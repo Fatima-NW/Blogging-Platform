@@ -9,9 +9,14 @@ def register_view(request):
     if request.method == "POST":
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save()    
-            login(request, user)  # auto login after registration
-            return redirect("home") 
+            user = form.save()  
+            # Authenticate user after registration
+            username = form.cleaned_data.get("username")
+            password = form.cleaned_data.get("password1")
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)  # Django knows which backend to use
+                return redirect("home")    
     else:
         form = CustomUserCreationForm()
     return render(request, "users/register.html", {"form": form})
