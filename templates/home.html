@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+    <div class="text-center">
+        <h1>Blogging Platform</h1>
+        {% if user.is_authenticated %}
+            <p>Hello, {{ user.get_full_name|default:user.username }}!</p>
+        {% else %}
+            <p>Please <a href="{% url 'login' %}">log in</a> or <a href="{% url 'register' %}">sign up</a>.</p>
+        {% endif %}
+    </div>
+{% endblock %}
