@@ -9,14 +9,8 @@ def register_view(request):
     if request.method == "POST":
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save()  
-            # Authenticate user after registration
-            username = form.cleaned_data.get("username")
-            password = form.cleaned_data.get("password1")
-            user = authenticate(request, username=username, password=password)
-            if user is not None:
-                login(request, user)  # Django knows which backend to use
-                return redirect("home")    
+            form.save()  
+            return redirect("login")  
     else:
         form = CustomUserCreationForm()
     return render(request, "users/register.html", {"form": form})
@@ -28,7 +22,7 @@ def login_view(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            return redirect("home")
+            return redirect("post_list")
     else:
         form = AuthenticationForm()
     return render(request, "users/login.html", {"form": form})
@@ -36,7 +30,7 @@ def login_view(request):
 # Logout view
 def logout_view(request):
     logout(request)
-    return redirect("login")  # after logout, go to login page
+    return redirect("home")  
 
 # Home view
 def home(request):

@@ -1,0 +1,936 @@
+[
+{
+    "model": "contenttypes.contenttype",
+    "fields": {
+        "app_label": "admin",
+        "model": "logentry"
+    }
+},
+{
+    "model": "contenttypes.contenttype",
+    "fields": {
+        "app_label": "auth",
+        "model": "permission"
+    }
+},
+{
+    "model": "contenttypes.contenttype",
+    "fields": {
+        "app_label": "auth",
+        "model": "group"
+    }
+},
+{
+    "model": "contenttypes.contenttype",
+    "fields": {
+        "app_label": "contenttypes",
+        "model": "contenttype"
+    }
+},
+{
+    "model": "contenttypes.contenttype",
+    "fields": {
+        "app_label": "sessions",
+        "model": "session"
+    }
+},
+{
+    "model": "contenttypes.contenttype",
+    "fields": {
+        "app_label": "users",
+        "model": "customuser"
+    }
+},
+{
+    "model": "contenttypes.contenttype",
+    "fields": {
+        "app_label": "posts",
+        "model": "like"
+    }
+},
+{
+    "model": "contenttypes.contenttype",
+    "fields": {
+        "app_label": "posts",
+        "model": "comment"
+    }
+},
+{
+    "model": "contenttypes.contenttype",
+    "fields": {
+        "app_label": "posts",
+        "model": "post"
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "1m4r2m9ejztwro0dsc761u5j9nl82ote",
+    "fields": {
+        "session_data": "e30:1v38wG:JfZL-UxAAK8K8vFm73lpXuenNMn9L6av99zxVHAQ50g",
+        "expire_date": "2025-10-13T08:08:52.826Z"
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "8tk2ov3e3u5s8wevwtkizbgupsx3gmrq",
+    "fields": {
+        "session_data": "e30:1v37uQ:wEhHMZFa-kz_Da_PM-7YPsPfmF1XgRSu4UtYM8l8Iw4",
+        "expire_date": "2025-10-13T07:02:54.943Z"
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "k5fhdo8pdi82tzg57pok8za1vxx6dje0",
+    "fields": {
+        "session_data": ".eJxVjMsOwiAQRf-FtSE8xhZcuu83kIFhpGogKe3K-O_apAvd3nPOfYmA21rC1vMSZhIXobU4_Y4R0yPXndAd663J1Oq6zFHuijxol1Oj_Lwe7t9BwV6-9dlroywzaj1mGEZGw2QsAGerTErKAxjwUSf0TBkJnGI1RJeAOLoo3h_-8jiH:1v38TU:HDaG74QmYwc1Mjdd-30VkKBcgpaeoJ4vliQImOTcQ78",
+        "expire_date": "2025-10-13T07:39:08.846Z"
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "rqmx2m6dlas5ddwcqvwxlbyfwa6sm8nc",
+    "fields": {
+        "session_data": ".eJxVjMsOwiAQRf-FtSHC8Bhcuu83EIaHVA0kpV0Z_12bdKHbe865L-bDtla_jbz4ObELA3b63SjER247SPfQbp3H3tZlJr4r_KCDTz3l5_Vw_w5qGPVb50BoQ4kGzyhQaxElaCzKgSWFUhBYp0FEyEYXiVI5EUUykgo6Us6x9wfHijbS:1v1iEu:hh_QUAL1lUyGKHuy5Zls9UkCx05QnerIjh8KpYK4S2k",
+        "expire_date": "2025-10-09T09:26:12.351Z"
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "tffuk2u60yqjd67ggrxp74jjf17li92s",
+    "fields": {
+        "session_data": ".eJxVjLsOwiAUht-F2TTAgUIdTRyNkzM5Bw6hsZek2Mn47rZJBx2_77-8RcD1VcJaeQl9EmehjDj9SsL45GlPdqzNwbW5jtgP9-Wx2QlHvs2Jh8tR_nsoWMs2B9COOepkAFybyXrwGDlbk5QhGz0o6rRMNpK0GRihU7HVxjqUwATi8wVkDTif:1v386v:12VE9exdELDqPeWaf9MJZ-Z_o_XdSDHCe76O0rCFV_w",
+        "expire_date": "2025-10-13T07:15:49.088Z"
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "u8pry8oijqvgwhihrbt2lrh1ex8u9399",
+    "fields": {
+        "session_data": ".eJxVjMsOwiAQRf-FtSE8xhZcuu83kIFhpGogKe3K-O_apAvd3nPOfYmA21rC1vMSZhIXobU4_Y4R0yPXndAd663J1Oq6zFHuijxol1Oj_Lwe7t9BwV6-9dlroywzaj1mGEZGw2QsAGerTErKAxjwUSf0TBkJnGI1RJeAOLoo3h_-8jiH:1v25jo:JFo4mm-SarfIOjyU5VRySEen8GqiSTxeqorj2Ulde7k",
+        "expire_date": "2025-10-10T10:31:40.532Z"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add log entry",
+        "content_type": [
+            "admin",
+            "logentry"
+        ],
+        "codename": "add_logentry"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change log entry",
+        "content_type": [
+            "admin",
+            "logentry"
+        ],
+        "codename": "change_logentry"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete log entry",
+        "content_type": [
+            "admin",
+            "logentry"
+        ],
+        "codename": "delete_logentry"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can view log entry",
+        "content_type": [
+            "admin",
+            "logentry"
+        ],
+        "codename": "view_logentry"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add permission",
+        "content_type": [
+            "auth",
+            "permission"
+        ],
+        "codename": "add_permission"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change permission",
+        "content_type": [
+            "auth",
+            "permission"
+        ],
+        "codename": "change_permission"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete permission",
+        "content_type": [
+            "auth",
+            "permission"
+        ],
+        "codename": "delete_permission"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can view permission",
+        "content_type": [
+            "auth",
+            "permission"
+        ],
+        "codename": "view_permission"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add group",
+        "content_type": [
+            "auth",
+            "group"
+        ],
+        "codename": "add_group"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change group",
+        "content_type": [
+            "auth",
+            "group"
+        ],
+        "codename": "change_group"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete group",
+        "content_type": [
+            "auth",
+            "group"
+        ],
+        "codename": "delete_group"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can view group",
+        "content_type": [
+            "auth",
+            "group"
+        ],
+        "codename": "view_group"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add content type",
+        "content_type": [
+            "contenttypes",
+            "contenttype"
+        ],
+        "codename": "add_contenttype"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change content type",
+        "content_type": [
+            "contenttypes",
+            "contenttype"
+        ],
+        "codename": "change_contenttype"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete content type",
+        "content_type": [
+            "contenttypes",
+            "contenttype"
+        ],
+        "codename": "delete_contenttype"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can view content type",
+        "content_type": [
+            "contenttypes",
+            "contenttype"
+        ],
+        "codename": "view_contenttype"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add session",
+        "content_type": [
+            "sessions",
+            "session"
+        ],
+        "codename": "add_session"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change session",
+        "content_type": [
+            "sessions",
+            "session"
+        ],
+        "codename": "change_session"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete session",
+        "content_type": [
+            "sessions",
+            "session"
+        ],
+        "codename": "delete_session"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can view session",
+        "content_type": [
+            "sessions",
+            "session"
+        ],
+        "codename": "view_session"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add user",
+        "content_type": [
+            "users",
+            "customuser"
+        ],
+        "codename": "add_customuser"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change user",
+        "content_type": [
+            "users",
+            "customuser"
+        ],
+        "codename": "change_customuser"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete user",
+        "content_type": [
+            "users",
+            "customuser"
+        ],
+        "codename": "delete_customuser"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can view user",
+        "content_type": [
+            "users",
+            "customuser"
+        ],
+        "codename": "view_customuser"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add like",
+        "content_type": [
+            "posts",
+            "like"
+        ],
+        "codename": "add_like"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change like",
+        "content_type": [
+            "posts",
+            "like"
+        ],
+        "codename": "change_like"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete like",
+        "content_type": [
+            "posts",
+            "like"
+        ],
+        "codename": "delete_like"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can view like",
+        "content_type": [
+            "posts",
+            "like"
+        ],
+        "codename": "view_like"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add comment",
+        "content_type": [
+            "posts",
+            "comment"
+        ],
+        "codename": "add_comment"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change comment",
+        "content_type": [
+            "posts",
+            "comment"
+        ],
+        "codename": "change_comment"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete comment",
+        "content_type": [
+            "posts",
+            "comment"
+        ],
+        "codename": "delete_comment"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can view comment",
+        "content_type": [
+            "posts",
+            "comment"
+        ],
+        "codename": "view_comment"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can add post",
+        "content_type": [
+            "posts",
+            "post"
+        ],
+        "codename": "add_post"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can change post",
+        "content_type": [
+            "posts",
+            "post"
+        ],
+        "codename": "change_post"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete post",
+        "content_type": [
+            "posts",
+            "post"
+        ],
+        "codename": "delete_post"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can view post",
+        "content_type": [
+            "posts",
+            "post"
+        ],
+        "codename": "view_post"
+    }
+},
+{
+    "model": "users.customuser",
+    "fields": {
+        "password": "pbkdf2_sha256$1000000$Hrdtgw1rT7pXNisWiTqLoL$zuIp9iCOSx1usb/DWRpiVtVRIEx/WE5bgoPURrDh17c=",
+        "last_login": "2025-09-29T08:40:12.156Z",
+        "is_superuser": true,
+        "username": "Fatima-NW",
+        "first_name": "Fatima",
+        "last_name": "Nadeem",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2025-09-26T10:17:17Z",
+        "email": "fatimanw@gmail.com",
+        "bio": "",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.customuser",
+    "fields": {
+        "password": "pbkdf2_sha256$1000000$rGEHS1UN8xPtNnnbpOw11G$AnO8r73OqYJ0hgZjdGx1dB3U00UcoAgRfFxM4g9a76c=",
+        "last_login": "2025-09-29T08:17:49.701Z",
+        "is_superuser": false,
+        "username": "arham.123",
+        "first_name": "Craig",
+        "last_name": "Arham",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2025-09-26T10:37:53Z",
+        "email": "Arham@yahoo.com",
+        "bio": "",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.customuser",
+    "fields": {
+        "password": "pbkdf2_sha256$1000000$dGiW0XbfMsnj8IlkaYl5rM$7EgJM2OgtgYOhLrWY3PUdcyJKPjHUXa2vwEIp13uHOs=",
+        "last_login": "2025-09-29T08:05:51.941Z",
+        "is_superuser": false,
+        "username": "AnnieCJ",
+        "first_name": "Annie",
+        "last_name": "Cresta",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2025-09-29T07:02:53.900Z",
+        "email": "anniecresta@gmail.com",
+        "bio": null,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.customuser",
+    "fields": {
+        "password": "pbkdf2_sha256$1000000$n1XVRjbFotwr0cANKEpO2D$sXGK/O8gjG9LUOPKJmSJZ6PR8QVrnG+2N+d3aI96Hlk=",
+        "last_login": "2025-09-29T08:05:01.859Z",
+        "is_superuser": false,
+        "username": "MariaCJ",
+        "first_name": "Maria",
+        "last_name": "Cresta",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2025-09-29T07:14:54.482Z",
+        "email": "mariacresta@gmail.com",
+        "bio": null,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.customuser",
+    "fields": {
+        "password": "pbkdf2_sha256$1000000$yaC9Dcus4Z4fQPJHfbJn62$XS7VCsPPQJCjemEL8P6epUSDSt2ZgOYGvNWC7UmW8aM=",
+        "last_login": "2025-09-29T08:17:11.365Z",
+        "is_superuser": false,
+        "username": "RogerDavies",
+        "first_name": "Roger",
+        "last_name": "Davies",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2025-09-29T07:37:18.644Z",
+        "email": "rogerd@gmail.com",
+        "bio": null,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.customuser",
+    "fields": {
+        "password": "pbkdf2_sha256$1000000$6y21rLsa2FynHLhhKCe9d4$S4iUp57Dyu70H96IZhg5wsyS/v5YfE2nCvFqwG5kZdM=",
+        "last_login": "2025-09-29T08:12:26.592Z",
+        "is_superuser": false,
+        "username": "Sherlock",
+        "first_name": "Sherlock",
+        "last_name": "Holmes",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2025-09-29T08:08:51.721Z",
+        "email": "sherlock@gmail.com",
+        "bio": null,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.customuser",
+    "fields": {
+        "password": "pbkdf2_sha256$1000000$Un2VThABbyK1fDHdLOviEX$X1z6tFR83lSGLWC1AoMdyvZOwviMoAkJbQiCI/1gFYw=",
+        "last_login": "2025-09-29T08:34:14.627Z",
+        "is_superuser": false,
+        "username": "Merthur",
+        "first_name": "Merlin",
+        "last_name": "Arthur",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2025-09-29T08:20:28.906Z",
+        "email": "merthur@gmail.com",
+        "bio": null,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.customuser",
+    "fields": {
+        "password": "pbkdf2_sha256$1000000$F9zTjTU70yZ6FqZcywO7Fk$6yDeuS5pjc3Ye1dp0up3xfMIy3ZTG0LgKmuem1Mk2S4=",
+        "last_login": "2025-09-29T08:59:30.195Z",
+        "is_superuser": false,
+        "username": "plswork",
+        "first_name": "Final",
+        "last_name": "Check",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2025-09-29T08:35:45.085Z",
+        "email": "plswork@gmail.com",
+        "bio": null,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "posts.post",
+    "pk": 1,
+    "fields": {
+        "title": "First Post",
+        "content": "This is my first post",
+        "author": [
+            "Fatima-NW"
+        ],
+        "created_at": "2025-09-26T11:35:45.450Z",
+        "updated_at": "2025-09-26T11:35:45.450Z"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 4,
+    "fields": {
+        "action_time": "2025-09-26T10:20:13.262Z",
+        "user": [
+            "Fatima-NW"
+        ],
+        "content_type": [
+            "users",
+            "customuser"
+        ],
+        "object_id": "7",
+        "object_repr": "FatimaNadeem",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 5,
+    "fields": {
+        "action_time": "2025-09-26T10:20:13.262Z",
+        "user": [
+            "Fatima-NW"
+        ],
+        "content_type": [
+            "users",
+            "customuser"
+        ],
+        "object_id": "5",
+        "object_repr": "FatimaNad.123",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 6,
+    "fields": {
+        "action_time": "2025-09-26T10:20:13.262Z",
+        "user": [
+            "Fatima-NW"
+        ],
+        "content_type": [
+            "users",
+            "customuser"
+        ],
+        "object_id": "3",
+        "object_repr": "FatimaN",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 7,
+    "fields": {
+        "action_time": "2025-09-26T10:52:15.750Z",
+        "user": [
+            "Fatima-NW"
+        ],
+        "content_type": [
+            "users",
+            "customuser"
+        ],
+        "object_id": "11",
+        "object_repr": "Fatima-NW",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"First name\", \"Last name\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 8,
+    "fields": {
+        "action_time": "2025-09-26T11:25:31.729Z",
+        "user": [
+            "Fatima-NW"
+        ],
+        "content_type": [
+            "users",
+            "customuser"
+        ],
+        "object_id": "10",
+        "object_repr": "newuser",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"First name\", \"Last name\", \"Bio\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 9,
+    "fields": {
+        "action_time": "2025-09-26T11:25:49.560Z",
+        "user": [
+            "Fatima-NW"
+        ],
+        "content_type": [
+            "users",
+            "customuser"
+        ],
+        "object_id": "6",
+        "object_repr": "RemusJLupin",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"First name\", \"Last name\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 10,
+    "fields": {
+        "action_time": "2025-09-26T11:26:11.122Z",
+        "user": [
+            "Fatima-NW"
+        ],
+        "content_type": [
+            "users",
+            "customuser"
+        ],
+        "object_id": "12",
+        "object_repr": "arham.123",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"First name\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 11,
+    "fields": {
+        "action_time": "2025-09-26T11:26:20.003Z",
+        "user": [
+            "Fatima-NW"
+        ],
+        "content_type": [
+            "users",
+            "customuser"
+        ],
+        "object_id": "12",
+        "object_repr": "arham.123",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Email\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 12,
+    "fields": {
+        "action_time": "2025-09-26T11:35:45.452Z",
+        "user": [
+            "Fatima-NW"
+        ],
+        "content_type": [
+            "posts",
+            "post"
+        ],
+        "object_id": "1",
+        "object_repr": "First Post",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 13,
+    "fields": {
+        "action_time": "2025-09-29T06:01:09.039Z",
+        "user": [
+            "Fatima-NW"
+        ],
+        "content_type": [
+            "posts",
+            "like"
+        ],
+        "object_id": "1",
+        "object_repr": "RemusJLupin liked First Post",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 14,
+    "fields": {
+        "action_time": "2025-09-29T06:01:33.188Z",
+        "user": [
+            "Fatima-NW"
+        ],
+        "content_type": [
+            "posts",
+            "comment"
+        ],
+        "object_id": "1",
+        "object_repr": "Comment by RemusJLupin on First Post",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 15,
+    "fields": {
+        "action_time": "2025-09-29T07:57:48.199Z",
+        "user": [
+            "Fatima-NW"
+        ],
+        "content_type": [
+            "users",
+            "customuser"
+        ],
+        "object_id": "6",
+        "object_repr": "RemusJLupin",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Password\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 16,
+    "fields": {
+        "action_time": "2025-09-29T08:01:23.443Z",
+        "user": [
+            "Fatima-NW"
+        ],
+        "content_type": [
+            "users",
+            "customuser"
+        ],
+        "object_id": "10",
+        "object_repr": "newuser",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 17,
+    "fields": {
+        "action_time": "2025-09-29T08:01:23.443Z",
+        "user": [
+            "Fatima-NW"
+        ],
+        "content_type": [
+            "users",
+            "customuser"
+        ],
+        "object_id": "6",
+        "object_repr": "RemusJLupin",
+        "action_flag": 3,
+        "change_message": ""
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 18,
+    "fields": {
+        "action_time": "2025-09-29T08:40:40.022Z",
+        "user": [
+            "Fatima-NW"
+        ],
+        "content_type": [
+            "users",
+            "customuser"
+        ],
+        "object_id": "19",
+        "object_repr": "happy",
+        "action_flag": 3,
+        "change_message": ""
+    }
+}
+]
