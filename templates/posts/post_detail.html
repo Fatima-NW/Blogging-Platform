@@ -9,13 +9,43 @@
     <small>By {{ post.author }} on {{ post.created_at|date:"M d, Y" }}</small>
 
     <hr>
+<!-- Like Button -->
+    <div class="mb-3">
+        {% if user.is_authenticated %}
+            <form method="post" action="{% url 'toggle_like' post.pk %}">
+                {% csrf_token %}
+                {% if user_has_liked %}
+                    <button type="submit" class="btn btn-danger">Unlike</button>
+                {% else %}
+                    <button type="submit" class="btn btn-success">Like</button>
+                {% endif %}
+                <span class="ms-2">{{ like_count }} like{{ like_count|pluralize }}</span>
+            </form>
+        {% else %}
+            <p><a href="{% url 'login' %}?next={{ request.path }}">Log in</a> to like this post.</p>
+            <span>{{ like_count }} like{{ like_count|pluralize }}</span>
+        {% endif %}
+    </div>
+
     <h4>Comments</h4>
+
+    <!--Comment Form -->
+    {% if user.is_authenticated %}
+        <div class="card mb-4 p-3">
+            <form method="post" action="{% url 'add_comment' post.pk %}">
+                {% csrf_token %}
+                {{ comment_form.as_p }}
+                <button type="submit" class="btn btn-primary">Post Comment</button>
+            </form>
+        </div>
+    {% endif %}
+
+    <!-- All Comments -->
     {% if comments %}
         <ul>
             {% for comment in comments %}
                 <li>
-                    <strong>{{ comment.author }}</strong>:
-                    {{ comment.content }}
+                    <strong>{{ comment.author }}</strong>: {{ comment.content }}
                     <br>
                     <small>{{ comment.created_at|date:"M d, Y H:i" }}</small>
                 </li>

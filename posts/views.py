@@ -1,9 +1,9 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import ListView
-from django.views.generic import DetailView
-from django.views.generic import CreateView
-from .models import Post, Comment
-from .forms import PostForm
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, redirect
+from django.views.generic import ListView, DetailView, CreateView
+from .models import Post, Comment, Like
+from .forms import PostForm, CommentForm
 from django.urls import reverse_lazy
 
 class PostListView(LoginRequiredMixin, ListView):
@@ -19,8 +19,17 @@ class PostDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # all comments for this post
-        context["comments"] = Comment.objects.filter(post=self.object).order_by("-created_at")
+        # comments
+        context["comments"] = self.object.comments.all().order_by("-created_at")
+        context["comment_form"] = CommentForm()
+
+        # likes
+        post = self.object
+        context["like_count"] = post.likes.count()
+        context["user_has_liked"] = (
+            self.request.user.is_authenticated
+            and post.likes.filter(user=self.request.user).exists()
+        )
         return context
 
 class PostCreateView(LoginRequiredMixin, CreateView):
@@ -33,3 +42,23 @@ class PostCreateView(LoginRequiredMixin, CreateView):
         # attach logged-in user as the author
         form.instance.author = self.request.user
         return super().form_valid(form)
+    
+@login_required
+def add_comment(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    if request.method == "POST":
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = post
+            comment.author = request.user
+            comment.save()
+    return redirect("post_detail", pk=post.pk)
+
+@login_required
+def toggle_like(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    like, created = Like.objects.get_or_create(post=post, user=request.user)
+    if not created:
+        like.delete()
+    return redirect("post_detail", pk=post.pk)
