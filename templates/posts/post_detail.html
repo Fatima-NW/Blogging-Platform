@@ -46,16 +46,18 @@
         <ul>
             {% for comment in comments %}
                 <div class="mb-3 p-2 border rounded">
-                    <strong>{{ comment.author }}</strong>
-                    <small>{{ comment.created_at|date:"M d, Y H:i" }}</small>
-                    <p>{{ comment.content }}</p>
-
-                    <!-- reply button + hidden form -->
-                    <button class="btn btn-link btn-sm reply-btn"
-                            data-comment-id="{{ comment.id }}"
-                            data-username="{{ comment.author.username }}">
-                        Reply
-                    </button>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ comment.author }}</strong>
+                            <small class="text-muted">{{ comment.created_at|date:"M d, Y H:i" }}</small>
+                        </div>
+                        <button class="btn btn-link btn-sm reply-btn"
+                                data-comment-id="{{ comment.id }}"
+                                data-username="{{ comment.author.username }}">
+                            Reply
+                        </button>
+                    </div>
+                    <p class="mb-1">{{ comment.content }}</p>
 
                     <!-- hidden reply form -->
                     <form method="post"
@@ -72,11 +74,33 @@
                     <!-- nested replies -->
                     {% for reply in comment.replies.all %}
                         <div class="ms-4 p-2 border-start">
-                            <strong>{{ reply.author }}</strong>
-                            <small>{{ reply.created_at|date:"M d, Y H:i" }}</small>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>{{ reply.author }}</strong>
+                                    <small class="text-muted">{{ reply.created_at|date:"M d, Y H:i" }}</small>
+                                </div>
+                                <button class="btn btn-link btn-sm reply-btn"
+                                        data-comment-id="{{ reply.id }}"
+                                        data-username="{{ reply.author.username }}">
+                                    Reply
+                                </button>
+                            </div>
                             <p>{{ reply.content }}</p>
+
+                            <!-- hidden reply form for replies -->
+                            <form method="post"
+                                action="{% url 'add_comment' post.pk %}"
+                                class="reply-form mt-2"
+                                id="reply-form-{{ reply.id }}"
+                                style="display: none;">
+                                {% csrf_token %}
+                                <input type="hidden" name="parent_id" value="{{ comment.id }}">
+                                <textarea name="content" class="form-control mb-2"></textarea>
+                                <button type="submit" class="btn btn-secondary btn-sm">Reply</button>
+                            </form>
                         </div>
                     {% endfor %}
+
                 </div>
             {% endfor %}
 

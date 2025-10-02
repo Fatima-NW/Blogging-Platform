@@ -58,7 +58,7 @@ class PostUpdateView(LoginRequiredMixin, UpdateView):
         if post.author != self.request.user:
             raise PermissionDenied("You are not allowed to edit this post.")
         return post
-    
+
 @login_required
 def add_comment(request, pk):
     post = get_object_or_404(Post, pk=pk)
@@ -69,12 +69,17 @@ def add_comment(request, pk):
             comment.post = post
             comment.author = request.user
 
-            # check if reply
             parent_id = request.POST.get("parent_id")
             if parent_id:
                 parent = Comment.objects.filter(id=parent_id, post=post).first()
                 if parent:
-                    comment.parent = parent
+                    # If parent itself has a parent it means it is a reply, so keep the root parent
+                    if parent.parent:
+                        comment.parent = parent.parent   # root comment
+                        comment.replied_to = parent.author
+                    else:
+                        comment.parent = parent          # top-level comment
+                        comment.replied_to = parent.author
 
             comment.save()
     return redirect("post_detail", pk=post.pk)

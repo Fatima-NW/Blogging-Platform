@@ -24,6 +24,12 @@ class Comment(models.Model):
         blank=True,
         related_name="replies"
     )
+    replied_to = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name="replies_received"
+    )
 
     def __str__(self):
         return f"Comment by {self.author} on {self.post.title}"
