@@ -17,7 +17,12 @@
         <a href="{% url 'post_detail' post.pk %}" class="list-group-item list-group-item-action">
           <h5 class="mb-1">{{ post.title }}</h5>
           <small>By {{ post.author.get_full_name|default:post.author.username }} on {{ post.created_at|date:"M d, Y" }}</small>
-          <p class="mb-1">{{ post.content|truncatewords:20 }}</p>
+          <p class="mb-1">{{ post.content|truncatewords:50 }}</p>
+          <small> 
+            {{ post.likes.count }} like{{ post.likes.count|pluralize }}
+            •
+            {{ post.comments.count }} comment{{ post.comments.count|pluralize }} 
+          </small>
         </a>
       {% endfor %}
     </div>

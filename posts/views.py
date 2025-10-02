@@ -19,9 +19,11 @@ class PostDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
         # comments
         context["comments"] = self.object.comments.all().order_by("-created_at")
         context["comment_form"] = CommentForm()
+        context["comment_count"] = self.object.comments.count()
 
         # likes
         post = self.object
