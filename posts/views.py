@@ -6,6 +6,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from .models import Post, Comment, Like
 from .forms import PostForm, CommentForm
 from django.urls import reverse_lazy
+from django.http import JsonResponse
 
 class PostListView(LoginRequiredMixin, ListView):
     model = Post
@@ -20,14 +21,14 @@ class PostDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
+        post = self.object
+
         # comments
-        context["comments"] = self.object.comments.all().order_by("-created_at")
+        context["comments"] = post.comments.filter(parent__isnull=True).order_by("-created_at")
         context["comment_form"] = CommentForm()
-        context["comment_count"] = self.object.comments.count()
+        context["comment_count"] = post.comments.count()
 
         # likes
-        post = self.object
         context["like_count"] = post.likes.count()
         context["user_has_liked"] = (
             self.request.user.is_authenticated
@@ -67,6 +68,14 @@ def add_comment(request, pk):
             comment = form.save(commit=False)
             comment.post = post
             comment.author = request.user
+
+            # check if reply
+            parent_id = request.POST.get("parent_id")
+            if parent_id:
+                parent = Comment.objects.filter(id=parent_id, post=post).first()
+                if parent:
+                    comment.parent = parent
+
             comment.save()
     return redirect("post_detail", pk=post.pk)
 
@@ -74,6 +83,17 @@ def add_comment(request, pk):
 def toggle_like(request, pk):
     post = get_object_or_404(Post, pk=pk)
     like, created = Like.objects.get_or_create(post=post, user=request.user)
+
     if not created:
         like.delete()
+        liked = False
+    else:
+        liked = True
+
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        return JsonResponse({
+            "liked": liked,
+            "like_count": post.likes.count()
+        })
+
     return redirect("post_detail", pk=post.pk)

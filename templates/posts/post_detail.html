@@ -12,22 +12,20 @@
     </div>
     <p>{{ post.content }}</p>
     <small>By {{ post.author }} on {{ post.created_at|date:"M d, Y" }}</small>
-
     <hr>
+
 <!-- Like Button -->
     <div class="mb-3">
         {% if user.is_authenticated %}
-            <form method="post" action="{% url 'toggle_like' post.pk %}">
-                {% csrf_token %}
-                {% if user_has_liked %}
-                    <button type="submit" class="btn btn-danger">Unlike</button>
-                {% else %}
-                    <button type="submit" class="btn btn-success">Like</button>
-                {% endif %}
-                <span class="ms-2">{{ like_count }} like{{ like_count|pluralize }}</span>
-            </form>
+            <button id="like-btn"
+                    data-post-id="{{ post.id }}"
+                    class="btn {% if user_has_liked %}btn-danger{% else %}btn-success{% endif %}">
+                {% if user_has_liked %}Unlike{% else %}Like{% endif %}
+            </button>
+            <span id="like-count" class="ms-2">
+                {{ like_count }} like{{ like_count|pluralize }}
+            </span>
         {% else %}
-            <p><a href="{% url 'login' %}?next={{ request.path }}">Log in</a> to like this post.</p>
             <span>{{ like_count }} like{{ like_count|pluralize }}</span>
         {% endif %}
     </div>
@@ -36,28 +34,139 @@
 
     <!--Comment Form -->
     {% if user.is_authenticated %}
-        <div class="card mb-4 p-3">
-            <form method="post" action="{% url 'add_comment' post.pk %}">
-                {% csrf_token %}
-                {{ comment_form.as_p }}
-                <button type="submit" class="btn btn-primary">Post Comment</button>
-            </form>
-        </div>
+        <form method="post" action="{% url 'add_comment' post.pk %}">
+            {% csrf_token %}
+            <textarea name="content" rows="2" class="form-control mb-2" placeholder="Add a comment..."></textarea>
+            <button type="submit" class="btn btn-sm btn-primary">Post Comment</button>
+        </form>
     {% endif %}
 
     <!-- All Comments -->
     {% if comments %}
         <ul>
             {% for comment in comments %}
-                <li>
-                    <strong>{{ comment.author }}</strong>: {{ comment.content }}
-                    <br>
+                <div class="mb-3 p-2 border rounded">
+                    <strong>{{ comment.author }}</strong>
                     <small>{{ comment.created_at|date:"M d, Y H:i" }}</small>
-                </li>
+                    <p>{{ comment.content }}</p>
+
+                    <!-- reply button + hidden form -->
+                    <button class="btn btn-link btn-sm reply-btn"
+                            data-comment-id="{{ comment.id }}"
+                            data-username="{{ comment.author.username }}">
+                        Reply
+                    </button>
+
+                    <!-- hidden reply form -->
+                    <form method="post"
+                            action="{% url 'add_comment' post.pk %}"
+                            class="reply-form mt-2"
+                            id="reply-form-{{ comment.id }}"
+                            style="display: none;">
+                        {% csrf_token %}
+                        <input type="hidden" name="parent_id" value="{{ comment.id }}">
+                        <textarea name="content" class="form-control mb-2"></textarea>
+                        <button type="submit" class="btn btn-secondary btn-sm">Reply</button>
+                    </form>
+
+                    <!-- nested replies -->
+                    {% for reply in comment.replies.all %}
+                        <div class="ms-4 p-2 border-start">
+                            <strong>{{ reply.author }}</strong>
+                            <small>{{ reply.created_at|date:"M d, Y H:i" }}</small>
+                            <p>{{ reply.content }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
             {% endfor %}
+
         </ul>
     {% else %}
         <p>No comments yet.</p>
     {% endif %}
+
+    <script>
+        // for replies
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll(".reply-btn").forEach(button => {
+                button.addEventListener("click", function () {
+                    let commentId = this.dataset.commentId;
+                    let username = this.dataset.username;
+
+                    // hide all other reply forms first
+                    document.querySelectorAll(".reply-form").forEach(f => f.style.display = "none");
+
+                    // show selected reply form
+                    let form = document.getElementById("reply-form-" + commentId);
+                    form.style.display = "block";
+
+                    // prefill with @username
+                    let textarea = form.querySelector("textarea");
+                    textarea.value = "@" + username + " ";
+                    textarea.focus();
+                });
+            });
+        });
+
+        // for like button
+        document.addEventListener("DOMContentLoaded", function () {
+            const likeBtn = document.getElementById("like-btn");
+            if (!likeBtn) return;
+
+            // Get CSRF token from cookie
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== "") {
+                    const cookies = document.cookie.split(";");
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + "=")) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+            const csrftoken = getCookie("csrftoken");
+
+            likeBtn.addEventListener("click", function () {
+                const postId = this.dataset.postId;
+                console.log("Like button clicked for post:", postId);
+
+                fetch(`/posts/${postId}/like/`, {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": csrftoken,
+                        "X-Requested-With": "XMLHttpRequest",
+                    },
+                })
+                .then(response => {
+                    console.log("Fetch response status:", response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Server response JSON:", data);
+
+                    // Update button
+                    if (data.liked) {
+                        likeBtn.textContent = "Unlike";
+                        likeBtn.classList.remove("btn-success");
+                        likeBtn.classList.add("btn-danger");
+                    } else {
+                        likeBtn.textContent = "Like";
+                        likeBtn.classList.remove("btn-danger");
+                        likeBtn.classList.add("btn-success");
+                    }
+
+                    // Update like count
+                    document.getElementById("like-count").textContent =
+                        data.like_count + " like" + (data.like_count === 1 ? "" : "s");
+                })
+                .catch(error => console.error("Fetch error:", error));
+            });
+        }); 
+    </script>
+
 </div>
 {% endblock %}
