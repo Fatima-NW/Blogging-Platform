@@ -14,7 +14,7 @@
     <small>By {{ post.author }} on {{ post.created_at|date:"M d, Y" }}</small>
     <hr>
 
-<!-- Like Button -->
+    <!-- Like Button -->
     <div class="mb-3">
         {% if user.is_authenticated %}
             <button id="like-btn"
@@ -94,7 +94,7 @@
                                 id="reply-form-{{ reply.id }}"
                                 style="display: none;">
                                 {% csrf_token %}
-                                <input type="hidden" name="parent_id" value="{{ comment.id }}">
+                                <input type="hidden" name="parent_id" value="{{ reply.id }}">
                                 <textarea name="content" class="form-control mb-2"></textarea>
                                 <button type="submit" class="btn btn-secondary btn-sm">Reply</button>
                             </form>

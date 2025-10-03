@@ -71,15 +71,12 @@ def add_comment(request, pk):
 
             parent_id = request.POST.get("parent_id")
             if parent_id:
-                parent = Comment.objects.filter(id=parent_id, post=post).first()
-                if parent:
-                    # If parent itself has a parent it means it is a reply, so keep the root parent
-                    if parent.parent:
-                        comment.parent = parent.parent   # root comment
-                        comment.replied_to = parent.author
-                    else:
-                        comment.parent = parent          # top-level comment
-                        comment.replied_to = parent.author
+                parent_comment = Comment.objects.filter(id=parent_id, post=post).first()
+                if parent_comment:
+                    # Always attach to the root comment
+                    comment.parent = parent_comment.parent or parent_comment
+                    # 'replied_to' is always the user being replied to
+                    comment.replied_to = parent_comment.author
 
             comment.save()
     return redirect("post_detail", pk=post.pk)
