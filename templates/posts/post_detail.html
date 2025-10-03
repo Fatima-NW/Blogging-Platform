@@ -40,7 +40,9 @@
     {% if user.is_authenticated %}
         <form method="post" action="{% url 'add_comment' post.pk %}">
             {% csrf_token %}
-            <textarea name="content" rows="2" class="form-control mb-2" placeholder="Add a comment..."></textarea>
+            <div class="mb-2">
+                {{ comment_form.content }}
+            </div>
             <button type="submit" class="btn btn-sm btn-primary">Post Comment</button>
         </form>
     {% endif %}
