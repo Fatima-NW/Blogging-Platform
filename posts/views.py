@@ -93,6 +93,13 @@ def add_comment(request, pk):
     return redirect("post_detail", pk=post.pk)
 
 @login_required
+def delete_comment(request, pk):
+    comment = get_object_or_404(Comment, pk=pk)
+    if request.user == comment.author:
+        comment.delete()
+    return redirect("post_detail", pk=comment.post.pk)
+
+@login_required
 def toggle_like(request, pk):
     post = get_object_or_404(Post, pk=pk)
     like, created = Like.objects.get_or_create(post=post, user=request.user)
