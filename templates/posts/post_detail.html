@@ -6,6 +6,7 @@
 <div class="container">
     <div class="d-flex justify-content-between align-items-center">
         <h2 class="mb-0">{{ post.title }}</h2>
+        <!-- Edit and Delete post buttons -->
         {% if user == post.author %}
             <div>
                 <a href="{% url 'post_edit' post.pk %}" class="btn btn-warning btn-sm">Edit</a>
@@ -54,11 +55,40 @@
                             <strong>{{ comment.author }}</strong>
                             <small class="text-muted">{{ comment.created_at|date:"M d, Y H:i" }}</small>
                         </div>
-                        <button class="btn btn-link btn-sm reply-btn"
-                                data-comment-id="{{ comment.id }}"
-                                data-username="{{ comment.author.username }}">
-                            Reply
-                        </button>
+
+                        <div class="d-flex align-items-center">
+                            <!-- Reply button -->
+                            <button class="btn btn-link btn-sm fw-bold text-muted text-decoration-none me-2 reply-btn"
+                                    data-comment-id="{{ comment.id }}"
+                                    data-username="{{ comment.author.username }}">
+                                Reply
+                            </button>
+
+                            <!-- Three-dot dropdown for delete -->
+                            <div class="dropdown" style="min-width: 24px;">
+                                {% if user == comment.author %}
+                                    <button class="btn btn-link btn-sm fw-bold text-dark text-decoration-none"
+                                            type="button"
+                                            id="dropdownMenu{{ comment.id }}" data-bs-toggle="dropdown" aria-expanded="false"
+                                            style="font-size: 1.05rem; line-height: 1;">
+                                        &#x22EE;
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu{{ comment.id }}">
+                                        <li>
+                                            <a class="dropdown-item text-danger"
+                                            href="{% url 'delete_comment' comment.pk %}">Delete</a>
+                                        </li>
+                                    </ul>
+                                {% else %}
+                                    <!-- Invisible placeholder to keep Reply aligned -->
+                                    <button class="btn btn-link btn-sm fw-bold text-dark text-decoration-none invisible"
+                                            style="font-size: 1.05rem; line-height: 1;">
+                                        &#x22EE;
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </div>
+
                     </div>
                     <p class="mb-1">{{ comment.content }}</p>
 
@@ -82,11 +112,39 @@
                                     <strong>{{ reply.author }}</strong>
                                     <small class="text-muted">{{ reply.created_at|date:"M d, Y H:i" }}</small>
                                 </div>
-                                <button class="btn btn-link btn-sm reply-btn"
-                                        data-comment-id="{{ reply.id }}"
-                                        data-username="{{ reply.author.username }}">
-                                    Reply
-                                </button>
+
+                                <div class="d-flex align-items-center">
+                                    <!-- Reply button -->
+                                    <button class="btn btn-link btn-sm fw-bold text-muted text-decoration-none me-2 reply-btn"
+                                            data-comment-id="{{ reply.id }}"
+                                            data-username="{{ reply.author.username }}">
+                                        Reply
+                                    </button>
+
+                                    <!-- Three-dot dropdown (always reserves space) -->
+                                    <div class="dropdown" style="min-width: 24px;">
+                                        {% if user == reply.author %}
+                                            <button class="btn btn-link btn-sm fw-bold text-dark text-decoration-none"
+                                                    type="button"
+                                                    id="dropdownMenuReply{{ reply.id }}" data-bs-toggle="dropdown" aria-expanded="false"
+                                                    style="font-size: 1.05rem; line-height: 1;">
+                                                &#x22EE;
+                                            </button>
+                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuReply{{ reply.id }}">
+                                                <li>
+                                                    <a class="dropdown-item text-danger"
+                                                    href="{% url 'delete_comment' reply.pk %}">Delete</a>
+                                                </li>
+                                            </ul>
+                                        {% else %}
+                                            <!-- Invisible placeholder to keep Reply aligned -->
+                                            <button class="btn btn-link btn-sm fw-bold text-dark text-decoration-none invisible"
+                                                    style="font-size: 1.05rem; line-height: 1;">
+                                                &#x22EE;
+                                            </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
                             </div>
                             <p>{{ reply.content }}</p>
 
