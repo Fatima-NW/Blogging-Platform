@@ -7,7 +7,10 @@
     <div class="d-flex justify-content-between align-items-center">
         <h2 class="mb-0">{{ post.title }}</h2>
         {% if user == post.author %}
-            <a href="{% url 'post_edit' post.pk %}" class="btn btn-warning btn-sm">Edit</a>
+            <div>
+                <a href="{% url 'post_edit' post.pk %}" class="btn btn-warning btn-sm">Edit</a>
+                <a href="{% url 'post_delete' post.pk %}" class="btn btn-danger btn-sm">Delete</a>
+            </div>
         {% endif %}
     </div>
     <p>{{ post.content }}</p>

@@ -2,7 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.core.exceptions import PermissionDenied
-from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import Post, Comment, Like
 from .forms import PostForm, CommentForm
 from django.urls import reverse_lazy
@@ -57,6 +57,17 @@ class PostUpdateView(LoginRequiredMixin, UpdateView):
         post = super().get_object(queryset)
         if post.author != self.request.user:
             raise PermissionDenied("You are not allowed to edit this post.")
+        return post
+    
+class PostDeleteView(LoginRequiredMixin, DeleteView):
+    model = Post
+    template_name = "posts/post_confirm_delete.html"
+    success_url = reverse_lazy("post_list")
+
+    def get_object(self, queryset=None):
+        post = super().get_object(queryset)
+        if post.author != self.request.user:
+            raise PermissionDenied("You are not allowed to delete this post.")
         return post
 
 @login_required
