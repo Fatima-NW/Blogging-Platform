@@ -15,7 +15,7 @@ class CommentForm(forms.ModelForm):
                 attrs={
                     "rows": 2, 
                     "placeholder": "Add a comment...", 
-                    "maxlength": 700,
+                    "maxlength": 1000,
                     "class": "form-control form-control-sm",
                 }
             )
