@@ -19,6 +19,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.http import HttpResponse
 from users import views as user_views
+from rest_framework_simplejwt.views import (TokenObtainPairView, TokenRefreshView,)
 
 # simple home view just for testing
 def home_view(request):
@@ -28,5 +29,8 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", user_views.home, name="home"),   # home/landing page
     path("users/", include("users.urls")),
-    path("posts/", include("posts.urls")),   
+    path("posts/", include("posts.urls")),  
+    path("api/", include("posts.api.urls")),
+    path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
 ]

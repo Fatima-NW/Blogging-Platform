@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     # my apps
     'users',
     "posts",
+
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -141,3 +143,14 @@ AUTHENTICATION_BACKENDS = [
     "users.backends.UsernameOrEmailBackend",  # custom backend: login via email or username
     "django.contrib.auth.backends.ModelBackend",  # default username/password login
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',  
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ]
+}
