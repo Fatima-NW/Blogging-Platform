@@ -8,7 +8,7 @@ from .forms import PostForm, CommentForm
 from django.urls import reverse_lazy
 from django.http import JsonResponse
 
-class PostListView(LoginRequiredMixin, ListView):
+class PostListView(ListView):
     model = Post
     template_name = "posts/post_list.html"
     context_object_name = "posts"
