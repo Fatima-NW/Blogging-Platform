@@ -96,6 +96,24 @@ class CommentCreateAPIView(generics.CreateAPIView):
                 comment.content = f"{tag} {comment.content}"
                 comment.save(update_fields=["content"])
 
+# Update a comment (only by author)
+class CommentUpdateAPIView(generics.RetrieveUpdateAPIView):
+    serializer_class = CommentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Comment.objects.filter(author=self.request.user)
+
+    def update(self, request, *args, **kwargs):
+        partial = True
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({
+            "detail": "Comment updated successfully.",
+            "comment": serializer.data
+        }, status=status.HTTP_200_OK)
 
 # Delete a comment (only by author)
 class CommentDeleteAPIView(generics.DestroyAPIView):

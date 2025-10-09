@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import ( PostListAPIView, PostDetailAPIView,
     PostCreateAPIView, PostUpdateAPIView, PostDeleteAPIView,
-    CommentCreateAPIView, CommentDeleteAPIView,
+    CommentCreateAPIView, CommentUpdateAPIView, CommentDeleteAPIView,
     ToggleLikeAPIView,
 )
 
@@ -15,6 +15,7 @@ urlpatterns = [
 
     # comments
     path("posts/<int:post_pk>/comment/", CommentCreateAPIView.as_view(), name="api_comment_create"),
+    path("comments/<int:pk>/update/", CommentUpdateAPIView.as_view(), name="api_comment_update"),
     path("comments/<int:pk>/delete/", CommentDeleteAPIView.as_view(), name="api_comment_delete"),
 
     # likes
