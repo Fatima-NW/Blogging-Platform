@@ -21,7 +21,16 @@ class PostDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        post = self.object
+        post = (
+            Post.objects
+            .select_related("author")  # joins user data for post author
+            .prefetch_related(
+                "comments__author",      # prefetch authors of comments
+                "comments__replied_to",  # prefetch replied-to users
+                "likes__user"            # prefetch users who liked the post
+            )
+            .get(pk=self.object.pk)
+        )
 
         # comments
         context["comments"] = post.comments.filter(parent__isnull=True).order_by("-created_at")
