@@ -29,7 +29,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", user_views.home, name="home"),   # home/landing page
     path("users/", include("users.urls")),
-    path("api/users/", include("users.api.urls")),
+    path("api/", include("users.api.urls")),
     path("posts/", include("posts.urls")),  
     path("api/", include("posts.api.urls")),
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
