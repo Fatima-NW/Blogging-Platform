@@ -29,6 +29,9 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
+# Pagination for listing post (template view)
+PAGINATE_BY = config("PAGINATE_BY", default=10, cast=int)
+
 ALLOWED_HOSTS = []
 
 
@@ -153,7 +156,9 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',  
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ]
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': config('PAGINATE_BY', default=10, cast=int),      # Pagination for listing post (api view)
 }
 
 SIMPLE_JWT = {

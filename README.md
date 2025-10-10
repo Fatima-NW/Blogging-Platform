@@ -50,6 +50,7 @@ A blogging platform built with **Django** and **Django REST Framework**.
     DB_PORT=port-number
     SECRET_KEY=your-secret-key
     DEBUG=True
+    PAGINATE_BY=number-of-posts-on-one-page
     ```
 5. Apply migrations and run server
     ```bash

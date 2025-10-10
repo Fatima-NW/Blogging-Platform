@@ -7,13 +7,14 @@ from .models import Post, Comment, Like
 from .forms import PostForm, CommentForm
 from django.urls import reverse_lazy
 from django.http import JsonResponse
+from django.conf import settings
 
 class PostListView(ListView):
     model = Post
     template_name = "posts/post_list.html"
     context_object_name = "posts"
     ordering = ["-created_at"]
-    paginate_by = 5
+    paginate_by = settings.PAGINATE_BY
 
 class PostDetailView(DetailView):
     model = Post
