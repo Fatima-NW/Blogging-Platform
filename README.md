@@ -60,7 +60,8 @@ A blogging platform built with **Django** and **Django REST Framework**.
     ```
 
 ## 📂 Project Structure
-YourFolder/
+```
+yourFolder/
 │
 ├── myproject/
 │ ├── settings.py             # Main configuration file
@@ -107,3 +108,4 @@ YourFolder/
 ├── pytest.ini                # For testing
 ├── README.md 
 └── manage.py
+```
