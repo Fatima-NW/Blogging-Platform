@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.core.exceptions import ValidationError
 
 class Post(models.Model):
     title = models.CharField(max_length=200)
@@ -33,6 +34,11 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"Comment by {self.author} on {self.post.title}"
+    
+    def save(self, *args, **kwargs):
+        if self.content and len(self.content) > 1000:
+            raise ValidationError("Content cannot exceed 1000 characters.")
+        super().save(*args, **kwargs)
 
 
 class Like(models.Model):
