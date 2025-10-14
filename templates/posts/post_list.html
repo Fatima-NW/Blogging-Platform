@@ -5,12 +5,45 @@
 {% block content %}
   <h2 class="mb-4">All Blog Posts</h2>
 
+  <!-- Create new post button-->
   {% if user.is_authenticated %}
     <a href="{% url 'post_create' %}" class="btn btn-success mb-3">
       + Create New Post
     </a>
   {% endif %}
 
+  <!-- Filter Form -->
+  <form method="get" class="mb-4 p-3 border rounded bg-light">
+    <div class="row g-2">
+      <div class="col-md-3">
+        <input type="text" name="author" class="form-control" placeholder="Filter by author name" value="{{ request.GET.author }}">
+      </div>
+      <div class="col-md-3">
+        <input type="text" name="title" class="form-control" placeholder="Filter by title" value="{{ request.GET.title }}">
+      </div>
+      <div class="col-md-3">
+        <input type="text" name="content" class="form-control" placeholder="Filter by content" value="{{ request.GET.content }}">
+      </div>
+      <div class="col-md-3">
+        <input type="date" name="created_on" class="form-control" 
+              placeholder="Created on" value="{{ request.GET.created_on }}">
+      </div>
+      <div class="col-md-3">
+        <div class="input-group">
+          <input type="date" name="created_after" class="form-control" value="{{ request.GET.created_after }}">
+          <span class="input-group-text">to</span>
+          <input type="date" name="created_before" class="form-control" value="{{ request.GET.created_before }}">
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-3 text-end">
+      <button type="submit" class="btn btn-primary">Apply Filters</button>
+      <a href="{% url 'post_list' %}" class="btn btn-secondary">Reset</a>
+    </div>
+  </form>
+
+  <!-- Displaying posts -->
   {% if posts %}
     <div class="list-group">
       {% for post in posts %}
@@ -29,43 +62,43 @@
 
     <!-- Pagination -->
     {% if is_paginated %}
-      <nav class="mt-4">
-        <ul class="pagination justify-content-center">
+    <nav class="mt-4">
+      <ul class="pagination justify-content-center">
 
-          {% if page_obj.has_previous %}
-            <li class="page-item">
-              <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+        {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value|urlencode }}{% endif %}{% endfor %}">Previous</a>
+          </li>
+        {% else %}
+          <li class="page-item disabled">
+            <span class="page-link">Previous</span>
+          </li>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+          {% if page_obj.number == num %}
+            <li class="page-item active">
+              <span class="page-link">{{ num }}</span>
             </li>
           {% else %}
-            <li class="page-item disabled">
-              <span class="page-link">Previous</span>
-            </li>
-          {% endif %}
-
-          {% for num in page_obj.paginator.page_range %}
-            {% if page_obj.number == num %}
-              <li class="page-item active">
-                <span class="page-link">{{ num }}</span>
-              </li>
-            {% else %}
-              <li class="page-item">
-                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
-              </li>
-            {% endif %}
-          {% endfor %}
-
-          {% if page_obj.has_next %}
             <li class="page-item">
-              <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
-            </li>
-          {% else %}
-            <li class="page-item disabled">
-              <span class="page-link">Next</span>
+              <a class="page-link" href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value|urlencode }}{% endif %}{% endfor %}">{{ num }}</a>
             </li>
           {% endif %}
+        {% endfor %}
 
-        </ul>
-      </nav>
+        {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value|urlencode }}{% endif %}{% endfor %}">Next</a>
+          </li>
+        {% else %}
+          <li class="page-item disabled">
+            <span class="page-link">Next</span>
+          </li>
+        {% endif %}
+
+      </ul>
+    </nav>
     {% endif %}
 
   {% else %}

@@ -17,6 +17,7 @@ from .forms import PostForm, CommentForm
 from django.urls import reverse_lazy
 from django.http import JsonResponse
 from django.conf import settings
+from .filters import filter_posts
 
 
 # -----------------------POSTS-----------------------
@@ -28,6 +29,13 @@ class PostListView(ListView):
     context_object_name = "posts"
     ordering = ["-created_at"]
     paginate_by = settings.PAGINATE_BY   # pagination
+
+    def get_queryset(self):
+        """ Returns filtered queryset based on query parameters """
+        queryset = super().get_queryset()
+        queryset = filter_posts(queryset, self.request.GET)
+        return queryset
+    
 
 class PostDetailView(DetailView):
     """ Displays a single post along with comments and like info """
