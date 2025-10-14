@@ -1,5 +1,5 @@
 """
-Forms for the posts app.
+Forms for the posts app
 
 Includes:
 - PostForm

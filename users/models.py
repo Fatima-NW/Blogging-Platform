@@ -1,5 +1,5 @@
 """
-Custom user model for the users app.
+Custom user model for the users app
 
 Extends Django's AbstractUser to include:
 - Unique email

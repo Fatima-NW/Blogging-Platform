@@ -1,8 +1,8 @@
 """
-Forms for the users app.
+Forms for the users app
 
 Includes:
-- CustomUserCreationForm: Custom registration form using the CustomUser model.
+- CustomUserCreationForm: Custom registration form using the CustomUser model
 """
 
 from django import forms

@@ -1,7 +1,7 @@
 """
-Custom authentication backend for the users app.
+Custom authentication backend for the users app
 
-Allows users to log in using either their username or email address.
+Allows users to log in using either their username or email address
 """
 
 from django.contrib.auth.backends import ModelBackend

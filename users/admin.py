@@ -1,5 +1,5 @@
 """
-Admin configuration for the users app.
+Admin configuration for the users app
 
 Registers:
 - CustomUser

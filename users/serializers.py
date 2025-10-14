@@ -1,5 +1,5 @@
 """
-Serializers for the users app.
+Serializers for the users app
 
 It includes:
 - UserSerializer
