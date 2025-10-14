@@ -1,3 +1,12 @@
+"""
+Template views for the posts app
+
+Includes views for:
+- Posts: list, detail, create, update, delete
+- Comments: create, delete
+- Likes: toggle like/unlike on a post
+"""
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
@@ -9,14 +18,19 @@ from django.urls import reverse_lazy
 from django.http import JsonResponse
 from django.conf import settings
 
+
+# -----------------------POSTS-----------------------
+
 class PostListView(ListView):
+    """ Displays all posts """
     model = Post
     template_name = "posts/post_list.html"
     context_object_name = "posts"
     ordering = ["-created_at"]
-    paginate_by = settings.PAGINATE_BY
+    paginate_by = settings.PAGINATE_BY   # pagination
 
 class PostDetailView(DetailView):
+    """ Displays a single post along with comments and like info """
     model = Post
     template_name = "posts/post_detail.html"
     context_object_name = "post"
@@ -25,10 +39,10 @@ class PostDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         post = (
             Post.objects
-            .select_related("author")  # joins user data for post author
+            .select_related("author")    # joins post author
             .prefetch_related(
                 "comments__author",      # prefetch authors of comments
-                "comments__replied_to",  # prefetch replied-to users
+                "comments__replied_to",  # prefetch mentioned users
                 "likes__user"            # prefetch users who liked the post
             )
             .get(pk=self.object.pk)
@@ -47,18 +61,21 @@ class PostDetailView(DetailView):
         )
         return context
 
+
 class PostCreateView(LoginRequiredMixin, CreateView):
+    """ Allow logged-in users to create posts """
     model = Post
     form_class = PostForm
     template_name = "posts/post_form.html"
     success_url = reverse_lazy("post_list")
 
     def form_valid(self, form):
-        # attach logged-in user as the author
-        form.instance.author = self.request.user
+        form.instance.author = self.request.user    # attach logged-in user as the author
         return super().form_valid(form)
     
+
 class PostUpdateView(LoginRequiredMixin, UpdateView):
+    """ Allow users to edit their own posts """
     model = Post
     form_class = PostForm
     template_name = "posts/post_form.html"
@@ -66,23 +83,36 @@ class PostUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_object(self, queryset=None):
         post = super().get_object(queryset)
-        if post.author != self.request.user:
+        if post.author != self.request.user:         # only author can edit
             raise PermissionDenied("You are not allowed to edit this post.")
         return post
     
+
 class PostDeleteView(LoginRequiredMixin, DeleteView):
+    """ Allow users to delete their own posts """
     model = Post
     template_name = "posts/post_confirm_delete.html"
     success_url = reverse_lazy("post_list")
 
     def get_object(self, queryset=None):
         post = super().get_object(queryset)
-        if post.author != self.request.user:
+        if post.author != self.request.user:         # only author can delete
             raise PermissionDenied("You are not allowed to delete this post.")
         return post
 
+
+# -----------------------COMMENTS-----------------------
+
 @login_required
 def add_comment(request, pk):
+    """ 
+    Allow logged-in users to add a comment 
+    
+    Supports a two-level structure:
+    - Top-level comments are direct responses to the post.
+    - Replies are nested under the top-level comment (the parent),
+      but tagged to the specific user being replied to via `replied_to`.
+    """
     post = get_object_or_404(Post, pk=pk)
     if request.method == "POST":
         form = CommentForm(request.POST)
@@ -95,32 +125,37 @@ def add_comment(request, pk):
             if parent_id:
                 parent_comment = Comment.objects.filter(id=parent_id, post=post).first()
                 if parent_comment:
-                    # Always attach to the root comment
-                    comment.parent = parent_comment.parent or parent_comment
-                    # 'replied_to' is always the user being replied to
-                    comment.replied_to = parent_comment.author
+                    comment.parent = parent_comment.parent or parent_comment # Attach to root comment (two-level nesting)
+                    comment.replied_to = parent_comment.author               # Tag the user being replied to
 
             comment.save()
     return redirect("post_detail", pk=post.pk)
 
+
 @login_required
 def delete_comment(request, pk):
+    """ Allow users to delete their own comments """
     comment = get_object_or_404(Comment, pk=pk)
-    if request.user == comment.author:
+    if request.user == comment.author:                 # only author can delete
         comment.delete()
     return redirect("post_detail", pk=comment.post.pk)
 
+
+# -----------------------LIKES-----------------------
+
 @login_required
 def toggle_like(request, pk):
+    """ Allow logged-in users to like/unlike a post """
     post = get_object_or_404(Post, pk=pk)
     like, created = Like.objects.get_or_create(post=post, user=request.user)
 
     if not created:
-        like.delete()
+        like.delete()          # user already liked -> unlike
         liked = False
     else:
         liked = True
 
+    #  Return JSON for AJAX requests
     if request.headers.get("x-requested-with") == "XMLHttpRequest":
         return JsonResponse({
             "liked": liked,

@@ -1,6 +1,11 @@
-from django.contrib import admin
+""" 
+Admin configuration for the posts app 
 
-# Register your models here.
+Registers: 
+- Post
+- Comment
+- Like
+"""
 
 from django.contrib import admin
 from .models import Post, Comment, Like

@@ -1,3 +1,14 @@
+"""
+Model tests for the posts app
+
+Includes tests for:
+- Post model: creation and string representation
+- Comment model: creation, replies, and content validation
+- Like model: creation and uniqueness constraints
+
+Uses pytest fixtures for creating test users and posts
+"""
+
 import pytest
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
@@ -11,6 +22,7 @@ User = get_user_model()
 
 @pytest.fixture
 def user(db):
+    """ Create a test user """
     return User.objects.create_user(
         username="fatima",
         email="fatima@example.com",
@@ -19,6 +31,7 @@ def user(db):
 
 @pytest.fixture
 def another_user(db):
+    """ Create a second user """
     return User.objects.create_user(
         username="alex",
         email="alex@example.com",
@@ -27,6 +40,7 @@ def another_user(db):
 
 @pytest.fixture
 def post(user):
+    """ Create a Ssample post """
     return Post.objects.create(title="Sample Post", content="Some content", author=user)
 
 

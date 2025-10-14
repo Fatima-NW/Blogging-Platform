@@ -1,3 +1,14 @@
+"""
+Template view tests for the posts app
+
+Includes tests for:
+- Post views: list, detail, create, update, delete
+- Comment views: add, delete, permission checks
+- Like views: toggle like/unlike, permission checks, AJAX response
+
+Uses pytest fixtures to create test users, posts, and comments
+"""
+
 import pytest
 from django.urls import reverse
 from django.contrib.auth import get_user_model

@@ -1,3 +1,13 @@
+"""
+Template view tests for the users app
+
+Tests include:
+- Registration page rendering and form submission
+- Login page rendering and authentication
+- Logout functionality
+- Home view rendering
+"""
+
 import pytest
 from django.urls import reverse
 from django.contrib.auth import get_user_model

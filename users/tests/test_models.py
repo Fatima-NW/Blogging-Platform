@@ -1,3 +1,12 @@
+"""
+Model tests for the users app
+
+Tests include:
+- Creating a user and verifying fields
+- Unique constraints on email and username
+- Optional bio field behavior
+"""
+
 import pytest
 from django.db import IntegrityError
 from django.core.exceptions import ValidationError

@@ -36,11 +36,11 @@ A blogging platform built with **Django** and **Django REST Framework**.
     ```
 3. Install dependencies
     ```bash
-    pip install django psycopg2-binary
-    pip install python-decouple                 # for .env
-    pip install djangorestframework
-    pip install djangorestframework-simplejwt 
-    pip install pytest pytest-django            # for testing
+    pip install django psycopg2-binary         # Django framework + PostgreSQLconnector
+    pip install python-decouple                # For .env
+    pip install djangorestframework            # Django REST Framework for building APIs
+    pip install djangorestframework-simplejwt  # JWT authentication support for DRF
+    pip install pytest pytest-django           # For testing
     ```
 4. Create .env file
     ```env
@@ -85,7 +85,7 @@ yourFolder/
 │ ├── models.py               # CustomUser model
 │ ├── views.py                # Template-based views
 │ ├── forms.py                # CustomUserCreationForm
-│ ├── backends.py             
+│ ├── backends.py             # Custom authentication backend
 │ ├── urls.py                 # Template-based view routes
 │ ├── serializers.py          # Serializers for APIs
 │ ├── api/                    

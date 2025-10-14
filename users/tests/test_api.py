@@ -1,3 +1,14 @@
+"""
+API tests for the users app
+
+Includes tests for:
+- User registration endpoint: success, password mismatch, weak password, duplicate username
+- Profile retrieval endpoint: authentication required
+
+Uses pytest fixtures to provide test users and DRF API clients
+"""
+
+
 import pytest
 from django.urls import reverse
 from django.contrib.auth import get_user_model

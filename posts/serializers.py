@@ -1,8 +1,17 @@
+"""
+Serializers for the posts app
+
+It includes:
+- PostSerializer
+- CommentSerializer
+"""
+
 from rest_framework import serializers
 from .models import Post, Comment
 
 class PostSerializer(serializers.ModelSerializer):
-    author = serializers.StringRelatedField(read_only=True)  # shows username instead of ID
+    """ Handles serialization for Post model """
+    author = serializers.StringRelatedField(read_only=True)
     likes_count = serializers.IntegerField(source="likes.count", read_only=True)
     comments_count = serializers.IntegerField(source="comments.count", read_only=True)
 
@@ -12,6 +21,7 @@ class PostSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    """ Handles serialization for Comment model """
     author = serializers.StringRelatedField(read_only=True)
     replied_to = serializers.StringRelatedField(read_only=True)
 

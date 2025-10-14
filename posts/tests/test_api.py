@@ -1,3 +1,14 @@
+"""
+API tests for the posts app
+
+Includes tests for:
+- Post endpoints: list, detail, create, update, delete
+- Comment endpoints: create, update, delete
+- Like endpoint: toggle like/unlike
+
+Uses pytest, DRF APIClient, and fixtures for authentication and test data
+"""
+
 import pytest
 from django.urls import reverse
 from rest_framework.test import APIClient
