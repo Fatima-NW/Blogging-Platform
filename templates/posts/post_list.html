@@ -14,32 +14,30 @@
 
   <!-- Filter Form -->
   <form method="get" class="mb-4 p-3 border rounded bg-light">
-    <div class="row g-2">
-      <div class="col-md-3">
-        <input type="text" name="author" class="form-control" placeholder="Filter by author name" value="{{ request.GET.author }}">
-      </div>
-      <div class="col-md-3">
-        <input type="text" name="title" class="form-control" placeholder="Filter by title" value="{{ request.GET.title }}">
-      </div>
-      <div class="col-md-3">
-        <input type="text" name="content" class="form-control" placeholder="Filter by content" value="{{ request.GET.content }}">
-      </div>
-      <div class="col-md-3">
-        <input type="date" name="created_on" class="form-control" 
-              placeholder="Created on" value="{{ request.GET.created_on }}">
-      </div>
-      <div class="col-md-3">
-        <div class="input-group">
-          <input type="date" name="created_after" class="form-control" value="{{ request.GET.created_after }}">
-          <span class="input-group-text">to</span>
-          <input type="date" name="created_before" class="form-control" value="{{ request.GET.created_before }}">
-        </div>
-      </div>
+
+    <!-- General Search -->
+    <div class="d-flex align-items-center mb-2">
+      <input type="text" name="query" class="form-control flex-grow-1 me-2" placeholder="Search anything" value="{{ request.GET.query }}">
+
+      <button type="submit" class="btn btn-primary me-2">Search</button>
+      <a href="{% url 'post_list' %}" class="btn btn-secondary me-2">Reset</a>
+      <button type="button" id="toggle-filters" class="btn btn-outline-secondary">Filters</button>
     </div>
 
-    <div class="mt-3 text-end">
-      <button type="submit" class="btn btn-primary">Apply Filters</button>
-      <a href="{% url 'post_list' %}" class="btn btn-secondary">Reset</a>
+    <!-- Filters Section -->
+    <div id="filters-section" style="display: none;">
+      <div class="row g-2 mt-3">
+        <div class="col-md-3"> <input type="text" name="author" class="form-control" placeholder="Filter by author" value="{{ request.GET.author }}"> </div>
+        <div class="col-md-3"> <input type="text" name="title" class="form-control" placeholder="Filter by title" value="{{ request.GET.title }}"> </div>
+        <div class="col-md-3"> <input type="text" name="content" class="form-control" placeholder="Filter by content" value="{{ request.GET.content }}"> </div>
+        <div class="col-md-3">
+          <div class="input-group">
+            <input type="date" name="start_date" class="form-control" value="{{ request.GET.start_date }}">
+            <span class="input-group-text">to</span>
+            <input type="date" name="end_date" class="form-control" value="{{ request.GET.end_date }}">
+          </div>
+        </div>
+      </div>
     </div>
   </form>
 
@@ -58,51 +56,67 @@
           </small>
         </a>
       {% endfor %}
-    </div>
+    </div>    
 
     <!-- Pagination -->
     {% if is_paginated %}
-    <nav class="mt-4">
-      <ul class="pagination justify-content-center">
-
-        {% if page_obj.has_previous %}
-          <li class="page-item">
-            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value|urlencode }}{% endif %}{% endfor %}">Previous</a>
-          </li>
-        {% else %}
-          <li class="page-item disabled">
-            <span class="page-link">Previous</span>
-          </li>
-        {% endif %}
-
-        {% for num in page_obj.paginator.page_range %}
-          {% if page_obj.number == num %}
-            <li class="page-item active">
-              <span class="page-link">{{ num }}</span>
+      <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+          {% if page_obj.has_previous %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value|urlencode }}{% endif %}{% endfor %}">Previous</a>
             </li>
           {% else %}
-            <li class="page-item">
-              <a class="page-link" href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value|urlencode }}{% endif %}{% endfor %}">{{ num }}</a>
-            </li>
+            <li class="page-item disabled"><span class="page-link">Previous</span></li>
           {% endif %}
-        {% endfor %}
 
-        {% if page_obj.has_next %}
-          <li class="page-item">
-            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value|urlencode }}{% endif %}{% endfor %}">Next</a>
-          </li>
-        {% else %}
-          <li class="page-item disabled">
-            <span class="page-link">Next</span>
-          </li>
-        {% endif %}
+          {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+              <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+            {% else %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value|urlencode }}{% endif %}{% endfor %}">{{ num }}</a>
+              </li>
+            {% endif %}
+          {% endfor %}
 
-      </ul>
-    </nav>
+          {% if page_obj.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value|urlencode }}{% endif %}{% endfor %}">Next</a>
+            </li>
+          {% else %}
+            <li class="page-item disabled"><span class="page-link">Next</span></li>
+          {% endif %}
+        </ul>
+      </nav>
     {% endif %}
-
+    
   {% else %}
     <p>No posts yet. Be the first to write one!</p>
   {% endif %}
-  
+
+  <div id="filter-data" 
+      data-visible="{% if request.GET.author or request.GET.title or request.GET.content or request.GET.start_date or request.GET.end_date %}true{% else %}false{% endif %}">
+  </div>
+
+  <!-- JS to handle showing/hiding the filters -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const toggleButton = document.getElementById('toggle-filters');
+      const filtersSection = document.getElementById('filters-section');
+      const filterData = document.getElementById('filter-data');
+
+      const filtersInitiallyVisible = filterData.dataset.visible === "true";
+
+      if (filtersInitiallyVisible) {
+        filtersSection.style.display = 'block';
+      }
+
+      toggleButton.addEventListener('click', () => {
+        const isVisible = filtersSection.style.display === 'block';
+        filtersSection.style.display = isVisible ? 'none' : 'block';
+      });
+    });
+  </script>
+
 {% endblock %}

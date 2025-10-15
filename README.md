@@ -72,6 +72,7 @@ yourFolder/
 │ ├── views.py                # Template-based views
 │ ├── forms.py                # Forms for posts and comments
 │ ├── urls.py                 # Template-based view routes
+│ ├── filters.py              # Filters for posts
 │ ├── serializers.py          # Serializers for APIs
 │ ├── api/                    
 │ │ ├── views.py               # API logic
@@ -79,7 +80,7 @@ yourFolder/
 │ ├── tests/                    
 │ │ ├── test_api.py             # Tests for API views
 │ │ ├── test_templates.py       # Tests for template views
-│ │ ├── test_models.py          # Tests for API views
+│ │ ├── test_models.py          # Tests for models
 │
 ├── users/
 │ ├── models.py               # CustomUser model
