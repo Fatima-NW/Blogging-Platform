@@ -57,22 +57,17 @@ def filter_posts(queryset, params):
 
     # CONTENT FILTER (Vector search + fallback)  
     if content_query:
-        # Vector search on title + content
+        # Vector search
         search_vector = SearchVector("title", "content")
         search_query = SearchQuery(content_query)
-        vector_qs = (
-            queryset.annotate(rank=SearchRank(search_vector, search_query))
-            .filter(rank__gte=0.05)
-            .order_by("-rank", "-created_at")
+        vector_qs = queryset.annotate(rank=SearchRank(search_vector, search_query)).filter(rank__gte=0.05)
+
+        # Always combine with icontains
+        icontains_qs = queryset.filter(
+            Q(title__icontains=content_query) |
+            Q(content__icontains=content_query)
         )
-        # Fallback: if no vector results, use basic icontains
-        if vector_qs.exists():
-            queryset = vector_qs
-        else:
-            queryset = queryset.filter(
-                Q(title__icontains=content_query) |
-                Q(content__icontains=content_query)
-            )
+        queryset = (vector_qs | icontains_qs).distinct().order_by('-created_at')
 
 
     # DATE RANGE FILTER (Inclusive)
@@ -88,25 +83,20 @@ def filter_posts(queryset, params):
   
     # GENERAL SEARCH (across title, content, and author)
     if general_query:
+        # Vector search
         search_vector = SearchVector("title", "content")
         search_query = SearchQuery(general_query)
-        vector_qs = (
-            queryset.annotate(rank=SearchRank(search_vector, search_query))
-            .filter(rank__gte=0.05)
-            .order_by("-rank", "-created_at")
-        )
+        vector_qs = queryset.annotate(rank=SearchRank(search_vector, search_query)).filter(rank__gte=0.05)
 
-        if vector_qs.exists():
-            queryset = vector_qs
-        else:
-            # fallback includes author name fields too
-            queryset = queryset.filter(
-                Q(title__icontains=general_query) |
-                Q(content__icontains=general_query) |
-                Q(author__username__icontains=general_query) |
-                Q(author__first_name__icontains=general_query) |
-                Q(author__last_name__icontains=general_query)
-            )
+        # Always combine with icontains
+        icontains_qs = queryset.filter(
+            Q(title__icontains=general_query) |
+            Q(content__icontains=general_query) |
+            Q(author__username__icontains=general_query) |
+            Q(author__first_name__icontains=general_query) |
+            Q(author__last_name__icontains=general_query)
+        )
+        queryset = (vector_qs | icontains_qs).distinct().order_by('-created_at')
 
 
     return queryset
