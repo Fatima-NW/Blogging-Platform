@@ -3,7 +3,7 @@ URL routing for posts app (template-based views)
 
 Includes routes for:
 - Creating, viewing, updating, deleting posts
-- Adding and deleting comments
+- Adding, updating, deleting comments
 - Liking/unliking posts
 """
 
