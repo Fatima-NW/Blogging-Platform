@@ -5,7 +5,7 @@ This file contains all the configuration for the Django application, including:
 - Installed apps and middleware
 - Database and authentication settings
 - Static and media file handling
-- Third-party integrations (e.g., REST framework, JWT)
+- Third-party integrations (e.g., REST framework, JWT, Celery with Redis)
 - Environment-based configurations (e.g., DEBUG, SECRET_KEY via python-decouple)
 
 For security and maintainability, sensitive values are loaded from environment variables
@@ -162,3 +162,14 @@ SIMPLE_JWT = {
     "BLACKLIST_AFTER_ROTATION": True,
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
+
+# Celery/Redis settings
+CELERY_BROKER_URL = "redis://localhost:6379/0"  
+CELERY_RESULT_BACKEND = "redis://localhost:6379/0"  
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TIMEZONE = "UTC"
+
+# settings.py
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
