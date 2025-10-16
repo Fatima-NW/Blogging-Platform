@@ -3,7 +3,7 @@ Template views for the posts app
 
 Includes views for:
 - Posts: list, detail, create, update, delete
-- Comments: create, delete
+- Comments: create, update, delete
 - Likes: toggle like/unlike on a post
 """
 
@@ -138,6 +138,25 @@ def add_comment(request, pk):
 
             comment.save()
     return redirect("post_detail", pk=post.pk)
+
+
+@login_required
+def update_comment(request, pk):
+    comment = get_object_or_404(Comment, pk=pk)
+
+    if request.user != comment.author:                # only author can update
+        return JsonResponse({"success": False, "error": "Unauthorized"}, status=403)
+
+    if request.method == "POST" and request.headers.get("X-Requested-With") == "XMLHttpRequest":
+        new_content = request.POST.get("content", "").strip()
+        if not new_content:
+            return JsonResponse({"success": False, "error": "Empty content."}, status=400)
+
+        comment.content = new_content
+        comment.save()
+        return JsonResponse({"success": True, "updated_content": comment.content})
+
+    return JsonResponse({"success": False, "error": "Invalid request."}, status=400)
 
 
 @login_required
