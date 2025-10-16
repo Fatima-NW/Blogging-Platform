@@ -14,15 +14,20 @@ from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnl
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
-
+from ..filters import filter_posts
 
 # -----------------------POSTS-----------------------
 
 class PostListAPIView(generics.ListAPIView):
     """ List all posts (read-only for unauthenticated users) """
-    queryset = Post.objects.all().order_by('-created_at')
     serializer_class = PostSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        queryset = Post.objects.all().order_by('-created_at')
+        params = self.request.query_params 
+        return filter_posts(queryset, params)
+
 
 class PostDetailAPIView(generics.RetrieveAPIView):
     """ Retrieve a single post (read-only for unauthenticated users) """
