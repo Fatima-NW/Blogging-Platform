@@ -1,3 +1,17 @@
+<!--
+Displays a single blog post with details
+
+Features:
+- Shows post title, content, author, and creation date
+- Edit/Delete buttons for post author
+- Like button with toggle
+- Comment section with:
+    - Submission form for authenticated users
+    - Display of comments and nested replies
+    - Delete options for comment/reply authors
+- JS handles reply toggling and like button AJAX
+-->
+
 {% extends "base.html" %}
 
 {% block title %}{{ post.title }}{% endblock %}
