@@ -15,6 +15,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from ..filters import filter_posts
+from posts.utils import notify_comment_emails
 
 # -----------------------POSTS-----------------------
 
@@ -74,14 +75,16 @@ class CommentCreateAPIView(generics.CreateAPIView):
     """
     Create a new comment or reply (authenticated users only).
 
-    Supports a two-level structure:
-    - Top-level comments are direct responses to the post.
-    - Replies are nested under the top-level comment (the parent),
-      but tagged to the specific user being replied to via `replied_to`.
-    Automatically prepends '@username' to replies.
+    - Supports a two-level structure:
+        - Top-level comments are direct responses to the post.
+        - Replies are nested under the top-level comment (the parent),
+        but tagged to the specific user being replied to.
+    - Automatically prepends '@username' to replies.
+    - Sends async email notifications to user being replied to.
     """
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticated]
+
 
     def perform_create(self, serializer):
         post_pk = self.kwargs.get("post_pk")
@@ -116,6 +119,9 @@ class CommentCreateAPIView(generics.CreateAPIView):
             if not comment.content.strip().startswith(tag):
                 comment.content = f"{tag} {comment.content}"
                 comment.save(update_fields=["content"])
+
+        # Send async email notifications
+        notify_comment_emails(comment, post, self.request.user)
 
 
 class CommentUpdateAPIView(generics.RetrieveUpdateAPIView):

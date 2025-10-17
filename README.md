@@ -41,6 +41,7 @@ A blogging platform built with **Django** and **Django REST Framework**.
     pip install djangorestframework            # Django REST Framework for building APIs
     pip install djangorestframework-simplejwt  # JWT authentication support for DRF
     pip install pytest pytest-django           # For testing
+    pip install celery redis                   # For background tasks
     ```
 4. Create .env file
     ```env
@@ -52,6 +53,8 @@ A blogging platform built with **Django** and **Django REST Framework**.
     SECRET_KEY=your-secret-key
     DEBUG=True
     PAGINATE_BY=number-of-posts-on-one-page
+    EMAIL_USER=sender-email-address
+    EMAIL_PASS=sender-app-password
     ```
 5. Apply migrations and run server
     ```bash
@@ -64,16 +67,20 @@ A blogging platform built with **Django** and **Django REST Framework**.
 yourFolder/
 │
 ├── myproject/
+│ ├── __init__.py            
 │ ├── settings.py             # Main configuration file
 │ ├── urls.py                 # Root URL routing
+│ ├── celery.py               # Celery configuration
 │
 ├── posts/
 │ ├── models.py               # Post, Comment, Like models
 │ ├── views.py                # Template-based views
 │ ├── forms.py                # Forms for posts and comments
 │ ├── urls.py                 # Template-based view routes
+│ ├── tasks.py                # Asynchronous tasks for the posts
 │ ├── filters.py              # Filters for posts
 │ ├── serializers.py          # Serializers for APIs
+│ ├── utils.py                # Utility helpers
 │ ├── api/                    
 │ │ ├── views.py               # API logic
 │ │ ├── urls.py                # API endpoints

@@ -1,5 +1,5 @@
 """
-Celery configuration for the Django project.
+Celery configuration for the Django project
 """
 
 import os

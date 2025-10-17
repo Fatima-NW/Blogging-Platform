@@ -18,6 +18,7 @@ from django.urls import reverse_lazy
 from django.http import JsonResponse
 from django.conf import settings
 from .filters import filter_posts
+from posts.utils import notify_comment_emails
 
 
 # -----------------------POSTS-----------------------
@@ -137,7 +138,11 @@ def add_comment(request, pk):
                     comment.replied_to = parent_comment.author               # Tag the user being replied to
 
             comment.save()
-    return redirect("post_detail", pk=post.pk)
+
+            # Send async email notifications
+            notify_comment_emails(comment, post, request.user)
+
+        return redirect("post_detail", pk=post.pk)
 
 
 @login_required
