@@ -125,7 +125,7 @@ Features:
                     </form>
 
                     <!-- nested replies -->
-                    {% for reply in comment.replies.all %}
+                    {% for reply in comment.replies_ordered %}
                         <div class="ms-4 p-2 border-start">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>

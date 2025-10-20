@@ -48,17 +48,24 @@ class PostDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         post = (
             Post.objects
-            .select_related("author")    # joins post author
+            .select_related("author")    # join post author
             .prefetch_related(
-                "comments__author",      # prefetch authors of comments
-                "comments__replied_to",  # prefetch mentioned users
-                "likes__user"            # prefetch users who liked the post
+                "comments__author",               # prefetch top-level comment authors
+                "comments__replied_to",           # prefetch replied-to users
+                "comments__replies__author",      # prefetch nested reply authors
+                "comments__replies__replied_to",  # prefetch nested reply replied-to
+                "likes__user"                     # prefetch users who liked the post
             )
             .get(pk=self.object.pk)
         )
 
-        # comments
-        context["comments"] = post.comments.filter(parent__isnull=True).order_by("-created_at")
+        # Top-level comments: newest to oldest
+        top_comments = post.comments.filter(parent__isnull=True).order_by("-created_at")
+        # Prefetch nested replies: oldest to newest
+        for comment in top_comments:
+            comment.replies_ordered = comment.replies.all().order_by("created_at")
+
+        context["comments"] = top_comments
         context["comment_form"] = CommentForm()
         context["comment_count"] = post.comments.count()
 
