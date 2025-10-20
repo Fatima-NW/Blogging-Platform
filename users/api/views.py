@@ -4,6 +4,7 @@ API views for the users app
 Includes views for:
 - User registration
 - User profile
+- @username autocompletion
 """
 
 from rest_framework import generics, status
@@ -11,6 +12,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from users.serializers import RegisterSerializer, UserSerializer
+from rest_framework.views import APIView
 
 User = get_user_model()
 
@@ -38,3 +40,13 @@ class ProfileAPIView(generics.RetrieveAPIView):
 
     def get_object(self):
         return self.request.user
+
+
+class UserSearchAPIView(APIView):
+    """ Search users for @mentions """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        q = request.GET.get("q", "")
+        users = User.objects.filter(username__istartswith=q)[:10]
+        return Response([user.username for user in users])
