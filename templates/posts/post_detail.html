@@ -4,6 +4,7 @@ Displays a single blog post with details
 Features:
 - Shows post title, content, author, and creation date
 - Edit/Delete buttons for post author
+- Post download button
 - Like button with toggle
 - Comment section with:
     - Submission form for authenticated users
@@ -19,18 +20,32 @@ Features:
 
 {% block content %}
 <div class="container">
-    <div class="d-flex justify-content-between align-items-center">
-        <h2 class="mb-0">{{ post.title }}</h2>
-        <!-- Edit and Delete post buttons -->
-        {% if user == post.author %}
+    <div class="border-bottom pb-2 mb-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2 class="mb-2">{{ post.title }}</h2>
             <div>
-                <a href="{% url 'post_edit' post.pk %}" class="btn btn-warning btn-sm">Edit</a>
-                <a href="{% url 'post_delete' post.pk %}" class="btn btn-danger btn-sm">Delete</a>
+                <!-- Download post buttons -->
+                {% if user.is_authenticated %}
+                <a href="{% url 'generate_post_pdf' post.pk %}" class="btn btn-secondary btn-sm"> Download PDF </a>
+                {% endif %}
+                <!-- Edit and Delete post buttons -->
+                {% if user == post.author %}
+                        <a href="{% url 'post_edit' post.pk %}" class="btn btn-warning btn-sm">Edit</a>
+                        <a href="{% url 'post_delete' post.pk %}" class="btn btn-danger btn-sm">Delete</a>
+                {% endif %}
             </div>
-        {% endif %}
+        </div>
+        <!-- Author + Date -->
+        <div class="text-muted small mt-1">
+            <i class="bi bi-person-circle"></i> {{ post.author }} &nbsp; | &nbsp;
+            <i class="bi bi-calendar3"></i> {{ post.created_at|date:"M d, Y" }}
+        </div>
     </div>
-    <p>{{ post.content }}</p>
-    <small>By {{ post.author }} on {{ post.created_at|date:"M d, Y" }}</small>
+
+    <!-- Post Content -->
+    <div class="mb-4">
+        <p style="font-size: 1.1rem; line-height: 1.5;">{{ post.content|linebreaks }}</p>
+    </div>
     <hr>
 
     <!-- Like Button -->
