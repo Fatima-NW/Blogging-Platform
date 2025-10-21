@@ -15,10 +15,6 @@ from django.http import HttpResponse
 from users import views as user_views
 from rest_framework_simplejwt.views import (TokenObtainPairView, TokenRefreshView,)
 
-# Simple home view just for testing
-def home_view(request):
-    return HttpResponse("<h1>Welcome Home!</h1>")
-
 urlpatterns = [
     path("admin/", admin.site.urls),                   # Admin panel
     path("", user_views.home, name="home"),            # Home/landing page
