@@ -2,13 +2,15 @@
 URL routing for posts app (template-based views)
 
 Includes routes for:
-- Creating, viewing, updating, deleting posts
+- Creating, viewing, updating, deleting, downloading posts
 - Adding, updating, deleting comments
 - Liking/unliking posts
 """
 
 from django.urls import path
-from .views import PostListView, PostDetailView, PostCreateView, PostUpdateView, PostDeleteView, add_comment, update_comment, delete_comment, toggle_like
+from .views import (PostListView, PostDetailView, PostCreateView, PostUpdateView, PostDeleteView, generate_pdf,
+                    add_comment, update_comment, delete_comment, 
+                    toggle_like)
 
 urlpatterns = [
     # posts
@@ -17,6 +19,7 @@ urlpatterns = [
     path("new/", PostCreateView.as_view(), name="post_create"),
     path("<int:pk>/edit/", PostUpdateView.as_view(), name="post_edit"),
     path("<int:pk>/delete/", PostDeleteView.as_view(), name="post_delete"),
+    path('<int:pk>/generate-pdf/', generate_pdf, name='generate_post_pdf'),
 
     # comments
     path("<int:pk>/comment/", add_comment, name="add_comment"),

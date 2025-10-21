@@ -2,7 +2,7 @@
 Template views for the posts app
 
 Includes views for:
-- Posts: list, detail, create, update, delete
+- Posts: view, create, update, delete, download
 - Comments: create, update, delete
 - Likes: toggle like/unlike on a post
 """
@@ -19,6 +19,7 @@ from django.http import JsonResponse
 from django.conf import settings
 from .filters import filter_posts
 from posts.utils import notify_comment_emails
+from .tasks import generate_post_pdf_task
 
 
 # -----------------------POSTS-----------------------
@@ -83,11 +84,13 @@ class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
     form_class = PostForm
     template_name = "posts/post_form.html"
-    success_url = reverse_lazy("post_list")
 
     def form_valid(self, form):
         form.instance.author = self.request.user    # attach logged-in user as the author
         return super().form_valid(form)
+    
+    def get_success_url(self):
+        return reverse_lazy("post_detail", kwargs={"pk": self.object.pk})
     
 
 class PostUpdateView(LoginRequiredMixin, UpdateView):
@@ -95,13 +98,15 @@ class PostUpdateView(LoginRequiredMixin, UpdateView):
     model = Post
     form_class = PostForm
     template_name = "posts/post_form.html"
-    success_url = reverse_lazy("post_list")
 
     def get_object(self, queryset=None):
         post = super().get_object(queryset)
         if post.author != self.request.user:         # only author can edit
             raise PermissionDenied("You are not allowed to edit this post.")
         return post
+    
+    def get_success_url(self):
+        return reverse_lazy("post_detail", kwargs={"pk": self.object.pk})
     
 
 class PostDeleteView(LoginRequiredMixin, DeleteView):
@@ -115,6 +120,14 @@ class PostDeleteView(LoginRequiredMixin, DeleteView):
         if post.author != self.request.user:         # only author can delete
             raise PermissionDenied("You are not allowed to delete this post.")
         return post
+
+
+@login_required
+def generate_pdf(request, pk):
+    """ Generate PDF of a post """
+    post = get_object_or_404(Post, pk=pk)
+    generate_post_pdf_task.delay(post.pk)
+    return redirect("post_detail", pk=pk)
 
 
 # -----------------------COMMENTS-----------------------

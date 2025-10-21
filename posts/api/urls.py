@@ -2,14 +2,14 @@
 URL routing for posts app (API endpoints)
 
 Includes routes for:
-- Creating, viewing, updating, deleting posts
+- Creating, viewing, updating, deleting, downloading posts
 - Adding, updating and deleting comments
 - Liking/unliking posts
 """
 
 from django.urls import path
 from .views import ( PostListAPIView, PostDetailAPIView,
-    PostCreateAPIView, PostUpdateAPIView, PostDeleteAPIView,
+    PostCreateAPIView, PostUpdateAPIView, PostDeleteAPIView, PostGeneratePDFAPIView,
     CommentCreateAPIView, CommentUpdateAPIView, CommentDeleteAPIView,
     ToggleLikeAPIView,
 )
@@ -21,6 +21,7 @@ urlpatterns = [
     path("posts/create/", PostCreateAPIView.as_view(), name="api_post_create"),
     path("posts/<int:pk>/update/", PostUpdateAPIView.as_view(), name="api_post_update"),
     path("posts/<int:pk>/delete/", PostDeleteAPIView.as_view(), name="api_post_delete"),
+    path("posts/<int:post_pk>/generate-pdf/", PostGeneratePDFAPIView.as_view(),name="api_post_generate_pdf"),
 
     # comments
     path("posts/<int:post_pk>/comment/", CommentCreateAPIView.as_view(), name="api_comment_create"),

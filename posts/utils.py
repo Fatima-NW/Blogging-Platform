@@ -3,6 +3,7 @@ Utility helpers for the posts app
 
 Includes:
 - Asynchronous email notifications for comments and replies
+- Asynchronous post downloads
 
 This module centralizes logic that may be shared across multiple views
 """
@@ -10,6 +11,13 @@ This module centralizes logic that may be shared across multiple views
 import re
 from django.contrib.auth import get_user_model
 from posts.tasks import send_email_task
+from django.template.loader import render_to_string
+from django.conf import settings
+from django.utils import timezone
+from weasyprint import HTML
+from django.utils.text import slugify
+import os
+
 
 User = get_user_model()
 
@@ -49,3 +57,23 @@ def notify_comment_emails(comment, post, user):
             subject = f"You were mentioned in a comment on '{post.title}'"
             message = f"{user.username} mentioned you in a comment: {comment.content}"
             send_email_task.delay(subject, message, [tagged_user.email])
+
+
+
+def generate_post_pdf(post):
+    """ Generate a PDF file of a post """
+
+    html_content = render_to_string("posts/post_pdf.html", {
+        "post": post,
+        "generation_date": timezone.localtime(timezone.now()),
+        "site_name": getattr(settings, "SITE_NAME", "Fatima's Blog"),
+    })
+
+    pdfs_dir = settings.PDFS_ROOT
+    os.makedirs(pdfs_dir, exist_ok=True)
+
+    filename = f"{slugify(post.title)}.pdf"
+    file_path = os.path.join(pdfs_dir, filename)
+
+    HTML(string=html_content, base_url=settings.BASE_DIR).write_pdf(file_path)
+    return file_path

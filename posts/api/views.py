@@ -17,6 +17,8 @@ from django.shortcuts import get_object_or_404
 from ..filters import filter_posts
 from posts.utils import notify_comment_emails
 
+from posts.tasks import generate_post_pdf_task
+
 # -----------------------POSTS-----------------------
 
 class PostListAPIView(generics.ListAPIView):
@@ -68,6 +70,15 @@ class PostDeleteAPIView(generics.DestroyAPIView):
         return Response({"detail": "Post deleted successfully."}, status=status.HTTP_200_OK)
 
 
+class PostGeneratePDFAPIView(APIView):
+    """ Generate PDF of a post"""
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, post_pk, format=None):
+        post = get_object_or_404(Post, pk=post_pk)
+        generate_post_pdf_task.delay(post.pk)
+        return Response({"success": True, "message": "PDF generation started."})
+    
 
 # -----------------------COMMENTS-----------------------
 
