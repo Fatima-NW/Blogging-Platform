@@ -15,11 +15,15 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from .models import Post, Comment, Like
 from .forms import PostForm, CommentForm
 from django.urls import reverse_lazy
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse, FileResponse
 from django.conf import settings
 from .filters import filter_posts
-from posts.utils import notify_comment_emails
-from .tasks import generate_post_pdf_task
+from .utils import notify_comment_emails, generate_post_pdf_bytes
+from .tasks import generate_post_pdf_task_and_email
+from concurrent.futures import ThreadPoolExecutor, TimeoutError
+from django.contrib import messages
+import os
+from django.http import Http404
 
 
 # -----------------------POSTS-----------------------
@@ -124,10 +128,56 @@ class PostDeleteView(LoginRequiredMixin, DeleteView):
 
 @login_required
 def generate_pdf(request, pk):
-    """ Generate PDF of a post """
+    """
+    Allow logged-in users to generate PDFs of posts
+
+    Hybrid behavior:
+    - If synchronous generation finishes within PDF_SYNC_TIMEOUT_SECONDS, return the PDF in the response
+    - Otherwise, dispatch Celery task to generate PDF and email it to the user
+    """
     post = get_object_or_404(Post, pk=pk)
-    generate_post_pdf_task.delay(post.pk)
-    return redirect("post_detail", pk=pk)
+
+    timeout = getattr(settings, "PDF_SYNC_TIMEOUT_SECONDS", 2)
+
+    # Run generation in thread and wait with timeout
+    with ThreadPoolExecutor(max_workers=1) as executor:
+        future = executor.submit(generate_post_pdf_bytes, post)
+        try:
+            pdf_bytes = future.result(timeout=timeout)
+            # Return as downloadable pdf to browser if completed within timeout
+            response = HttpResponse(pdf_bytes, content_type="application/pdf")
+            filename = f"{post.title}.pdf"
+            response["Content-Disposition"] = f'attachment; filename="{filename}"'
+            return response
+
+        except TimeoutError:
+            # Dispatch background Celery task if takes too long
+            recipient_email = request.user.email
+            generate_post_pdf_task_and_email.delay(post.pk, recipient_email)
+
+            messages.info(request, "PDF is being generated in the background. We will email you a link when it's ready.")
+            return redirect("post_detail", pk=pk)
+       
+
+def download_generated_pdf(request, uid):
+    """
+    Serve a generated PDF saved temporarily in the project under PDFs
+    After serving, delete the file to avoid storage buildup
+    """
+    pdfs_dir = getattr(settings, "PDFS_TEMP_ROOT")
+    file_path = os.path.join(pdfs_dir, f"{uid}.pdf")
+
+    if not os.path.exists(file_path):
+        raise Http404("File not found or expired")
+
+    # Stream file to user, then delete
+    response = FileResponse(open(file_path, "rb"), as_attachment=True, filename=f"{uid}.pdf")
+    try:
+        os.remove(file_path)
+    except Exception:
+        pass
+
+    return response
 
 
 # -----------------------COMMENTS-----------------------

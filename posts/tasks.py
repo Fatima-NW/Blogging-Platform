@@ -2,14 +2,20 @@
 Asynchronous tasks for the posts app
 
 Includes tasks for:
-- Sending emails
-- Allowing users to download pdfs of posts
+- Sending emails 
+- Generating PDFs of posts asynchronously and emailing download links
+- Cleaning up temporary PDF files
 """
 
 from celery import shared_task
 from django.core.mail import send_mail
 from django.conf import settings
 from posts.models import Post
+from django.urls import reverse
+from posts.utils import generate_post_pdf_bytes, save_pdf_bytes_temp
+from pathlib import Path
+from datetime import timedelta, datetime
+from django.utils import timezone
 
 @shared_task
 def send_email_task(subject, message, recipient_list):
@@ -22,11 +28,57 @@ def send_email_task(subject, message, recipient_list):
         fail_silently=False,
     )
 
+
 @shared_task
-def generate_post_pdf_task(post_id):
-    """ Asynchronous task to generate a PDF for a post """
-    from posts.utils import generate_post_pdf
+def generate_post_pdf_task_and_email(post_id, recipient_email):
+    """
+    Celery task that:
+    - Generates PDF of a post
+    - Saves it temporarily
+    - Emails a download link to the user
+    """
+    try:
+        post = Post.objects.get(pk=post_id)
+    except Post.DoesNotExist:
+        return None
     
-    post = Post.objects.get(pk=post_id)
-    pdf_path = generate_post_pdf(post)
-    return pdf_path
+    # Generate pdf bytes
+    pdf_bytes = generate_post_pdf_bytes(post)
+
+    # Save to temporary folder and get uid
+    uid, file_path = save_pdf_bytes_temp(pdf_bytes, filename=f"{post.slug if hasattr(post,'slug') else post.pk}.pdf")
+    
+    # Build download URL and email
+    download_path = reverse("download_generated_pdf", args=[uid])
+    download_url = f"{settings.SITE_URL}{download_path}"
+    subject = f"Your PDF for '{post.title}' is ready"
+    message = (
+        f"Hi,\n\nYour PDF for post \"{post.title}\" is ready. "
+        f"Click the link to download it:\n\n{download_url}\n\n"
+        f"This link will expire in 10 minutes or the file will be removed after download."
+    )
+    send_email_task(subject, message, [recipient_email])
+
+    return {"uid": uid, "path": file_path}
+
+
+@shared_task
+def cleanup_old_temp_pdfs(max_age_minutes=10):
+    """
+    Delete temporary PDF files older than 'max_age_minutes'.
+    """
+    folder = getattr(settings, "PDFS_TEMP_ROOT")
+    cutoff = timezone.now() - timedelta(minutes=max_age_minutes)
+    for p in Path(folder).glob("*.pdf"):
+        try:
+            mtime = timezone.make_aware(
+                datetime.fromtimestamp(p.stat().st_mtime),
+                timezone.get_default_timezone()
+            )
+            print(f"Checking {p}: mtime={mtime}, cutoff={cutoff}")
+            if mtime < cutoff:
+                p.unlink()
+                print(f"Deleted {p}")
+        except Exception as e:
+            print(f"Error deleting {p}: {e}")
+

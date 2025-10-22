@@ -8,7 +8,8 @@ Includes routes for:
 """
 
 from django.urls import path
-from .views import (PostListView, PostDetailView, PostCreateView, PostUpdateView, PostDeleteView, generate_pdf,
+from .views import (PostListView, PostDetailView, PostCreateView, PostUpdateView, PostDeleteView, 
+                    generate_pdf, download_generated_pdf,
                     add_comment, update_comment, delete_comment, 
                     toggle_like)
 
@@ -20,6 +21,7 @@ urlpatterns = [
     path("<int:pk>/edit/", PostUpdateView.as_view(), name="post_edit"),
     path("<int:pk>/delete/", PostDeleteView.as_view(), name="post_delete"),
     path('<int:pk>/generate-pdf/', generate_pdf, name='generate_post_pdf'),
+    path('download-pdf/<str:uid>/', download_generated_pdf, name='download_generated_pdf'),
 
     # comments
     path("<int:pk>/comment/", add_comment, name="add_comment"),

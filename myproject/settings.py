@@ -169,7 +169,7 @@ CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
-CELERY_TIMEZONE = "UTC"
+CELERY_TIMEZONE = "Asia/Karachi"
 
 
 # Email setup
@@ -181,5 +181,13 @@ EMAIL_HOST_USER = config('EMAIL_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_PASS') 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-# For downloaded posts
-PDFS_ROOT = BASE_DIR / 'PDFs'
+
+# Temporary PDF storage
+PDFS_TEMP_ROOT = os.path.join(BASE_DIR, "PDFs")
+
+# Site URL used in email links
+SITE_URL = "http://127.0.0.1:8000"  
+
+# Timeout threshold for synchronous generation
+PDF_SYNC_TIMEOUT_SECONDS = 0.001
+

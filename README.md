@@ -32,7 +32,6 @@ A blogging platform built with **Django** and **Django REST Framework**.
     ```bash
     python -m venv venv
     source venv/bin/activate    # macOS/Linux
-    venv\Scripts\activate       # Windows
     ```
 ### 3. Install dependencies
     ```bash

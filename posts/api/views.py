@@ -14,10 +14,12 @@ from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnl
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
 from ..filters import filter_posts
-from posts.utils import notify_comment_emails
-
-from posts.tasks import generate_post_pdf_task
+from posts.utils import notify_comment_emails, generate_post_pdf_bytes
+from posts.tasks import generate_post_pdf_task_and_email
+from django.conf import settings
+from concurrent.futures import ThreadPoolExecutor, TimeoutError
 
 # -----------------------POSTS-----------------------
 
@@ -71,13 +73,38 @@ class PostDeleteAPIView(generics.DestroyAPIView):
 
 
 class PostGeneratePDFAPIView(APIView):
-    """ Generate PDF of a post"""
+    """
+    VGenerates PDF of a post
+
+    Hybrid behavior:
+    - If synchronous generation finishes within PDF_SYNC_TIMEOUT_SECONDS, return the PDF in the response
+    - Otherwise, dispatch Celery task to generate PDF and email it to the user
+    """
     permission_classes = [IsAuthenticated]
 
     def post(self, request, post_pk, format=None):
         post = get_object_or_404(Post, pk=post_pk)
-        generate_post_pdf_task.delay(post.pk)
-        return Response({"success": True, "message": "PDF generation started."})
+        timeout = getattr(settings, "PDF_SYNC_TIMEOUT_SECONDS", 2)
+
+        # Try synchronous PDF generation first
+        with ThreadPoolExecutor(max_workers=1) as executor:
+            future = executor.submit(generate_post_pdf_bytes, post)
+            try:
+                pdf_bytes = future.result(timeout=timeout)
+                filename = f"{post.title}.pdf"
+                response = HttpResponse(pdf_bytes, content_type="application/pdf")
+                response["Content-Disposition"] = f'attachment; filename="{filename}"'
+                return response
+
+            except TimeoutError:
+                # Dispatch Celery task if it takes too long
+                recipient_email = request.user.email
+                generate_post_pdf_task_and_email.delay(post.pk, recipient_email)
+                return Response({
+                    "success": True,
+                    "message": "PDF generation is taking longer than expected. "
+                               "We will email you a download link when it's ready."
+                }, status=202)
     
 
 # -----------------------COMMENTS-----------------------

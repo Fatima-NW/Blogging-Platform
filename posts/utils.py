@@ -10,13 +10,13 @@ This module centralizes logic that may be shared across multiple views
 
 import re
 from django.contrib.auth import get_user_model
-from posts.tasks import send_email_task
-from django.template.loader import render_to_string
-from django.conf import settings
-from django.utils import timezone
 from weasyprint import HTML
-from django.utils.text import slugify
+from django.conf import settings
 import os
+import uuid
+from io import BytesIO
+import tempfile
+from django.utils.text import slugify
 
 
 User = get_user_model()
@@ -37,6 +37,8 @@ def notify_comment_emails(comment, post, user):
       - Replied-to user notifications
       - @tagged user notifications
     """
+    from posts.tasks import send_email_task
+
     # Notify post author ONLY for top-level comments
     if not comment.parent and post.author.email and post.author != user:
         subject = f"New comment on your post '{post.title}'"
@@ -60,20 +62,42 @@ def notify_comment_emails(comment, post, user):
 
 
 
-def generate_post_pdf(post):
-    """ Generate a PDF file of a post """
+def generate_post_pdf_bytes(post):
+    """
+    Generate a PDF of a post and return it as bytes
+    """
+    from django.template.loader import render_to_string
+    from django.utils import timezone
+    from django.conf import settings
 
     html_content = render_to_string("posts/post_pdf.html", {
         "post": post,
         "generation_date": timezone.localtime(timezone.now()),
         "site_name": getattr(settings, "SITE_NAME", "Fatima's Blog"),
     })
+    pdf_io = BytesIO()
+    HTML(string=html_content, base_url=settings.BASE_DIR).write_pdf(pdf_io)
+    return pdf_io.getvalue()
 
-    pdfs_dir = settings.PDFS_ROOT
+
+def save_pdf_bytes_temp(pdf_bytes, filename: str | None = None):
+    """
+    Save PDF bytes to a temporary file PDFs
+    """
+    pdfs_dir = getattr(settings, "PDFS_TEMP_ROOT", None)
+    if not pdfs_dir:
+        pdfs_dir = os.path.join(settings.BASE_DIR, "PDFs")
+
     os.makedirs(pdfs_dir, exist_ok=True)
 
-    filename = f"{slugify(post.title)}.pdf"
-    file_path = os.path.join(pdfs_dir, filename)
+    uid = uuid.uuid4().hex
+    stored_name = f"{uid}.pdf"
+    file_path = os.path.join(pdfs_dir, stored_name)
 
-    HTML(string=html_content, base_url=settings.BASE_DIR).write_pdf(file_path)
-    return file_path
+    # write bytes to the file
+    with open(file_path, "wb") as f:
+        f.write(pdf_bytes)
+        f.flush()
+
+    # return uid (for download link) and actual path on disk
+    return uid, file_path
