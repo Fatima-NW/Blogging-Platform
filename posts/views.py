@@ -24,6 +24,9 @@ from concurrent.futures import ThreadPoolExecutor, TimeoutError
 from django.contrib import messages
 import os
 from django.http import Http404
+from mylogger import Logger
+
+logger = Logger()
 
 
 # -----------------------POSTS-----------------------
@@ -40,6 +43,7 @@ class PostListView(ListView):
         """ Returns filtered queryset based on query parameters """
         queryset = super().get_queryset()
         queryset = filter_posts(queryset, self.request.GET)
+        logger.info(f"User {self.request.user} fetched post list. {queryset.count()} posts returned.")
         return queryset
     
 
@@ -80,6 +84,8 @@ class PostDetailView(DetailView):
             self.request.user.is_authenticated
             and post.likes.filter(user=self.request.user).exists()
         )
+        logger.info(f"User {self.request.user} viewed post {self.object.pk}")
+        logger.debug(f"Post {self.object.pk} has {post.comments.count()} comments and {post.likes.count()} likes")
         return context
 
 
@@ -91,7 +97,12 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.author = self.request.user    # attach logged-in user as the author
+        logger.info(f"User {self.request.user} created post {form.instance.pk}")
         return super().form_valid(form)
+    
+    def form_invalid(self, form):
+        logger.warning(f"User {self.request.user} failed to create post: {form.errors}")
+        return super().form_invalid(form)
     
     def get_success_url(self):
         return reverse_lazy("post_detail", kwargs={"pk": self.object.pk})
@@ -106,8 +117,19 @@ class PostUpdateView(LoginRequiredMixin, UpdateView):
     def get_object(self, queryset=None):
         post = super().get_object(queryset)
         if post.author != self.request.user:         # only author can edit
+            logger.warning(f"User {self.request.user} tried to edit/delete post {post.pk} without permission")
             raise PermissionDenied("You are not allowed to edit this post.")
+        logger.info(f"User {self.request.user} accessed post {post.pk} for editing")
         return post
+    
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        logger.info(f"User {self.request.user} successfully updated post {form.instance.pk}")
+        return response
+    
+    def form_invalid(self, form):
+        logger.warning(f"User {self.request.user} failed to update post {form.instance.pk}: {form.errors}")
+        return super().form_invalid(form)
     
     def get_success_url(self):
         return reverse_lazy("post_detail", kwargs={"pk": self.object.pk})
@@ -122,8 +144,16 @@ class PostDeleteView(LoginRequiredMixin, DeleteView):
     def get_object(self, queryset=None):
         post = super().get_object(queryset)
         if post.author != self.request.user:         # only author can delete
+            logger.warning(f"User {self.request.user} tried to delete post {post.pk} without permission")
             raise PermissionDenied("You are not allowed to delete this post.")
+        logger.info(f"User {self.request.user} accessed post {post.pk} for deletion")
         return post
+    
+    def delete(self, request, *args, **kwargs):
+        post = self.get_object()
+        response = super().delete(request, *args, **kwargs)
+        logger.info(f"User {self.request.user} successfully deleted post {post.pk}")
+        return response
 
 
 @login_required
@@ -136,8 +166,8 @@ def generate_pdf(request, pk):
     - Otherwise, dispatch Celery task to generate PDF and email it to the user
     """
     post = get_object_or_404(Post, pk=pk)
-
     timeout = getattr(settings, "PDF_SYNC_TIMEOUT_SECONDS", 2)
+    logger.info(f"User {request.user} requested PDF for post {pk}")
 
     # Run generation in thread and wait with timeout
     with ThreadPoolExecutor(max_workers=1) as executor:
@@ -148,13 +178,14 @@ def generate_pdf(request, pk):
             response = HttpResponse(pdf_bytes, content_type="application/pdf")
             filename = f"{post.title}.pdf"
             response["Content-Disposition"] = f'attachment; filename="{filename}"'
+            logger.info(f"PDF generated for post {pk} by {request.user}")
             return response
 
         except TimeoutError:
             # Dispatch background Celery task if takes too long
             recipient_email = request.user.email
             generate_post_pdf_task_and_email.delay(post.pk, recipient_email)
-
+            logger.info(f"PDF generation for post {pk} exceeded timeout; dispatched background task for {request.user}")
             messages.info(request, "PDF is being generated in the background. We will email you a link when it's ready.")
             return redirect("post_detail", pk=pk)
        
@@ -168,14 +199,18 @@ def download_generated_pdf(request, uid):
     file_path = os.path.join(pdfs_dir, f"{uid}.pdf")
 
     if not os.path.exists(file_path):
+        logger.warning(f"User {request.user} tried to download missing or expired PDF {uid}")
         raise Http404("File not found or expired")
 
     # Stream file to user, then delete
-    response = FileResponse(open(file_path, "rb"), as_attachment=True, filename=f"{uid}.pdf")
+    with open(file_path, "rb") as f:
+        response = FileResponse(f, as_attachment=True, filename=f"{uid}.pdf")
+
     try:
         os.remove(file_path)
-    except Exception:
-        pass
+        logger.info(f"User {request.user} downloaded and removed PDF {uid}")
+    except Exception as e:
+        logger.warning(f"Failed to delete PDF {uid}: {e}")
 
     return response
 
@@ -211,8 +246,11 @@ def add_comment(request, pk):
 
             # Send async email notifications
             notify_comment_emails(comment, post, request.user)
+            logger.info(f"User {request.user} added comment {comment.pk} to post {pk}")
+        else:
+            logger.warning(f"User {request.user} failed to add comment to post {pk}: {form.errors}")
 
-        return redirect("post_detail", pk=post.pk)
+    return redirect("post_detail", pk=post.pk)
 
 
 @login_required
@@ -220,17 +258,21 @@ def update_comment(request, pk):
     comment = get_object_or_404(Comment, pk=pk)
 
     if request.user != comment.author:                # only author can update
+        logger.warning(f"Unauthorized update attempt by {request.user} on comment {pk}")
         return JsonResponse({"success": False, "error": "Unauthorized"}, status=403)
 
     if request.method == "POST" and request.headers.get("X-Requested-With") == "XMLHttpRequest":
         new_content = request.POST.get("content", "").strip()
         if not new_content:
+            logger.warning(f"User {request.user} submitted empty content for comment {pk}")
             return JsonResponse({"success": False, "error": "Empty content."}, status=400)
 
         comment.content = new_content
         comment.save()
+        logger.info(f"User {request.user} updated comment {pk}")
         return JsonResponse({"success": True, "updated_content": comment.content})
 
+    logger.warning(f"Invalid request for updating comment {pk} by {request.user}")
     return JsonResponse({"success": False, "error": "Invalid request."}, status=400)
 
 
@@ -240,6 +282,9 @@ def delete_comment(request, pk):
     comment = get_object_or_404(Comment, pk=pk)
     if request.user == comment.author:                 # only author can delete
         comment.delete()
+        logger.info(f"User {request.user} deleted comment {pk}")
+    else:
+        logger.warning(f"Unauthorized delete attempt by {request.user} on comment {pk}")
     return redirect("post_detail", pk=comment.post.pk)
 
 
@@ -254,8 +299,10 @@ def toggle_like(request, pk):
     if not created:
         like.delete()          # user already liked -> unlike
         liked = False
+        logger.info(f"User {request.user} unliked post {pk}")
     else:
         liked = True
+        logger.info(f"User {request.user} liked post {pk}")
 
     #  Return JSON for AJAX requests
     if request.headers.get("x-requested-with") == "XMLHttpRequest":
