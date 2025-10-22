@@ -131,6 +131,16 @@ yourFolder/
 │ ├── users/                  # User specific templates 
 │ ├── posts/                  # Post specific templates 
 │
+├── logger_pkg/               # Custom logger package
+│ ├── mylogger/               # Python module  
+│ │ ├── __init__.py           
+│ │ ├── logger.py             # Main Logger class      
+│ │ ├── utils.py              
+│ ├── setup.py                
+│ ├── pyproject.toml          
+│ ├── example_usage.py        
+│ ├── README.md
+│
 ├── PDFs/                     # Autocreated on post download
 ├── venv/                     # Virtual environment folder
 ├── .env                      # Environment variables

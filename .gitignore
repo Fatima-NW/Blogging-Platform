@@ -3,3 +3,4 @@ __pycache__/
 *.pyc
 PDFs/
 celerybeat-schedule*
+*.egg-info/
