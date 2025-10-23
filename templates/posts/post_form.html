@@ -4,16 +4,18 @@ Displays the form for creating a new blog post
 
 {% extends "base.html" %}
 
-{% block title %}New Post{% endblock %}
+{% block title %}{% if is_create %}New Post{% else %}Edit Post{% endif %}{% endblock %}
 
 {% block content %}
 <div class="container mt-5" style="max-width: 700px;">
     <div class="card shadow-sm p-4">
-        <h2 class="text-center mb-4">Create a New Post</h2>
+        <h2 class="text-center mb-4">
+            {% if is_create %}Create a New Post{% else %}Edit Post{% endif %}
+        </h2>
         <form method="POST">
             {% csrf_token %}
             {{ form.as_p }}
-            <button type="submit" class="btn btn-primary w-100 rounded">Publish</button>
+            <button type="submit" class="btn btn-primary w-100 rounded">{% if is_create %}Publish{% else %}Update{% endif %}</button>
         </form>
     </div>
 </div>
