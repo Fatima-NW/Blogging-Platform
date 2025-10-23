@@ -165,20 +165,34 @@ def test_post_delete_api_forbidden_for_non_author(api_client, another_user, post
     assert Post.objects.filter(pk=post.pk).exists()
 
 # DOWNLOAD POST
-
 @pytest.mark.django_db
-def test_api_generate_post_pdf(auth_client, post):
-    """ Test that calling the API POST endpoint triggers the Celery PDF generation """
+def test_api_generate_post_pdf_async(auth_client, post, user):
+    """ Test that the PDF generation API dispatches Celery task if synchronous generation times out """
     url = reverse("api_post_generate_pdf", kwargs={"post_pk": post.pk})
 
-    with patch("posts.api.views.generate_post_pdf_task.delay") as mock_task:
+    # Patch the PDF bytes function to simulate timeout
+    with patch("posts.api.views.generate_post_pdf_bytes", side_effect=TimeoutError):
+        with patch("posts.api.views.generate_post_pdf_task_and_email.delay") as mock_task:
+            response = auth_client.post(url)
+
+            assert response.status_code == 202
+            assert response.data["success"] is True
+            assert "email" in response.data["message"].lower()
+            mock_task.assert_called_once_with(post.pk, user.email)
+
+
+@pytest.mark.django_db
+def test_api_generate_post_pdf_sync(auth_client, post):
+    """ Test that the PDF generation API returns PDF bytes if synchronous generation succeeds """
+    url = reverse("api_post_generate_pdf", kwargs={"post_pk": post.pk})
+
+    with patch("posts.api.views.generate_post_pdf_bytes") as mock_pdf:
+        mock_pdf.return_value = b"%PDF-1.4 some content here"
         response = auth_client.post(url)
 
-        assert response.status_code == 200 
-        assert response.data["success"] is True
-        assert "PDF generation started" in response.data["message"]
-        mock_task.assert_called_once_with(post.pk)
-
+        assert response.status_code == 200
+        assert response["Content-Type"] == "application/pdf"
+        assert response.content.startswith(b"%PDF")
 
 
 # ---------------- COMMENT TESTS ----------------

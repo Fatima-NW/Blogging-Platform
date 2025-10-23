@@ -14,7 +14,6 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from posts.models import Post, Comment, Like
 from unittest.mock import patch
-from posts.tasks import send_email_task
 
 User = get_user_model()
 
@@ -148,17 +147,27 @@ def test_post_delete_by_non_author_forbidden(client, another_user, post):
 # DOWNLOAD POST
 
 @pytest.mark.django_db
-def test_generate_post_pdf(client_logged_in, post):
-    """ Test that visiting the template PDF download URL triggers the Celery PDF generation """
-    url = reverse("generate_post_pdf", args=[post.pk]) 
+def test_generate_post_pdf_sync(client_logged_in, post):
+    """ Test synchronous PDF generation returns PDF response with correct headers """
+    url = reverse("generate_post_pdf", args=[post.pk])
+    response = client_logged_in.post(url)
+    assert response.status_code == 200
+    assert response["Content-Type"] == "application/pdf"
+    assert f"{post.title}.pdf" in response["Content-Disposition"]
+    assert isinstance(response.content, bytes)
 
-    with patch("posts.views.generate_post_pdf_task.delay") as mock_task:
-        response = client_logged_in.get(url)  
-
-        # Should redirect to post detail
-        assert response.status_code == 302
-        assert response.url == reverse("post_detail", args=[post.pk])
-        mock_task.assert_called_once_with(post.pk)
+@pytest.mark.django_db
+def test_generate_post_pdf_async_dispatch(client_logged_in, post, user):
+    """ Test that when PDF generation times out, a Celery task is dispatched """
+    url = reverse("generate_post_pdf", args=[post.pk])
+    with patch("posts.views.generate_post_pdf_bytes", side_effect=TimeoutError):
+        with patch("posts.views.generate_post_pdf_task_and_email.delay") as mock_task:
+            response = client_logged_in.post(url, follow=True)
+            assert response.redirect_chain[-1][0] == reverse("post_detail", args=[post.pk])
+            assert response.status_code == 200 
+            mock_task.assert_called_once_with(post.pk, user.email)
+            messages = list(response.context["messages"])
+            assert any("PDF is being generated" in m.message for m in messages)
 
 
 # ---------------- COMMENT TESTS ----------------
