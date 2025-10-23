@@ -38,20 +38,21 @@ class Logger:
         self.logger.setLevel(level)
         self.logger.propagate = False  # Prevent duplicate logs
 
-        # Console handler
-        ch = logging.StreamHandler(sys.stdout)
-        ch.setLevel(level)
-        ch.setFormatter(self.ColoredFormatter())
-        self.logger.addHandler(ch)
+        if not self.logger.handlers: 
+            # Console handler
+            ch = logging.StreamHandler(sys.stdout)
+            ch.setLevel(level)
+            ch.setFormatter(self.ColoredFormatter())
+            self.logger.addHandler(ch)
 
-        # Optional file handler
-        if log_file:
-            fh = logging.FileHandler(log_file)
-            fh.setLevel(level)
-            fh.setFormatter(logging.Formatter(
-                '%(asctime)s - %(levelname)s - %(message)s'
-            ))
-            self.logger.addHandler(fh)
+            # Optional file handler
+            if log_file:
+                fh = logging.FileHandler(log_file)
+                fh.setLevel(level)
+                fh.setFormatter(logging.Formatter(
+                    '%(asctime)s - %(levelname)s - %(message)s'
+                ))
+                self.logger.addHandler(fh)
 
     class ColoredFormatter(logging.Formatter):
         """Custom formatter with colors based on log level"""
