@@ -1,3 +1,12 @@
+"""
+URL routing for posts app (API endpoints)
+
+Includes routes for:
+- Creating, viewing, updating, deleting posts
+- Adding, updating and deleting comments
+- Liking/unliking posts
+"""
+
 from django.urls import path
 from .views import ( PostListAPIView, PostDetailAPIView,
     PostCreateAPIView, PostUpdateAPIView, PostDeleteAPIView,

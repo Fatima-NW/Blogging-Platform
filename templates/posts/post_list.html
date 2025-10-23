@@ -1,32 +1,134 @@
+<!--
+Displays all blog posts in a list
+
+Features:
+- Create new post button (for authenticated users)
+- General search across title, content, and author
+- Collapsible filters for author, title, content, and date range
+- Each post item shows title, author, creation date, truncated content, number of likes and comments
+- Pagination controls
+- JavaScript to toggle the visibility of the filters section
+-->
+
 {% extends "base.html" %}
 
 {% block title %}All Posts{% endblock %}
 
 {% block content %}
-  <h2 class="mb-4">All Blog Posts</h2>
+    <h2 class="mb-4">All Blog Posts</h2>
 
-  {% if user.is_authenticated %}
-    <a href="{% url 'post_create' %}" class="btn btn-success mb-3">
-      + Create New Post
-    </a>
-  {% endif %}
-
-  {% if posts %}
-    <div class="list-group">
-      {% for post in posts %}
-        <a href="{% url 'post_detail' post.pk %}" class="list-group-item list-group-item-action">
-          <h5 class="mb-1">{{ post.title }}</h5>
-          <small>By {{ post.author.get_full_name|default:post.author.username }} on {{ post.created_at|date:"M d, Y" }}</small>
-          <p class="mb-1">{{ post.content|truncatewords:50 }}</p>
-          <small> 
-            {{ post.likes.count }} like{{ post.likes.count|pluralize }}
-            •
-            {{ post.comments.count }} comment{{ post.comments.count|pluralize }} 
-          </small>
+    <!-- Create new post button-->
+    {% if user.is_authenticated %}
+        <a href="{% url 'post_create' %}" class="btn btn-success mb-3">
+            + Create New Post
         </a>
-      {% endfor %}
+    {% endif %}
+
+    <!-- Filter Form -->
+    <form method="get" class="mb-4 p-3 border rounded bg-light">
+
+        <!-- General Search -->
+        <div class="d-flex align-items-center mb-2">
+            <input type="text" name="query" class="form-control flex-grow-1 me-2" placeholder="Search anything" value="{{ request.GET.query }}">
+
+            <button type="submit" class="btn btn-primary me-2">Search</button>
+            <a href="{% url 'post_list' %}" class="btn btn-secondary me-2">Reset</a>
+            <button type="button" id="toggle-filters" class="btn btn-outline-secondary">Filters</button>
+        </div>
+
+        <!-- Filters Section -->
+        <div id="filters-section" style="display: none;">
+            <div class="row g-2 mt-3">
+                <div class="col-md-3"> <input type="text" name="author" class="form-control" placeholder="Filter by author" value="{{ request.GET.author }}"> </div>
+                <div class="col-md-3"> <input type="text" name="title" class="form-control" placeholder="Filter by title" value="{{ request.GET.title }}"> </div>
+                <div class="col-md-3"> <input type="text" name="content" class="form-control" placeholder="Filter by content" value="{{ request.GET.content }}"> </div>
+                <div class="col-md-3">
+                    <div class="input-group">
+                        <input type="date" name="start_date" class="form-control" value="{{ request.GET.start_date }}">
+                        <span class="input-group-text">to</span>
+                        <input type="date" name="end_date" class="form-control" value="{{ request.GET.end_date }}">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- Displaying posts -->
+    {% if posts %}
+        <div class="list-group">
+            {% for post in posts %}
+                <a href="{% url 'post_detail' post.pk %}" class="list-group-item list-group-item-action">
+                    <h5 class="mb-1">{{ post.title }}</h5>
+                    <small>By {{ post.author.get_full_name|default:post.author.username }} on {{ post.created_at|date:"M d, Y" }}</small>
+                    <p class="mb-1">{{ post.content|truncatewords:50 }}</p>
+                    <small> 
+                        {{ post.likes.count }} like{{ post.likes.count|pluralize }}
+                        •
+                        {{ post.comments.count }} comment{{ post.comments.count|pluralize }} 
+                    </small>
+                </a>
+            {% endfor %}
+        </div>    
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value|urlencode }}{% endif %}{% endfor %}">Previous</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">Previous</span></li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                        {% else %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value|urlencode }}{% endif %}{% endfor %}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value|urlencode }}{% endif %}{% endfor %}">Next</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">Next</span></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+        
+    {% else %}
+        <p>No posts yet. Be the first to write one!</p>
+    {% endif %}
+
+    <div id="filter-data" 
+        data-visible="{% if request.GET.author or request.GET.title or request.GET.content or request.GET.start_date or request.GET.end_date %}true{% else %}false{% endif %}">
     </div>
-  {% else %}
-    <p>No posts yet. Be the first to write one!</p>
-  {% endif %}
+
+    <!-- JS to handle showing/hiding the filters -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const toggleButton = document.getElementById('toggle-filters');
+            const filtersSection = document.getElementById('filters-section');
+            const filterData = document.getElementById('filter-data');
+
+            const filtersInitiallyVisible = filterData.dataset.visible === "true";
+
+            if (filtersInitiallyVisible) {
+                filtersSection.style.display = 'block';
+            }
+
+            toggleButton.addEventListener('click', () => {
+                const isVisible = filtersSection.style.display === 'block';
+                filtersSection.style.display = isVisible ? 'none' : 'block';
+            });
+        });
+    </script>
+
 {% endblock %}

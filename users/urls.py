@@ -1,3 +1,12 @@
+"""
+URL routing for users app (template-based views)
+
+Includes routes for:
+- User registration
+- User login
+- Logout
+"""
+
 from django.urls import path
 from . import views
 

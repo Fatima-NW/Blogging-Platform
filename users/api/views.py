@@ -1,3 +1,11 @@
+"""
+API views for the users app
+
+Includes views for:
+- User registration
+- User profile
+"""
+
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -6,13 +14,14 @@ from users.serializers import RegisterSerializer, UserSerializer
 
 User = get_user_model()
 
-# Register new user
 class RegisterAPIView(generics.CreateAPIView):
+    """ API endpoint for user registration """
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
     permission_classes = [AllowAny]
 
     def create(self, request, *args, **kwargs):
+        """ Validate and create a new user """
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
@@ -22,8 +31,8 @@ class RegisterAPIView(generics.CreateAPIView):
         )
 
 
-# Get current user's profile
 class ProfileAPIView(generics.RetrieveAPIView):
+    """ Retrieve the profile details of the authenticated user """
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
 

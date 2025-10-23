@@ -1,3 +1,12 @@
+"""
+API views for the posts app
+
+Includes endpoints for:
+- Posts: list, detail, create, update, delete
+- Comments: create, update, delete
+- Likes: toggle like/unlike on a post
+"""
+
 from rest_framework import generics, status
 from posts.models import Post, Comment, Like
 from posts.serializers import PostSerializer, CommentSerializer
@@ -5,40 +14,48 @@ from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnl
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
-
+from ..filters import filter_posts
+from posts.utils import notify_comment_emails
 
 # -----------------------POSTS-----------------------
 
-# List all posts (read-only for unauthenticated users)
 class PostListAPIView(generics.ListAPIView):
-    queryset = Post.objects.all().order_by('-created_at')
+    """ List all posts (read-only for unauthenticated users) """
     serializer_class = PostSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
-# Retrieve a single post (read-only for unauthenticated users)
+    def get_queryset(self):
+        queryset = Post.objects.all().order_by('-created_at')
+        params = self.request.query_params 
+        return filter_posts(queryset, params)
+
+
 class PostDetailAPIView(generics.RetrieveAPIView):
+    """ Retrieve a single post (read-only for unauthenticated users) """
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
-# Create a new post (authenticated users only)
 class PostCreateAPIView(generics.CreateAPIView):
+    """ Create a new post (authenticated users only) """
     serializer_class = PostSerializer
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-# Update a post (only by author)
+
 class PostUpdateAPIView(generics.RetrieveUpdateAPIView):
+    """ Update an existing post (only by the author) """
     serializer_class = PostSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return Post.objects.filter(author=self.request.user)
 
-# Delete a post (only by author)
+
 class PostDeleteAPIView(generics.DestroyAPIView):
+    """ Delete a post (only by the author) """
     serializer_class = PostSerializer
     permission_classes = [IsAuthenticated]
 
@@ -54,10 +71,20 @@ class PostDeleteAPIView(generics.DestroyAPIView):
 
 # -----------------------COMMENTS-----------------------
 
-# Add a comment (authenticated users only)
 class CommentCreateAPIView(generics.CreateAPIView):
+    """
+    Create a new comment or reply (authenticated users only).
+
+    - Supports a two-level structure:
+        - Top-level comments are direct responses to the post.
+        - Replies are nested under the top-level comment (the parent),
+        but tagged to the specific user being replied to.
+    - Automatically prepends '@username' to replies.
+    - Sends async email notifications to user being replied to.
+    """
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticated]
+
 
     def perform_create(self, serializer):
         post_pk = self.kwargs.get("post_pk")
@@ -74,13 +101,10 @@ class CommentCreateAPIView(generics.CreateAPIView):
                 parent_id = None
 
             if parent_id:
-                # original_parent is the comment the user clicked "Reply" on
-                original_parent = Comment.objects.filter(pk=parent_id, post=post).first()
+                original_parent = Comment.objects.filter(pk=parent_id, post=post).first() # comment being replied to
                 if original_parent:
-                    # replied_to should be the author of the comment being replied to
-                    replied_to_user = original_parent.author
-                    # root_parent must be the top-level comment for two-level structure
-                    root_parent = original_parent.parent or original_parent
+                    replied_to_user = original_parent.author # user being replied to
+                    root_parent = original_parent.parent or original_parent # top-level comment for nesting
 
         comment = serializer.save(
             post=post,
@@ -89,15 +113,19 @@ class CommentCreateAPIView(generics.CreateAPIView):
             replied_to=replied_to_user,
         )
 
-        # Add autotagging text if replying to someone
+        # Add @username when replying to another user
         if comment.replied_to:
             tag = f"@{comment.replied_to.username}"
             if not comment.content.strip().startswith(tag):
                 comment.content = f"{tag} {comment.content}"
                 comment.save(update_fields=["content"])
 
-# Update a comment (only by author)
+        # Send async email notifications
+        notify_comment_emails(comment, post, self.request.user)
+
+
 class CommentUpdateAPIView(generics.RetrieveUpdateAPIView):
+    """ Update a comment (only by the author) """
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticated]
 
@@ -115,8 +143,9 @@ class CommentUpdateAPIView(generics.RetrieveUpdateAPIView):
             "comment": serializer.data
         }, status=status.HTTP_200_OK)
 
-# Delete a comment (only by author)
+
 class CommentDeleteAPIView(generics.DestroyAPIView):
+    """ Delete a comment (only by the author) """
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticated]
 
@@ -132,8 +161,8 @@ class CommentDeleteAPIView(generics.DestroyAPIView):
 
 # -----------------------LIKES-----------------------
 
-# Toggle like/unlike on a post (authenticated users only)
 class ToggleLikeAPIView(APIView):
+    """ Toggle like/unlike on a post (authenticated users only) """
     permission_classes = [IsAuthenticated]
 
     def post(self, request, post_pk, format=None):
