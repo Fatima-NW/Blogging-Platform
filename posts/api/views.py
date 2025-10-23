@@ -67,14 +67,12 @@ class PostUpdateAPIView(generics.RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        logger.info(f"User {self.request.user} is accessing their posts for update")
         return Post.objects.filter(author=self.request.user)
     
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
-        logger.info(f"User {request.user} is updating post {instance.pk}")
         response = super().update(request, *args, **kwargs)
-        logger.success(f"User {request.user} successfully updated post {instance.pk}")
+        logger.info(f"User {request.user} successfully updated post {instance.pk}")
         return response
 
 
@@ -84,14 +82,13 @@ class PostDeleteAPIView(generics.DestroyAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        logger.info(f"User {self.request.user} is accessing posts for deletion")
         return Post.objects.filter(author=self.request.user)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        logger.info(f"User {request.user} requested to delete post {instance.pk}")
+        post_id = instance.pk
         self.perform_destroy(instance)
-        logger.success(f"User {request.user} deleted post {instance.pk}")
+        logger.info(f"User {request.user} deleted post {post_id}")
         return Response({"detail": "Post deleted successfully."}, status=status.HTTP_200_OK)
 
 
@@ -115,18 +112,18 @@ class PostGeneratePDFAPIView(APIView):
             future = executor.submit(generate_post_pdf_bytes, post)
             try:
                 pdf_bytes = future.result(timeout=timeout)
-                logger.success(f"PDF for post {post.pk} generated synchronously within {timeout}s")
-                filename = f"{post.title}.pdf"
                 filename = f"{post.title}.pdf"
                 response = HttpResponse(pdf_bytes, content_type="application/pdf")
                 response["Content-Disposition"] = f'attachment; filename="{filename}"'
+                logger.info(f"PDF for post {post.pk} generated synchronously")
                 return response
 
             except TimeoutError:
                 # Dispatch Celery task if it takes too long
-                logger.warning(f"PDF generation for post {post.pk} took longer than {timeout}s, running asynchronously")
+                logger.warning(f"PDF generation for post {post.pk} timed out")
                 recipient_email = request.user.email
                 generate_post_pdf_task_and_email.delay(post.pk, recipient_email)
+                logger.info(f"PDF generation for post {post.pk} dispatched asynchronously")
                 return Response({
                     "success": True,
                     "message": "PDF generation is taking longer than expected. "
@@ -204,11 +201,10 @@ class CommentUpdateAPIView(generics.RetrieveUpdateAPIView):
     def update(self, request, *args, **kwargs):
         partial = True
         instance = self.get_object()
-        logger.info(f"User {request.user} is is attempting to update comment {instance.pk}")
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        logger.success(f"User {request.user} successfully updated comment {instance.pk}")
+        logger.info(f"User {request.user} successfully updated comment {instance.pk}")
         return Response({
             "detail": "Comment updated successfully.",
             "comment": serializer.data
@@ -225,9 +221,8 @@ class CommentDeleteAPIView(generics.DestroyAPIView):
 
     def destroy(self, request, *args, **kwargs):
         comment = self.get_object()
-        logger.info(f"User {request.user} requested to delete comment {comment.pk}")
         self.perform_destroy(comment)
-        logger.success(f"User {request.user} deleted comment {comment.pk}")
+        logger.info(f"User {request.user} deleted comment {comment.pk}")
         return Response({"detail": "Comment deleted successfully."}, status=status.HTTP_200_OK)
 
 
