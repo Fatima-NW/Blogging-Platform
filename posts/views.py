@@ -172,6 +172,7 @@ class PostDeleteView(LoginRequiredMixin, DeleteView):
 
 
 @login_required
+@logger.log_execution(level="DEBUG") 
 def generate_pdf(request, pk):
     """
     Allow logged-in users to generate PDFs of posts
