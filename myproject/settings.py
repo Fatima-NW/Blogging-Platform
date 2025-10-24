@@ -189,5 +189,8 @@ PDFS_TEMP_ROOT = os.path.join(BASE_DIR, "PDFs")
 SITE_URL = "http://127.0.0.1:8000"  
 
 # Timeout threshold for synchronous generation
-PDF_SYNC_TIMEOUT_SECONDS = 0.2
+PDF_SYNC_TIMEOUT_SECONDS = 1
+
+# Max time after which PDF links expire
+PDF_LINK_EXPIRY_MINUTES = 15
 

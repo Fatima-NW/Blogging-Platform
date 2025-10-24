@@ -13,11 +13,11 @@ app = Celery("myproject")
 app.config_from_object("django.conf:settings", namespace="CELERY")
 app.autodiscover_tasks()
 
-# Periodic task: cleanup PDFs older than 10 mins, runs every 5 mins
+# Periodic task: cleanup PDFs older than expiry minutes, runs every 10 mins
 app.conf.beat_schedule = {
     "cleanup-temp-pdfs-every-minute": {
         "task": "posts.tasks.cleanup_old_temp_pdfs",
-        "schedule": 300.0,        # every 5 minutes
-        "args": (10,),            # max_age_minutes = 10
+        "schedule": 600.0,                          # every 10 minutes
+        "args": (settings.PDF_LINK_EXPIRY_MINUTES,),   
     },
 }

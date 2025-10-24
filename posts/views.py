@@ -15,7 +15,8 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from .models import Post, Comment, Like
 from .forms import PostForm, CommentForm
 from django.urls import reverse_lazy
-from django.http import JsonResponse, HttpResponse, FileResponse
+from django.http import JsonResponse, HttpResponse, FileResponse, Http404
+from django.shortcuts import render
 from django.conf import settings
 from .filters import filter_posts
 from .utils import notify_comment_emails, generate_post_pdf_bytes
@@ -23,7 +24,6 @@ from .tasks import generate_post_pdf_task_and_email
 from concurrent.futures import ThreadPoolExecutor, TimeoutError
 from django.contrib import messages
 import os
-from django.http import Http404
 from wsgiref.util import FileWrapper
 from mylogger import Logger
 
@@ -95,7 +95,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
     """ Allow logged-in users to create posts """
     model = Post
     form_class = PostForm
-    template_name = "posts/post_form.html"
+    template_name = "posts/post_creation_form.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -123,7 +123,7 @@ class PostUpdateView(LoginRequiredMixin, UpdateView):
     """ Allow users to edit their own posts """
     model = Post
     form_class = PostForm
-    template_name = "posts/post_form.html"
+    template_name = "posts/post_creation_form.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -214,10 +214,13 @@ def download_generated_pdf(request, uid):
     """
     pdfs_dir = getattr(settings, "PDFS_TEMP_ROOT")
     file_path = os.path.join(pdfs_dir, f"{uid}.pdf")
+    template_name = "posts/pdf_expired.html"
 
     if not os.path.exists(file_path):
+        expiry_minutes = getattr(settings, "PDF_LINK_EXPIRY_MINUTES", 15)
         logger.warning(f"User {request.user} tried to download missing or expired PDF {uid}")
-        raise Http404("File not found or expired")
+        context = {"expiry_minutes": expiry_minutes}
+        return render(request, template_name, context, status=410)
 
     # Stream file to user
     f = open(file_path, "rb")
@@ -225,7 +228,6 @@ def download_generated_pdf(request, uid):
 
     # Only delete when the response is closed
     original_close = response.close
-
     def cleanup():
         try:
             original_close()
@@ -235,7 +237,6 @@ def download_generated_pdf(request, uid):
                 logger.info(f"User {request.user} downloaded and removed PDF {uid}")
             except Exception as e:
                 logger.warning(f"Failed to delete PDF {uid}: {e}")
-
     response.close = cleanup
     return response
 

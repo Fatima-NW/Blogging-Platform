@@ -51,11 +51,15 @@ def generate_post_pdf_task_and_email(post_id, recipient_email):
     # Build download URL and email
     download_path = reverse("download_generated_pdf", args=[uid])
     download_url = f"{settings.SITE_URL}{download_path}"
+    expiry_minutes = getattr(settings, "PDF_LINK_EXPIRY_MINUTES", 15)
+
     subject = f"Your PDF for '{post.title}' is ready"
     message = (
-        f"Hi,\n\nYour PDF for post \"{post.title}\" is ready. "
-        f"Click the link to download it:\n\n{download_url}\n\n"
-        f"This link will expire in 10 minutes or the file will be removed after download."
+        f"Hi,\n\nYour PDF for post \"{post.title}\" is ready for download.\n"
+        f"Download it using this one-time link:\n{download_url}\n\n"
+        f"⚠️ Please note:\n"
+        f"- The link will automatically expire after {expiry_minutes} minutes.\n"
+        f"- The file will be deleted after it is downloaded once.\n\n"
     )
     send_email_task(subject, message, [recipient_email])
 
@@ -63,10 +67,11 @@ def generate_post_pdf_task_and_email(post_id, recipient_email):
 
 
 @shared_task
-def cleanup_old_temp_pdfs(max_age_minutes=10):
+def cleanup_old_temp_pdfs(max_age_minutes=None):
     """
     Delete temporary PDF files older than 'max_age_minutes'.
     """
+    max_age_minutes = max_age_minutes or getattr(settings, "PDF_LINK_EXPIRY_MINUTES", 15)
     folder = getattr(settings, "PDFS_TEMP_ROOT")
     cutoff = timezone.now() - timedelta(minutes=max_age_minutes)
     for p in Path(folder).glob("*.pdf"):
