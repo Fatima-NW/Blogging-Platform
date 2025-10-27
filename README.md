@@ -35,6 +35,11 @@ A blogging platform built with **Django** and **Django REST Framework**.
     ```
 ### 3. Install dependencies
     ```bash
+    pip install -r requirements.txt            # All requirements
+    pip install -e /full/path/to/mylogger      # For logger package        
+    
+    or
+
     pip install django psycopg2-binary         # Django framework + PostgreSQLconnector
     pip install python-decouple                # For .env
     pip install djangorestframework            # Django REST Framework for building APIs
@@ -42,6 +47,7 @@ A blogging platform built with **Django** and **Django REST Framework**.
     pip install pytest pytest-django           # For testing
     pip install celery redis                   # For background tasks
     pip install weasyprint                     # For downloading PDFs
+    pip install -e /full/path/to/mylogger      # For logger package
     ```
 ### 4. Create .env file
     ```env
@@ -141,11 +147,13 @@ yourFolder/
 │ ├── example_usage.py        
 │ ├── README.md
 │
+├── static/                   # Static files
 ├── PDFs/                     # Autocreated on post download
 ├── venv/                     # Virtual environment folder
 ├── .env                      # Environment variables
 ├── .gitignore 
 ├── pytest.ini                # For testing
+├── requirements.txt
 ├── README.md 
 └── manage.py
 ```
