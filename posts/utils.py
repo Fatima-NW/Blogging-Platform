@@ -3,7 +3,7 @@ Utility helpers for the posts app
 
 Includes:
 - Asynchronous email notifications for comments and replies
-- Asynchronous post downloads
+- Post downloads
 
 This module centralizes logic that may be shared across multiple views
 """
@@ -59,7 +59,6 @@ def notify_comment_emails(comment, post, user):
             subject = f"You were mentioned in a comment on '{post.title}'"
             message = f"{user.username} mentioned you in a comment: {comment.content}"
             send_email_task.delay(subject, message, [tagged_user.email])
-
 
 
 def generate_post_pdf_bytes(post):

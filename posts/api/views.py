@@ -94,7 +94,7 @@ class PostDeleteAPIView(generics.DestroyAPIView):
 
 class PostGeneratePDFAPIView(APIView):
     """
-    VGenerates PDF of a post
+    Generates PDF of a post
 
     Hybrid behavior:
     - If synchronous generation finishes within PDF_SYNC_TIMEOUT_SECONDS, return the PDF in the response
@@ -102,15 +102,15 @@ class PostGeneratePDFAPIView(APIView):
     """
     permission_classes = [IsAuthenticated]
 
-    def post(self, request, post_pk, format=None):
+    def handle(self, request, post_pk):
         post = get_object_or_404(Post, pk=post_pk)
         timeout = getattr(settings, "PDF_SYNC_TIMEOUT_SECONDS", 2)
         logger.info(f"User {request.user} requested PDF for post {post.pk}")
 
-        # Try synchronous PDF generation first
         with ThreadPoolExecutor(max_workers=1) as executor:
             future = executor.submit(generate_post_pdf_bytes, post)
             try:
+                # Try synchronous PDF generation first
                 pdf_bytes = future.result(timeout=timeout)
                 filename = f"{post.title}.pdf"
                 response = HttpResponse(pdf_bytes, content_type="application/pdf")
@@ -129,6 +129,12 @@ class PostGeneratePDFAPIView(APIView):
                     "message": "PDF generation is taking longer than expected. "
                                "We will email you a download link when it's ready."
                 }, status=202)
+
+    def get(self, request, post_pk, *args, **kwargs):
+        return self.handle(request, post_pk)
+
+    def post(self, request, post_pk, *args, **kwargs):
+        return self.handle(request, post_pk)
     
 
 # -----------------------COMMENTS-----------------------

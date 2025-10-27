@@ -3,7 +3,7 @@ Asynchronous tasks for the posts app
 
 Includes tasks for:
 - Sending emails 
-- Generating PDFs of posts asynchronously and emailing download links
+- Generating PDFs of posts and emailing download links
 - Cleaning up temporary PDF files
 """
 
