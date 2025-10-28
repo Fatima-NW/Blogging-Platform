@@ -19,7 +19,7 @@ from contextlib import contextmanager
 # ---------------------- COLOR SUPPORT  ----------------------
 try:
     from colorama import init as colorama_init, Fore, Style
-    colorama_init(autoreset=True)
+    colorama_init(autoreset=True, strip=False)
 except ImportError:
     class Dummy:
         RESET_ALL = ""

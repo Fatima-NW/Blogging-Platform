@@ -2,6 +2,7 @@
 
 A blogging platform built with **Django** and **Django REST Framework**.
 
+
 ## 🚀 Features
 
 - User registration and login
@@ -9,9 +10,11 @@ A blogging platform built with **Django** and **Django REST Framework**.
 - View post details with comments and likes
 - Add, edit, and delete comments + reply to other users
 - Like or unlike posts
-- View personal profile
 - Clean template views
+- Filtering blog posts
+- Automated email notifications for new comments or delayed PDF downloads
 - API support for all major actions
+- Dockerized setup for easy deployment
 
 ## ⚙️ Tech Stack
 
@@ -20,48 +23,59 @@ A blogging platform built with **Django** and **Django REST Framework**.
 - **Authentication:** JWT (Simplejwt)
 - **Environment Variables:** Managed using `python-decouple`
 - **Frontend (templates):** HTML, Bootstrap
+- **Task Queue:** Celery + Redis
 - **Version Control:** Git & GitHub
+- **Containerization:** Docker, Docker Compose
+
 
 ## 🧰 Setup Instructions
 
-### 1. Clone this repository 
-    ```bash
-    git clone https://github.com/Fatima-NW/Blogging-Platform.git
-    ```
-### 2. Create and activate virtual environment
-    ```bash
-    python -m venv venv
-    source venv/bin/activate    # macOS/Linux
-    ```
-### 3. Install dependencies
-    ```bash
-    pip install -r requirements.txt            # All requirements
-    pip install -e /full/path/to/mylogger      # For logger package        
-    
-    or
+You have two options:
 
-    pip install django psycopg2-binary         # Django framework + PostgreSQLconnector
-    pip install python-decouple                # For .env
-    pip install djangorestframework            # Django REST Framework for building APIs
-    pip install djangorestframework-simplejwt  # JWT authentication support for DRF
-    pip install pytest pytest-django           # For testing
-    pip install celery redis                   # For background tasks
-    pip install weasyprint                     # For downloading PDFs
-    pip install -e /full/path/to/mylogger      # For logger package
-    ```
+## Option 1: Manual Python Setup (Classic)
+
+### 1. Clone this repository 
+```bash
+git clone https://github.com/Fatima-NW/Blogging-Platform.git
+```
+
+### 2. Create and activate virtual environment
+```bash
+python -m venv venv
+source venv/bin/activate    # macOS/Linux
+```
+
+### 3. Install dependencies
+```bash
+pip install -r requirements.txt            # All requirements
+pip install -e /full/path/to/mylogger      # For logger package        
+
+or
+
+pip install django psycopg2-binary         # Django framework + PostgreSQLconnector
+pip install python-decouple                # For .env
+pip install djangorestframework            # Django REST Framework for building APIs
+pip install djangorestframework-simplejwt  # JWT authentication support for DRF
+pip install pytest pytest-django           # For testing
+pip install celery redis                   # For background tasks
+pip install weasyprint                     # For downloading PDFs
+pip install -e /full/path/to/mylogger      # For logger package
+```
+
 ### 4. Create .env file
-    ```env
-    DB_NAME=your-database-name
-    DB_USER=postgres
-    DB_PASSWORD=your-database-password
-    DB_HOST=localhost
-    DB_PORT=port-number
-    SECRET_KEY=your-secret-key
-    DEBUG=True
-    PAGINATE_BY=number-of-posts-on-one-page
-    EMAIL_USER=sender-email-address
-    EMAIL_PASS=sender-app-password
-    ```
+```env
+DB_NAME=your-database-name
+DB_USER=postgres
+DB_PASSWORD=your-database-password
+DB_HOST=localhost
+DB_PORT=port-number
+SECRET_KEY=your-secret-key
+DEBUG=True
+PAGINATE_BY=number-of-posts-on-one-page
+EMAIL_USER=sender-email-address
+EMAIL_PASS=sender-app-password
+```
+
 ### 5. Run the project
 - Apply database migrations:
     ```bash
@@ -88,6 +102,73 @@ A blogging platform built with **Django** and **Django REST Framework**.
     # Run a specific test function
     pytest posts/tests/test_templates.py::test_post_create_view
     ```
+
+## Option 2: Docker Setup
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/Fatima-NW/Blogging-Platform.git
+```
+
+### 2. Create .env file
+```.env
+DB_NAME=myprojectdb
+DB_USER=postgres
+DB_PASSWORD=postgres123
+DB_HOST=db
+DB_PORT=5432
+SECRET_KEY=your-secret-key
+DEBUG=True
+PAGINATE_BY=5
+EMAIL_USER=your-email@example.com
+EMAIL_PASS=your-app-password
+```
+
+### 3. Build and start containers
+```bash
+sudo docker compose up --build
+
+#After the first build, you can start containers normally without rebuilding:
+sudo docker compose up
+```
+
+### 4. Check logs
+- All services
+    ```bash
+    sudo docker compose logs -f
+    ```
+- Django only
+    ```bash
+    sudo docker logs -f project1-web-1
+    ```
+- Celery worker only
+    ```bash
+    sudo docker logs -f project1-celery-1
+    ```
+- Celery beat only
+    ```bash
+    sudo docker logs -f project1-celery-beat-1
+    ```
+
+### 5. Run tests
+```bash
+sudo docker exec -it project1-web-1 bash     # Open python shell in Django container
+pytest                                       # Run all tests or specific ones
+```
+
+### 6. Stop containers
+```bash
+sudo docker compose down
+```
+
+### 7. Services
+Services included: 
+- Django app
+- PostgreSQL
+- Redis
+- Celery
+- Cerlery Beat
+
 
 ## 📂 Project Structure
 ```
@@ -123,13 +204,8 @@ yourFolder/
 │ ├── backends.py             # Custom authentication backend
 │ ├── urls.py                 # Template-based view routes
 │ ├── serializers.py          # Serializers for APIs
-│ ├── api/                    
-│ │ ├── views.py             
-│ │ ├── urls.py              
-│ ├── tests/                    
-│ │ ├── test_api.py            
-│ │ ├── test_templates.py      
-│ │ ├── test_models.py                  
+│ ├── api/                                
+│ ├── tests/                                     
 │
 ├── templates/
 │ ├── base.html 
@@ -152,11 +228,14 @@ yourFolder/
 ├── venv/                     # Virtual environment folder
 ├── .env                      # Environment variables
 ├── .gitignore 
+├── Dockerfile                # Docker
+├── docker-compose.yml  
 ├── pytest.ini                # For testing
 ├── requirements.txt
 ├── README.md 
 └── manage.py
 ```
+
 
 ## 📡 API Endpoints
 
