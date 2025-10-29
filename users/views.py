@@ -54,7 +54,7 @@ def login_view(request):
 
 def logout_view(request):
     """ Log out the current user and redirect to the homepage """
-    username = request.user.username if request.user.is_authenticated else "Anonymous"
+    username = request.user.username if request.user.is_authenticated else "AnonymousUser"
     logout(request)
     logger.info(f"User {username} logged out")
     messages.info(request, "You have been logged out.")
@@ -63,6 +63,6 @@ def logout_view(request):
 
 def home(request):
     """ Render the home page """
-    username = request.user.username if request.user.is_authenticated else "Anonymous"
-    logger.info(f"Home page accessed by user {username}")
+    username = request.user.username if request.user.is_authenticated else "AnonymousUser"
+    logger.info(f"{username} accessed home page ")
     return render(request, "home.html")

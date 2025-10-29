@@ -4,7 +4,7 @@ from mylogger import Logger
 
 logger = Logger()
 
-class RequestTimingMiddleware(MiddlewareMixin):
+class Middleware(MiddlewareMixin):
     def process_request(self, request):
         request._start_time = time.time()
 

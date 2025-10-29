@@ -45,7 +45,8 @@ class PostListView(ListView):
         queryset = super().get_queryset()
         queryset = filter_posts(queryset, self.request.GET)
         logger.debug(f"Query params received: {self.request.GET.dict()}")
-        logger.info(f"User {self.request.user} fetched post list")
+        logger.info(f"{self.request.user} fetched post list")
+        logger.debug(f"Total posts: {queryset.count()}, Filtered by: {settings.PAGINATE_BY }")
         return queryset
     
 
@@ -86,8 +87,8 @@ class PostDetailView(DetailView):
             self.request.user.is_authenticated
             and post.likes.filter(user=self.request.user).exists()
         )
-        logger.info(f"User {self.request.user} viewed post {self.object.pk}")
-        logger.debug(f"Prefetched data for post {post.pk} (comments={post.comments.count()}, likes={post.likes.count()})")
+        logger.info(f"{self.request.user} viewed post '{self.object.title}'")
+        logger.debug(f"Comments: {post.comments.count()}, Likes: {post.likes.count()}")
         return context
 
 
@@ -97,6 +98,10 @@ class PostCreateView(LoginRequiredMixin, CreateView):
     form_class = PostForm
     template_name = "posts/post_creation_form.html"
 
+    def get(self, request, *args, **kwargs):
+        logger.info(f"{request.user} accessed post creation form")
+        return super().get(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["is_create"] = True
@@ -104,15 +109,15 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.author = self.request.user    # attach logged-in user as the author
-        logger.info(f"User {self.request.user} created a new post")
+        logger.info(f"{self.request.user} created post: {form.instance.title}")
         messages.success(self.request, "Post created successfully!")
         return super().form_valid(form)
     
     def form_invalid(self, form):
         content_errors = form.errors.get("content", [])
         if any("at most 10000" in str(e) for e in content_errors):
-            logger.debug(f"User {self.request.user} attempted to create post exceeding 10,000 chars")
-            logger.warning(f"User {self.request.user} failed to create post due to content length")
+            logger.debug(f"{self.request.user} attempted to create post exceeding 10,000 chars")
+            logger.warning(f"{self.request.user} failed to create post due to content length")
         return super().form_invalid(form)
     
     def get_success_url(self):
@@ -133,23 +138,25 @@ class PostUpdateView(LoginRequiredMixin, UpdateView):
     def get_object(self, queryset=None):
         post = super().get_object(queryset)
         if post.author != self.request.user:         # only author can edit
-            logger.warning(f"User {self.request.user} tried to edit post {post.pk} without permission")
+            logger.warning(f"{self.request.user} tried to edit post '{post.title}' without permission")
             raise PermissionDenied("You are not allowed to edit this post.")
-        logger.info(f"User {self.request.user} accessed post {post.pk} for editing")
+        
+        if self.request.method == "GET":
+            logger.info(f"{self.request.user} accessed post '{post.title}' for editing")
         return post
     
     def form_valid(self, form):
         response = super().form_valid(form)
-        logger.debug(f"Post {form.instance.pk} updated fields: {form.changed_data}")
-        logger.info(f"User {self.request.user} successfully updated post {form.instance.pk}")
+        logger.info(f"{self.request.user} successfully updated the post")
+        logger.debug(f"Updated fields: {form.changed_data}")
         messages.success(self.request, "Post updated successfully!")
         return response
     
     def form_invalid(self, form):
         content_errors = form.errors.get("content", [])
         if any("at most 10000" in str(e) for e in content_errors):
-            logger.debug(f"User {self.request.user} attempted to update post exceeding 10,000 chars")
-            logger.warning(f"User {self.request.user} failed to update post due to content length")
+            logger.debug(f"{self.request.user} attempted to update post exceeding 10,000 chars")
+            logger.warning(f"{self.request.user} failed to update post due to content length")
         return super().form_invalid(form)
     
     def get_success_url(self):
@@ -165,9 +172,9 @@ class PostDeleteView(LoginRequiredMixin, DeleteView):
     def get_object(self, queryset=None):
         post = super().get_object(queryset)
         if post.author != self.request.user:         # only author can delete
-            logger.warning(f"User {self.request.user} tried to delete post {post.pk} without permission")
+            logger.warning(f"{self.request.user} tried to delete post '{post.title}' without permission")
             raise PermissionDenied("You are not allowed to delete this post.")
-        logger.info(f"User {self.request.user} accessed post {post.pk} for deletion")
+        logger.info(f"{self.request.user} accessed post '{post.title}' for deletion")
         return post
 
 
@@ -183,7 +190,7 @@ def generate_pdf(request, pk):
     """
     post = get_object_or_404(Post, pk=pk)
     timeout = getattr(settings, "PDF_SYNC_TIMEOUT_SECONDS", 2)
-    logger.info(f"User {request.user} requested PDF for post {pk}")
+    logger.info(f"{request.user} requested PDF for post '{post.title}'")
 
     # Run generation in thread and wait with timeout
     with ThreadPoolExecutor(max_workers=1) as executor:
@@ -194,15 +201,15 @@ def generate_pdf(request, pk):
             response = HttpResponse(pdf_bytes, content_type="application/pdf")
             filename = f"{post.title}.pdf"
             response["Content-Disposition"] = f'attachment; filename="{filename}"'
-            logger.info(f"PDF generated for post {pk} by {request.user}")
+            logger.info(f"PDF generated successfully!")
             return response
 
         except TimeoutError:
             # Dispatch background Celery task if takes too long
             recipient_email = request.user.email
             generate_post_pdf_task_and_email.delay(post.pk, recipient_email)
-            logger.warning(f"PDF generation timed out for post {pk}")
-            logger.info(f"Dispatched background Celery task for {request.user}. User will receive an email with the download link once ready.")
+            logger.warning(f"PDF generation timed out!")
+            logger.info(f"{request.user} will receive an email with the download link once ready")
             messages.info(request, "PDF is being generated in the background. We will email you a link when it's ready.")
             return redirect("post_detail", pk=pk)
        
@@ -218,7 +225,7 @@ def download_generated_pdf(request, uid):
 
     if not os.path.exists(file_path):
         expiry_minutes = getattr(settings, "PDF_LINK_EXPIRY_MINUTES", 15)
-        logger.warning(f"User {request.user} tried to download missing or expired PDF {uid}")
+        logger.warning(f"{request.user} tried to download missing or expired PDF '{uid}'")
         context = {"expiry_minutes": expiry_minutes}
         return render(request, template_name, context, status=410)
 
@@ -234,7 +241,7 @@ def download_generated_pdf(request, uid):
         finally:
             try:
                 os.remove(file_path)
-                logger.info(f"User {request.user} downloaded and removed PDF {uid}")
+                logger.info(f"{request.user} downloaded PDF '{uid}'")
             except Exception as e:
                 logger.warning(f"Failed to delete PDF {uid}: {e}")
     response.close = cleanup
@@ -272,14 +279,14 @@ def add_comment(request, pk):
 
             # Send async email notifications
             notify_comment_emails(comment, post, request.user)
-            logger.info(f"User {request.user} added comment {comment.pk} to post {pk}")
+            logger.info(f"{request.user} added comment {comment.pk} on '{post.title}'")
             messages.success(request, "Comment added successfully!")
         else:
             if "content" in form.errors:
                 content_errors = form.errors.get("content")
                 if any("at most 1000 characters" in err for err in content_errors):
-                    logger.debug(f"User {request.user} attempted to submit a comment exceeding 1000 chars on post {pk}")
-            logger.warning(f"User {request.user} failed to add comment to post {pk}")
+                    logger.debug(f"{request.user} attempted to submit a comment exceeding 1000 chars")
+            logger.warning(f"{request.user} failed to add comment on '{post.title}'")
 
     return redirect("post_detail", pk=post.pk)
 
@@ -295,17 +302,17 @@ def update_comment(request, pk):
     if request.method == "POST" and request.headers.get("X-Requested-With") == "XMLHttpRequest":
         new_content = request.POST.get("content", "").strip()
         if not new_content:
-            logger.warning(f"User {request.user} submitted empty content for comment {pk}")
+            logger.warning(f"{request.user} submitted empty content for comment {pk}")
             return JsonResponse({"success": False, "error": "Empty content."}, status=400)
 
         if len(new_content) > 1000:
-            logger.debug(f"User {request.user} attempted to update comment {pk} exceeding 1000 chars")
-            logger.warning(f"User {request.user} failed to update comment {pk}")
+            logger.debug(f"{request.user} attempted to update comment {pk} exceeding 1000 chars")
+            logger.warning(f"{request.user} failed to update comment {pk}")
             return JsonResponse({"success": False, "error": "Comment too long (max 1000 characters)."}, status=400)
 
         comment.content = new_content
         comment.save()
-        logger.info(f"User {request.user} updated comment {pk}")
+        logger.info(f"{request.user} updated comment {pk}")
         return JsonResponse({"success": True, "updated_content": comment.content})
 
     logger.warning(f"Invalid request for updating comment {pk} by {request.user}")
@@ -319,7 +326,7 @@ def delete_comment(request, pk):
     if request.user == comment.author:                 # only author can delete
         comment.delete()
         messages.success(request, "Comment deleted successfully!")
-        logger.info(f"User {request.user} deleted comment {pk}")
+        logger.info(f"{request.user} deleted comment {pk}")
     else:
         messages.error(request, "You are not allowed to delete this comment.")
         logger.warning(f"Unauthorized delete attempt by {request.user} on comment {pk}")
@@ -337,12 +344,12 @@ def toggle_like(request, pk):
     if not created:
         like.delete()          # user already liked -> unlike
         liked = False
-        logger.info(f"User {request.user} unliked post {pk}")
+        logger.info(f"{request.user} unliked post '{post.title}'")
     else:
         liked = True
-        logger.info(f"User {request.user} liked post {pk}")
+        logger.info(f"{request.user} liked post '{post.title}'")
 
-    logger.debug(f"Post {pk} now has {post.likes.count()} likes after {request.user}'s action")
+    logger.debug(f"Updated like count: {post.likes.count()}")
 
     #  Return JSON for AJAX requests
     if request.headers.get("x-requested-with") == "XMLHttpRequest":

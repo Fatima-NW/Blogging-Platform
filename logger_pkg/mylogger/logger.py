@@ -121,7 +121,7 @@ class Logger:
                 cls_name = getattr(self_obj, "__class__", None)
                 if cls_name:
                     return f"[{cls_name.__name__}] {msg}"
-                return f"[RequestTimingMiddleware] {msg}"
+                return f"[Middleware] {msg}"
 
             # Skip framework and irrelevant internals
             if any(skip in filename for skip in ("django", "runserver", "socketserver", "wsgi")):
