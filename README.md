@@ -1,68 +1,65 @@
-# Django Blog Platform
+# Django Blogging Platform
 
-A blogging platform built with **Django** and **Django REST Framework**.
+The Django Blogging Platform is a modern, full-featured web application built with **Django** and **Django REST Framework**. It delivers a seamless blogging experience where users can share their stories, engage with others through comments and likes, and enjoy a clean, responsive interface. Behind the scenes, the platform handles background tasks, automated notifications, and data management with efficiency and reliability. Powered by Docker for effortless setup and deployment, it combines functionality and performance to provide a smooth, end-to-end blogging environment.
 
 
 ## 🚀 Features
 
-- User registration and login
-- Create, view, edit, delete, and download posts
-- View post details with comments and likes
-- Add, edit, and delete comments + reply to other users
-- Like or unlike posts
-- Clean template views
-- Filtering blog posts
-- Automated email notifications for new comments or delayed PDF downloads
-- API support for all major actions
-- Dockerized setup for easy deployment
+- Secure user authentication with JWT-based login and registration.
+- Create, edit, delete, and download blog posts as PDFs.
+- Interactive post pages with likes, threaded comments, and replies.
+- Add, edit, delete and reply to other comments.
+- Dynamic post filtering for easy content discovery.
+- Automated email alerts for new comments and delayed downloads.
+- Complete API support for all major functionalities.
+- Fully containerized with Docker for quick setup and deployment.
 
 ## ⚙️ Tech Stack
 
 - **Backend:** Django, Django REST Framework
 - **Database:** PostgreSQL
-- **Authentication:** JWT (Simplejwt)
-- **Environment Variables:** Managed using `python-decouple`
+- **Authentication:** JWT (SimpleJWT)
+- **Environment Management:** python-decouple (.env files)
 - **Frontend (templates):** HTML, Bootstrap
 - **Task Queue:** Celery + Redis
-- **Version Control:** Git & GitHub
+- **Version Control:** Git, GitHub
 - **Containerization:** Docker, Docker Compose
+- **Testing:** Pytest 
 
 
 ## 🧰 Setup Instructions
 
-You have two options:
+You can run this project in two ways:
+- **Option A:** Locally, using a Python virtual environment
+- **Option B:** Using Docker containers for a fully isolated setup
 
-## Option 1: Manual Python Setup (Classic)
+>**Note:** All commands below should be run inside the **project root directory** — the main folder that contains your project files.
 
-### 1. Clone this repository 
+### 1. Clone the repository
+Create a new folder (e.g., `yourfolder`) anywhere on your system, open a terminal inside that folder, and run:
+
 ```bash
-git clone https://github.com/Fatima-NW/Blogging-Platform.git
+git clone https://github.com/Fatima-NW/Blogging-Platform.git .
 ```
+
+## Option A: Manual Setup
 
 ### 2. Create and activate virtual environment
 ```bash
 python -m venv venv
-source venv/bin/activate    # macOS/Linux
+source venv/bin/activate
 ```
 
 ### 3. Install dependencies
 ```bash
-pip install -r requirements.txt            # All requirements
-pip install -e /full/path/to/mylogger      # For logger package        
-
-or
-
-pip install django psycopg2-binary         # Django framework + PostgreSQLconnector
-pip install python-decouple                # For .env
-pip install djangorestframework            # Django REST Framework for building APIs
-pip install djangorestframework-simplejwt  # JWT authentication support for DRF
-pip install pytest pytest-django           # For testing
-pip install celery redis                   # For background tasks
-pip install weasyprint                     # For downloading PDFs
-pip install -e /full/path/to/mylogger      # For logger package
+pip install -r requirements.txt
+pip install -e ./logger_pkg          # Logger package 
 ```
 
 ### 4. Create .env file
+Create a file named `.env` in the project root and copy the following content into it:
+
+>**Note:** Replace the values according to your own specific configurations.
 ```env
 DB_NAME=your-database-name
 DB_USER=postgres
@@ -76,164 +73,149 @@ EMAIL_USER=sender-email-address
 EMAIL_PASS=sender-app-password
 ```
 
-### 5. Run the project
-- Apply database migrations:
-    ```bash
-    python manage.py migrate
-    ```
-- Start the development server:
+### 5. Apply database migrations
+```bash
+python manage.py migrate
+```
+
+### 6. Run the project
+- **Start the server**
     ```bash
     python manage.py runserver
     ```
-- (Optional) Start Celery worker for background tasks:
+
+- **Access the app**                          
+    Once running, open your browser and go to: http://localhost:8000
+
+- **Start Celery and Celery beat**
     ```bash
     celery -A myproject worker -l info
-
-    # Start Celery with 4 workers (replace 4 with your desired number)
-    celery -A myproject worker -l info -c 4
+    celery -A myproject beat -l info
     ```
-- (Optional) Run tests:
+
+- **Run tests** (Optional)
     ```bash
-    pytest
-
-    # Run a specific test file (replace with your desired path)
-    pytest posts/tests/test_templates.py
-
-    # Run a specific test function
-    pytest posts/tests/test_templates.py::test_post_create_view
+    pytest                                       # All tests
+    pytest path/to/test_file.py                  # Specific test file
+    pytest path/to/test_file.py::test_func       # Specific test function
     ```
 
-## Option 2: Docker Setup
+## Option B: Docker Setup
 
-### 1. Clone the repository
-```bash
-git clone https://github.com/Fatima-NW/Blogging-Platform.git
-```
+### 2. Create `.env` file
+Create a file named `.env` in the project root and copy the following content into it:
 
-### 2. Create .env file
+>**Note:** Only replace the values where it is mentioned. Keep all other values exactly as they are.
+
 ```.env
 DB_NAME=myprojectdb
 DB_USER=postgres
 DB_PASSWORD=postgres123
 DB_HOST=db
 DB_PORT=5432
-SECRET_KEY=your-secret-key
+SECRET_KEY=your-secret-key              # Replace with your secret key
 DEBUG=True
-PAGINATE_BY=5
-EMAIL_USER=your-email@example.com
-EMAIL_PASS=your-app-password
+PAGINATE_BY=5                           # Adjustable (posts per page)
+EMAIL_USER=your-email@example.com       # Replace with sender email
+EMAIL_PASS=your-app-password            # Replace with sender app password
 ```
 
-### 3. Build and start containers
+### 3. Build the Docker images
 ```bash
-sudo docker compose up --build
-
-#After the first build, you can start containers normally without rebuilding:
-sudo docker compose up
+sudo docker compose build
 ```
 
-### 4. Check logs
-- All services
-    ```bash
-    sudo docker compose logs -f
-    ```
-- Django only
-    ```bash
-    sudo docker logs -f project1-web-1
-    ```
-- Celery worker only
-    ```bash
-    sudo docker logs -f project1-celery-1
-    ```
-- Celery beat only
-    ```bash
-    sudo docker logs -f project1-celery-beat-1
-    ```
-
-### 5. Run tests
+### 4. Apply database migrations
 ```bash
-sudo docker exec -it project1-web-1 bash     # Open python shell in Django container
-pytest                                       # Run all tests or specific ones
+sudo docker compose exec web python manage.py migrate
 ```
+
+### 5. Run the project
+
+- **Start all containers**
+    ```bash
+    # Run in detached mode (background)
+    sudo docker compose up -d
+
+    # Or run in foreground (shows logs)
+    sudo docker compose up
+    ```
+
+- **Access the app**             
+    Once running, open your browser and go to: http://localhost:8000
+
+>**Note:** If your main folder has a different name, replace `yourfolder` in the commands below with your actual folder name.
+
+- **Run tests** (Optional)    
+    ```bash
+    sudo docker exec -it yourfolder-web-1 bash   # Open shell in Django container
+
+    pytest                                       # All tests
+    pytest path/to/test_file.py                  # Specific test file
+    pytest path/to/test_file.py::test_func       # Specific test function
+    ```
+
+- **Check logs** (Optional)
+    - All services
+        ```bash
+        sudo docker compose logs -f
+        ```
+
+    - Django only
+        ```bash
+        sudo docker logs -f yourfolder-web-1
+        ```
+
+    - Celery worker only
+        ```bash
+        sudo docker logs -f yourfolder-celery-1
+        ```
+
+    - Celery beat only
+        ```bash
+        sudo docker logs -f yourfolder-celery-beat-1
+        ```
 
 ### 6. Stop containers
 ```bash
 sudo docker compose down
 ```
 
-### 7. Services
-Services included: 
+### 💡 Services Used
+This setup automatically starts the following services under Docker:
 - Django app
 - PostgreSQL
 - Redis
 - Celery
-- Cerlery Beat
+- Celery Beat
 
 
 ## 📂 Project Structure
 ```
-yourFolder/
+yourfolder/
 │
-├── myproject/
-│ ├── __init__.py            
-│ ├── settings.py             # Main configuration file
-│ ├── urls.py                 # Root URL routing
-│ ├── celery.py               # Celery configuration
+├── myproject/                # Core configuration (settings, URLs, Celery setup)
 │
-├── posts/
-│ ├── models.py               # Post, Comment, Like models
-│ ├── views.py                # Template-based views
-│ ├── forms.py                # Forms for posts and comments
-│ ├── urls.py                 # Template-based view routes
-│ ├── tasks.py                # Asynchronous tasks for the posts
-│ ├── filters.py              # Filters for posts
-│ ├── serializers.py          # Serializers for APIs
-│ ├── utils.py                # Utility helpers
+├── posts/                    # Blog posts app (models, views, urls, APIs, tests, etc.)
 │ ├── api/                    
-│ │ ├── views.py               # API logic
-│ │ ├── urls.py                # API endpoints
 │ ├── tests/                    
-│ │ ├── test_api.py             # Tests for API views
-│ │ ├── test_templates.py       # Tests for template views
-│ │ ├── test_models.py          # Tests for models
 │
-├── users/
-│ ├── models.py               # CustomUser model
-│ ├── views.py                # Template-based views
-│ ├── forms.py                # CustomUserCreationForm
-│ ├── backends.py             # Custom authentication backend
-│ ├── urls.py                 # Template-based view routes
-│ ├── serializers.py          # Serializers for APIs
+├── users/                    # User management app (models, views, urls, APIs, tests, etc.)
 │ ├── api/                                
 │ ├── tests/                                     
 │
-├── templates/
-│ ├── base.html 
-│ ├── home.html     
-│ ├── users/                  # User specific templates 
-│ ├── posts/                  # Post specific templates 
+├── templates/                # HTML templates
+├── static/                   # Static assets
 │
-├── logger_pkg/               # Custom logger package
-│ ├── mylogger/               # Python module  
-│ │ ├── __init__.py           
-│ │ ├── logger.py             # Main Logger class      
-│ │ ├── utils.py              
-│ ├── setup.py                
-│ ├── pyproject.toml          
-│ ├── example_usage.py        
-│ ├── README.md
+├── logger_pkg/               # Custom logger package (mylogger module)
 │
-├── static/                   # Static files
-├── PDFs/                     # Autocreated on post download
-├── venv/                     # Virtual environment folder
+├── PDFs/                     # Auto-generated delayed post PDFs
 ├── .env                      # Environment variables
-├── .gitignore 
-├── Dockerfile                # Docker
-├── docker-compose.yml  
-├── pytest.ini                # For testing
-├── requirements.txt
-├── README.md 
-└── manage.py
+├── Dockerfile                # Docker configuration
+├── docker-compose.yml        # Multi-service setup
+├── pytest.ini                # Testing configuration
+├── requirements.txt          # Project dependencies
+└── manage.py                 # Django management script
 ```
 
 
@@ -262,6 +244,4 @@ yourFolder/
 - DELETE `/api/comments/<comment_id>/delete/` → Delete a comment (author only)
 
 **Likes**
-- POST   `/api/posts/<post_id>/like/`       → Toggle like/unlike
-
-
+- POST   `/api/posts/<post_id>/like/`         → Toggle like/unlike
