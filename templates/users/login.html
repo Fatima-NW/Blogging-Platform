@@ -7,12 +7,20 @@ Displays the user login page
 {% block title %}Login{% endblock %}
 
 {% block content %}
-	<div class="container mt-5">
-		<h2>Login</h2>
-		<form method="post">
-			{% csrf_token %}
-			{{ form.as_p }}
-			<button type="submit" class="btn btn-success">Login</button>
-		</form>
-	</div>
+<div class="container mt-5" style="max-width: 450px;">
+    <div class="card shadow-sm p-4">
+        <h2 class="text-center mb-4">Login</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-success w-100 rounded">Login</button>
+        </form>
+    </div>
+</div>
+
+<style>
+form input {
+    width: 100%;
+}
+</style>
 {% endblock %}

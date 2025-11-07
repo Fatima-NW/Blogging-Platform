@@ -14,8 +14,16 @@ from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnl
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
 from ..filters import filter_posts
-from posts.utils import notify_comment_emails
+from posts.utils import notify_comment_emails, generate_post_pdf_bytes
+from posts.tasks import generate_post_pdf_task_and_email
+from django.conf import settings
+from concurrent.futures import ThreadPoolExecutor, TimeoutError
+from mylogger import Logger
+
+logger = Logger()
+
 
 # -----------------------POSTS-----------------------
 
@@ -27,6 +35,7 @@ class PostListAPIView(generics.ListAPIView):
     def get_queryset(self):
         queryset = Post.objects.all().order_by('-created_at')
         params = self.request.query_params 
+        logger.info(f"User {self.request.user} fetched post list with params: {dict(self.request.query_params)}")
         return filter_posts(queryset, params)
 
 
@@ -36,6 +45,12 @@ class PostDetailAPIView(generics.RetrieveAPIView):
     serializer_class = PostSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
+    def get_object(self):
+        post = super().get_object()
+        logger.info(f"User {self.request.user} viewed post {post.pk}")
+        return post
+    
+
 class PostCreateAPIView(generics.CreateAPIView):
     """ Create a new post (authenticated users only) """
     serializer_class = PostSerializer
@@ -43,6 +58,7 @@ class PostCreateAPIView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+        logger.info(f"User {self.request.user} created a new post: {serializer.validated_data.get('title')}")
 
 
 class PostUpdateAPIView(generics.RetrieveUpdateAPIView):
@@ -52,6 +68,12 @@ class PostUpdateAPIView(generics.RetrieveUpdateAPIView):
 
     def get_queryset(self):
         return Post.objects.filter(author=self.request.user)
+    
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        response = super().update(request, *args, **kwargs)
+        logger.info(f"User {request.user} successfully updated post {instance.pk}")
+        return response
 
 
 class PostDeleteAPIView(generics.DestroyAPIView):
@@ -64,10 +86,56 @@ class PostDeleteAPIView(generics.DestroyAPIView):
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
+        post_id = instance.pk
         self.perform_destroy(instance)
+        logger.info(f"User {request.user} deleted post {post_id}")
         return Response({"detail": "Post deleted successfully."}, status=status.HTTP_200_OK)
 
 
+class PostGeneratePDFAPIView(APIView):
+    """
+    Generates PDF of a post
+
+    Hybrid behavior:
+    - If synchronous generation finishes within PDF_SYNC_TIMEOUT_SECONDS, return the PDF in the response
+    - Otherwise, dispatch Celery task to generate PDF and email it to the user
+    """
+    permission_classes = [IsAuthenticated]
+
+    def handle(self, request, post_pk):
+        post = get_object_or_404(Post, pk=post_pk)
+        timeout = getattr(settings, "PDF_SYNC_TIMEOUT_SECONDS", 2)
+        logger.info(f"User {request.user} requested PDF for post {post.pk}")
+
+        with ThreadPoolExecutor(max_workers=1) as executor:
+            future = executor.submit(generate_post_pdf_bytes, post)
+            try:
+                # Try synchronous PDF generation first
+                pdf_bytes = future.result(timeout=timeout)
+                filename = f"{post.title}.pdf"
+                response = HttpResponse(pdf_bytes, content_type="application/pdf")
+                response["Content-Disposition"] = f'attachment; filename="{filename}"'
+                logger.info(f"PDF for post {post.pk} generated synchronously")
+                return response
+
+            except TimeoutError:
+                # Dispatch Celery task if it takes too long
+                logger.warning(f"PDF generation for post {post.pk} timed out")
+                recipient_email = request.user.email
+                generate_post_pdf_task_and_email.delay(post.pk, recipient_email)
+                logger.info(f"PDF generation for post {post.pk} dispatched asynchronously")
+                return Response({
+                    "success": True,
+                    "message": "PDF generation is taking longer than expected. "
+                               "We will email you a download link when it's ready."
+                }, status=202)
+
+    def get(self, request, post_pk, *args, **kwargs):
+        return self.handle(request, post_pk)
+
+    def post(self, request, post_pk, *args, **kwargs):
+        return self.handle(request, post_pk)
+    
 
 # -----------------------COMMENTS-----------------------
 
@@ -120,6 +188,10 @@ class CommentCreateAPIView(generics.CreateAPIView):
                 comment.content = f"{tag} {comment.content}"
                 comment.save(update_fields=["content"])
 
+        logger.info(f"User {self.request.user} commented on post {post.pk}")
+        if replied_to_user:
+            logger.info(f"User {self.request.user} replied to {replied_to_user.username} under comment {root_parent.pk if root_parent else 'N/A'}")
+
         # Send async email notifications
         notify_comment_emails(comment, post, self.request.user)
 
@@ -138,6 +210,7 @@ class CommentUpdateAPIView(generics.RetrieveUpdateAPIView):
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+        logger.info(f"User {request.user} successfully updated comment {instance.pk}")
         return Response({
             "detail": "Comment updated successfully.",
             "comment": serializer.data
@@ -155,6 +228,7 @@ class CommentDeleteAPIView(generics.DestroyAPIView):
     def destroy(self, request, *args, **kwargs):
         comment = self.get_object()
         self.perform_destroy(comment)
+        logger.info(f"User {request.user} deleted comment {comment.pk}")
         return Response({"detail": "Comment deleted successfully."}, status=status.HTTP_200_OK)
 
 
@@ -170,8 +244,10 @@ class ToggleLikeAPIView(APIView):
         like, created = Like.objects.get_or_create(post=post, user=request.user)
         if not created:
             like.delete()
+            logger.info(f"User {request.user} unliked post {post.pk}")
             liked = False
         else:
+            logger.info(f"User {request.user} liked post {post.pk}")
             liked = True
         return Response({
             "liked": liked,

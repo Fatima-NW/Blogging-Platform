@@ -1,0 +1,12 @@
+celery==5.5.3
+colorama==0.4.6
+Django==5.2.7
+djangorestframework==3.16.1
+djangorestframework_simplejwt==5.5.1
+psycopg2-binary==2.9.10
+pytest==8.4.2
+pytest-django==4.11.1
+python-decouple==3.8
+redis==6.4.0
+setuptools==80.9.0
+weasyprint==66.0

@@ -2,8 +2,8 @@
 Template view tests for the posts app
 
 Includes tests for:
-- Post views: list, detail, create, update, delete
-- Comment views: add, delete, permission checks
+- Post views: list, detail, create, update, delete, download
+- Comment views: add, delete, email
 - Like views: toggle like/unlike, permission checks, AJAX response
 
 Uses pytest fixtures to create test users, posts, and comments
@@ -13,6 +13,7 @@ import pytest
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from posts.models import Post, Comment, Like
+from unittest.mock import patch
 
 User = get_user_model()
 
@@ -143,6 +144,31 @@ def test_post_delete_by_non_author_forbidden(client, another_user, post):
     response = client.post(url)
     assert response.status_code == 403
 
+# DOWNLOAD POST
+
+@pytest.mark.django_db
+def test_generate_post_pdf_sync(client_logged_in, post):
+    """ Test synchronous PDF generation returns PDF response with correct headers """
+    url = reverse("generate_post_pdf", args=[post.pk])
+    response = client_logged_in.post(url)
+    assert response.status_code == 200
+    assert response["Content-Type"] == "application/pdf"
+    assert f"{post.title}.pdf" in response["Content-Disposition"]
+    assert isinstance(response.content, bytes)
+
+@pytest.mark.django_db
+def test_generate_post_pdf_async_dispatch(client_logged_in, post, user):
+    """ Test that when PDF generation times out, a Celery task is dispatched """
+    url = reverse("generate_post_pdf", args=[post.pk])
+    with patch("posts.views.generate_post_pdf_bytes", side_effect=TimeoutError):
+        with patch("posts.views.generate_post_pdf_task_and_email.delay") as mock_task:
+            response = client_logged_in.post(url, follow=True)
+            assert response.redirect_chain[-1][0] == reverse("post_detail", args=[post.pk])
+            assert response.status_code == 200 
+            mock_task.assert_called_once_with(post.pk, user.email)
+            messages = list(response.context["messages"])
+            assert any("PDF is being generated" in m.message for m in messages)
+
 
 # ---------------- COMMENT TESTS ----------------
 
@@ -166,6 +192,35 @@ def test_add_comment_requires_login(client, post):
     assert "/login" in response.url
     assert not Comment.objects.filter(content="Should not work").exists()
 
+# UPDATE COMMENT
+
+@pytest.mark.django_db
+def test_edit_own_comment(client_logged_in, comment):
+    """ Authors should be able to edit their own comment """
+    url = reverse("update_comment", args=[comment.pk])
+    response = client_logged_in.post(url, {"content": "Edited comment"}, HTTP_X_REQUESTED_WITH="XMLHttpRequest")
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["success"] is True
+    comment.refresh_from_db()
+    assert comment.content == "Edited comment"
+
+
+@pytest.mark.django_db
+def test_edit_other_users_comment_forbidden(client, another_user, comment):
+    """ Non-authors cannot update another author's comment """
+    client.force_login(another_user)
+    url = reverse("update_comment", args=[comment.pk])
+    response = client.post(url, {"content": "Hacked!"}, HTTP_X_REQUESTED_WITH="XMLHttpRequest")
+
+    assert response.status_code == 403
+    data = response.json()
+    assert data["success"] is False
+    assert "Unauthorized" in data["error"]
+    comment.refresh_from_db()
+    assert comment.content != "Hacked!"
+
 # DELETE COMMENT 
 
 @pytest.mark.django_db
@@ -185,6 +240,23 @@ def test_delete_other_user_comment_forbidden(client, another_user, comment):
     # still redirects, but comment should remain
     assert response.status_code == 302
     assert Comment.objects.filter(pk=comment.pk).exists()
+
+# SEND EMAIL ON COMMENT
+
+@pytest.mark.django_db
+def test_comment_triggers_email_task(client_logged_in, post, user):
+    """ Ensure that when a comment is added, the Celery email task is triggered """
+    url = reverse("add_comment", args=[post.pk])
+    data = {"content": "This is a test comment"}
+
+    with patch("posts.views.notify_comment_emails") as mock_notify:
+        response = client_logged_in.post(url, data)
+        assert response.status_code == 302  # Redirect to post detail
+
+        mock_notify.assert_called_once()
+        comment = Comment.objects.filter(post=post, content="This is a test comment").first()
+        assert comment is not None
+        assert comment.author == user
 
 
 # ---------------- LIKE TESTS ----------------

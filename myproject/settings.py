@@ -33,7 +33,7 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 # Pagination for listing post (template view)
 PAGINATE_BY = config("PAGINATE_BY", default=10, cast=int)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 # Application definition
 INSTALLED_APPS = [
@@ -59,6 +59,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'myproject.middleware.Middleware',
 ]
 
 ROOT_URLCONF = 'myproject.urls'
@@ -89,8 +91,8 @@ DATABASES = {
         'NAME': config('DB_NAME'),
         'USER': config('DB_USER'),
         'PASSWORD': config('DB_PASSWORD'),
-        'HOST': config('DB_HOST', default='localhost'),
-        'PORT': config('DB_PORT', default='5432'),
+        'HOST': config('DB_HOST', default='db'),
+        'PORT': config('DB_PORT', default='5432', cast=int),
     }
 }
 
@@ -115,7 +117,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Karachi'
 
 USE_I18N = True
 
@@ -124,6 +126,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -164,12 +167,12 @@ SIMPLE_JWT = {
 }
 
 # Celery/Redis settings
-CELERY_BROKER_URL = "redis://localhost:6379/0"  
-CELERY_RESULT_BACKEND = "redis://localhost:6379/0"  
+CELERY_BROKER_URL = "redis://redis:6379/0"  
+CELERY_RESULT_BACKEND = "redis://redis:6379/0"  
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
-CELERY_TIMEZONE = "UTC"
+CELERY_TIMEZONE = "Asia/Karachi"
 
 
 # Email setup
@@ -180,3 +183,17 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = config('EMAIL_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_PASS') 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
+# Temporary PDF storage
+PDFS_TEMP_ROOT = os.path.join(BASE_DIR, "PDFs")
+
+# Site URL used in email links
+SITE_URL = "http://127.0.0.1:8000"  
+
+# Timeout threshold for synchronous generation
+PDF_SYNC_TIMEOUT_SECONDS = 1
+
+# Max time after which PDF links expire
+PDF_LINK_EXPIRY_MINUTES = 15
+

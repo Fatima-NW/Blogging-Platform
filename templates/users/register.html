@@ -7,12 +7,32 @@ Displays the user registration page
 {% block title %}Register{% endblock %}
 
 {% block content %}
-    <div class="container mt-5">
-        <h2>Sign Up</h2>
+<div class="container mt-5 mb-5" style="max-width: 500px;">
+    <div class="card shadow-sm p-4">
+        <h2 class="text-center mb-4">Sign Up</h2>
         <form method="post">
             {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary">Register</button>
+            {% for field in form %}
+                <div class="mb-3">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% for error in field.errors %}
+                        <div class="text-danger small mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary w-100 rounded">Register</button>
         </form>
     </div>
+</div>
+
+<style>
+form input {
+    width: 100%;
+}
+form textarea {
+    width: 100%;
+    height: 70px;
+}
+</style>
 {% endblock %}

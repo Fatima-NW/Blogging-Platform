@@ -12,7 +12,7 @@ from django.contrib.auth.models import AbstractUser
 class CustomUser(AbstractUser):
     """ Custom user model with unique email and optional bio field """
     email = models.EmailField(unique=True)   
-    bio = models.TextField(blank=True, null=True) 
+    bio = models.TextField(blank=True, null=True, max_length=200) 
     
     def __str__(self):
         return self.username

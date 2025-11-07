@@ -1,0 +1,31 @@
+<!--
+Displays the form for creating/updating a blog post
+-->
+
+{% extends "base.html" %}
+
+{% block title %}{% if is_create %}New Post{% else %}Edit Post{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container mt-5" style="max-width: 700px;">
+    <div class="card shadow-sm p-4">
+        <h2 class="text-center mb-4">
+            {% if is_create %}Create a New Post{% else %}Edit Post{% endif %}
+        </h2>
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary w-100 rounded">{% if is_create %}Publish{% else %}Update{% endif %}</button>
+        </form>
+    </div>
+</div>
+
+<style>
+form input, form textarea {
+    width: 100%;
+}
+form label {
+    font-weight: bold;
+}
+</style>
+{% endblock %}
