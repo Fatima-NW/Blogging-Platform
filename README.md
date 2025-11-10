@@ -1,6 +1,6 @@
-# Django Blogging Platform
+# Blogging Platform
 
-The Django Blogging Platform is a modern, full-featured web application built with **Django** and **Django REST Framework**. It delivers a seamless blogging experience where users can share their stories, engage with others through comments and likes, and enjoy a clean, responsive interface. Behind the scenes, the platform handles background tasks, automated notifications, and data management with efficiency and reliability. Powered by Docker for effortless setup and deployment, it combines functionality and performance to provide a smooth, end-to-end blogging environment.
+The Blogging Platform is a modern, full-featured web application built with **Django** and **Django REST Framework**. It delivers a seamless blogging experience where users can share their stories, engage with others through comments and likes, and enjoy a clean, responsive interface. Behind the scenes, the platform handles background tasks, automated notifications, and data management with efficiency and reliability. Powered by Docker for effortless setup and deployment, it combines functionality and performance to provide a smooth, end-to-end blogging environment.
 
 
 ## 🚀 Features
@@ -67,7 +67,7 @@ DB_PASSWORD=your-database-password
 DB_HOST=localhost
 DB_PORT=port-number
 SECRET_KEY=your-secret-key
-DEBUG=True
+DEBUG=False
 PAGINATE_BY=number-of-posts-on-one-page
 EMAIL_USER=sender-email-address
 EMAIL_PASS=sender-app-password
@@ -78,20 +78,25 @@ EMAIL_PASS=sender-app-password
 python manage.py migrate
 ```
 
-### 6. Run the project
+### 6. Collect static files (only needed if DEBUG=False)
+```bash
+python manage.py collectstatic
+```
+
+### 7. Run the project
 - **Start the server**
     ```bash
     python manage.py runserver
     ```
-
-- **Access the app**                          
-    Once running, open your browser and go to: http://localhost:8000
 
 - **Start Celery and Celery beat**
     ```bash
     celery -A myproject worker -l info
     celery -A myproject beat -l info
     ```
+
+- **Access the app**                          
+    Once running, open your browser and go to: http://localhost:8000
 
 - **Run tests** (Optional)
     ```bash
@@ -114,7 +119,7 @@ DB_PASSWORD=postgres123
 DB_HOST=db
 DB_PORT=5432
 SECRET_KEY=your-secret-key              # Replace with your secret key
-DEBUG=True
+DEBUG=False                             # True=dev, False=prod
 PAGINATE_BY=5                           # Adjustable (posts per page)
 EMAIL_USER=your-email@example.com       # Replace with sender email
 EMAIL_PASS=your-app-password            # Replace with sender app password
@@ -122,7 +127,7 @@ EMAIL_PASS=your-app-password            # Replace with sender app password
 
 ### 3. Build the Docker images
 ```bash
-sudo docker compose build
+sudo docker compose up --build -d
 ```
 
 ### 4. Apply database migrations
@@ -176,10 +181,10 @@ sudo docker compose exec web python manage.py migrate
         sudo docker logs -f yourfolder-celery-beat-1
         ```
 
-### 6. Stop containers
-```bash
-sudo docker compose down
-```
+- **Stop containers**
+    ```bash
+    sudo docker compose down
+    ```
 
 ### 💡 Services Used
 This setup automatically starts the following services under Docker:
