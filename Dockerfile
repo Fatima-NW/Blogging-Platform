@@ -29,6 +29,9 @@ COPY . /app/
 # Install your custom logger package
 RUN pip install /app/logger_pkg
 
+# Collect static files
+RUN python manage.py collectstatic --noinput
+
 # Expose Django port
 EXPOSE 8000
 
