@@ -90,11 +90,13 @@ Features:
 
                         <div class="d-flex align-items-center">
                             <!-- Reply button -->
-                            <button class="btn btn-link btn-sm fw-bold text-muted text-decoration-none me-2 reply-btn"
-                                    data-comment-id="{{ comment.id }}"
-                                    data-username="{{ comment.author.username }}">
-                                Reply
-                            </button>
+                             {% if user.is_authenticated %}
+                                <button class="btn btn-link btn-sm fw-bold text-muted text-decoration-none me-2 reply-btn"
+                                        data-comment-id="{{ comment.id }}"
+                                        data-username="{{ comment.author.username }}">
+                                    Reply
+                                </button>
+                            {% endif %}
 
                             <!-- Three-dot dropdown for updating and deleting comment -->
                             <div class="dropdown" style="min-width: 24px;">
@@ -151,11 +153,13 @@ Features:
 
                                 <div class="d-flex align-items-center">
                                     <!-- Reply button -->
-                                    <button class="btn btn-link btn-sm fw-bold text-muted text-decoration-none me-2 reply-btn"
-                                            data-comment-id="{{ reply.id }}"
-                                            data-username="{{ reply.author.username }}">
-                                        Reply
-                                    </button>
+                                     {% if user.is_authenticated %}
+                                        <button class="btn btn-link btn-sm fw-bold text-muted text-decoration-none me-2 reply-btn"
+                                                data-comment-id="{{ reply.id }}"
+                                                data-username="{{ reply.author.username }}">
+                                            Reply
+                                        </button>
+                                    {% endif %}
 
                                     <!-- Three-dot dropdown updating and deleting replies -->
                                     <div class="dropdown" style="min-width: 24px;">
