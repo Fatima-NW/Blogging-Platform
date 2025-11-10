@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+*.egg
+*.log
+
+venv/
+.env
+.ENV 
+*.cache
+PDFs/
+*.pytest_cache
+celerybeat-schedule*
+.vscode/
+.idea/  
