@@ -20,7 +20,7 @@ Features:
 
 <body>
     <!-- Navigation bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top py-3 mb-4">
         <div class="container-fluid">
             <a class="navbar-brand" href="{% url 'home' %}">Blog Site</a>
 
@@ -58,7 +58,7 @@ Features:
     {% endif %}
 
     <!-- For child template-->
-    <div class="container">
+    <div class="container mb-5">
         {% block content %}
         <!-- Child template content goes here -->
         {% endblock %}

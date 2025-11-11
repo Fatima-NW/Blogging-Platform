@@ -33,11 +33,11 @@ Features:
 
             <button type="submit" class="btn btn-primary me-2">Search</button>
             <a href="{% url 'post_list' %}" class="btn btn-secondary me-2">Reset</a>
-            <button type="button" id="toggle-filters" class="btn btn-outline-secondary">Filters</button>
+            <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#filters-section">Filters</button>
         </div>
 
         <!-- Filters Section -->
-        <div id="filters-section" style="display: none;">
+        <div class="collapse {% if request.GET.author or request.GET.title or request.GET.content or request.GET.start_date or request.GET.end_date %}show{% endif %}" id="filters-section">
             <div class="row g-2 mt-3">
                 <div class="col-md-3"> <input type="text" name="author" class="form-control" placeholder="Filter by author" value="{{ request.GET.author }}"> </div>
                 <div class="col-md-3"> <input type="text" name="title" class="form-control" placeholder="Filter by title" value="{{ request.GET.title }}"> </div>
@@ -57,11 +57,14 @@ Features:
     {% if posts %}
         <div class="list-group">
             {% for post in posts %}
-                <a href="{% url 'post_detail' post.pk %}" class="list-group-item list-group-item-action">
+                <a href="{% url 'post_detail' post.pk %}" class="list-group-item list-group-item-action py-3">
                     <h5 class="mb-1">{{ post.title }}</h5>
-                    <small>By {{ post.author.get_full_name|default:post.author.username }} on {{ post.created_at|date:"M d, Y" }}</small>
-                    <p class="mb-1">{{ post.content|truncatewords:50 }}</p>
-                    <small> 
+                    <small class="text-muted small mb-2">
+                        {{ post.author.get_full_name|default:post.author.username }} &nbsp; | &nbsp; 
+                        {{ post.created_at|date:"M d, Y" }}
+                    </small>
+                    <p class="truncate-3 mb-1">{{ post.content}}</p>
+                    <small class="text-secondary"> 
                         {{ post.likes.count }} like{{ post.likes.count|pluralize }}
                         •
                         {{ post.comments.count }} comment{{ post.comments.count|pluralize }} 
@@ -107,28 +110,14 @@ Features:
         <p>No posts yet. Be the first to write one!</p>
     {% endif %}
 
-    <div id="filter-data" 
-        data-visible="{% if request.GET.author or request.GET.title or request.GET.content or request.GET.start_date or request.GET.end_date %}true{% else %}false{% endif %}">
-    </div>
-
-    <!-- JS to handle showing/hiding the filters -->
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const toggleButton = document.getElementById('toggle-filters');
-            const filtersSection = document.getElementById('filters-section');
-            const filterData = document.getElementById('filter-data');
-
-            const filtersInitiallyVisible = filterData.dataset.visible === "true";
-
-            if (filtersInitiallyVisible) {
-                filtersSection.style.display = 'block';
-            }
-
-            toggleButton.addEventListener('click', () => {
-                const isVisible = filtersSection.style.display === 'block';
-                filtersSection.style.display = isVisible ? 'none' : 'block';
-            });
-        });
-    </script>
+    <style>
+        .truncate-3 {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        }
+    </style>
 
 {% endblock %}

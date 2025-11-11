@@ -21,9 +21,9 @@ Features:
 {% block content %}
 <div class="container">
     <div class="border-bottom pb-2 mb-3">
-        <div class="d-flex justify-content-between align-items-center">
-            <h2 class="mb-2">{{ post.title }}</h2>
-            <div>
+        <div class="d-flex justify-content-between align-items-start flex-wrap mb-2">
+            <h2 class="mb-1 me-3 flex-shrink-1">{{ post.title }}</h2>
+            <div class="d-flex flex-wrap gap-2 align-items-center">
                 <!-- Download post buttons -->
                 {% if user.is_authenticated %}
                     <a href="{% url 'generate_post_pdf' post.pk %}" class="btn btn-secondary btn-sm">Download PDF</a>
@@ -37,7 +37,7 @@ Features:
         </div>
         <!-- Author + Date -->
         <div class="text-muted small mt-1">
-            <i class="bi bi-person-circle"></i> {{ post.author }} &nbsp; | &nbsp;
+            <i class="bi bi-person-circle"></i> {{ post.author.get_full_name|default:post.author.username }} &nbsp; | &nbsp;
             <i class="bi bi-calendar3"></i> {{ post.created_at|date:"M d, Y" }}
         </div>
     </div>
@@ -51,7 +51,7 @@ Features:
     <!-- Like Button -->
     <div class="mb-3">
         {% if user.is_authenticated %}
-            <button id="like-btn" data-post-id="{{ post.id }}" class="btn {% if user_has_liked %}btn-danger{% else %}btn-success{% endif %}">
+            <button id="like-btn" data-post-id="{{ post.id }}" class="btn btn-sm {% if user_has_liked %}btn-danger{% else %}btn-success{% endif %}" style="width:70px">
                 {% if user_has_liked %}Unlike{% else %}Like{% endif %}
             </button>
             <span id="like-count" class="ms-2"> {{ like_count }} like{{ like_count|pluralize }} </span>
@@ -64,10 +64,10 @@ Features:
 
     <!--Comment Form -->
     {% if user.is_authenticated %}
-        <form method="post" action="{% url 'add_comment' post.pk %}">
+        <form method="post" action="{% url 'add_comment' post.pk %}" class="mb-3">
             {% csrf_token %}
             <div class="mb-2"> {{ comment_form.content}} </div>
-            <button type="submit" class="btn btn-sm btn-primary">Post Comment</button>
+            <button type="submit" class="btn btn-sm btn-primary" style="width:70px">Submit</button>
         </form>
     {% endif %}
 
