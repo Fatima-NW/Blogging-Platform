@@ -19,7 +19,6 @@ The Blogging Platform is a modern, full-featured web application built with **Dj
 - **Backend:** Django, Django REST Framework
 - **Database:** PostgreSQL
 - **Authentication:** JWT (SimpleJWT)
-- **Environment Management:** python-decouple (.env files)
 - **Frontend (templates):** HTML, Bootstrap
 - **Task Queue:** Celery + Redis
 - **Version Control:** Git, GitHub
@@ -68,9 +67,11 @@ DB_HOST=localhost
 DB_PORT=port-number
 SECRET_KEY=your-secret-key
 DEBUG=False
-PAGINATE_BY=number-of-posts-on-one-page
+PAGINATE_BY=posts-per-page
 EMAIL_USER=sender-email-address
 EMAIL_PASS=sender-app-password
+CELERY_BROKER="redis://127.0.0.1:6379/0"  
+CELERY_RESULT="redis://127.0.0.1:6379/0" 
 ```
 
 ### 5. Apply database migrations
@@ -110,7 +111,7 @@ python manage.py collectstatic
 ### 2. Create `.env` file
 Create a file named `.env` in the project root and copy the following content into it:
 
->**Note:** Only replace the values where it is mentioned. Keep all other values exactly as they are.
+>**Note:** Only replace the values where it is mentioned. Keep all other values as they are.
 
 ```.env
 DB_NAME=myprojectdb
@@ -123,6 +124,8 @@ DEBUG=False                             # True=dev, False=prod
 PAGINATE_BY=5                           # Adjustable (posts per page)
 EMAIL_USER=your-email@example.com       # Replace with sender email
 EMAIL_PASS=your-app-password            # Replace with sender app password
+CELERY_BROKER="redis://redis:6379/0"  
+CELERY_RESULT="redis://redis:6379/0" 
 ```
 
 ### 3. Build the Docker images
@@ -161,25 +164,12 @@ sudo docker compose exec web python manage.py migrate
     ```
 
 - **Check logs** (Optional)
-    - All services
-        ```bash
-        sudo docker compose logs -f
-        ```
-
-    - Django only
-        ```bash
-        sudo docker logs -f yourfolder-web-1
-        ```
-
-    - Celery worker only
-        ```bash
-        sudo docker logs -f yourfolder-celery-1
-        ```
-
-    - Celery beat only
-        ```bash
-        sudo docker logs -f yourfolder-celery-beat-1
-        ```
+    ```bash
+    sudo docker compose logs -f                    # All services
+    sudo docker logs -f yourfolder-web-1           # Django only
+    sudo docker logs -f yourfolder-celery-1        # Celery worker only
+    sudo docker logs -f yourfolder-celery-beat-1   # Celery beat only
+    ```
 
 - **Stop containers**
     ```bash
@@ -214,7 +204,6 @@ yourfolder/
 │
 ├── logger_pkg/               # Custom logger package (mylogger module)
 │
-├── PDFs/                     # Auto-generated delayed post PDFs
 ├── .env                      # Environment variables
 ├── Dockerfile                # Docker configuration
 ├── docker-compose.yml        # Multi-service setup
