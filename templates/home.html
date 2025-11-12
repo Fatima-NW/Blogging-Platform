@@ -11,12 +11,78 @@ Features:
 {% block title %}Home{% endblock %}
 
 {% block content %}
-    <div class="text-center">
-        <h1>Blogging Platform</h1>
+    <div class="hero-section text-center">
+        <h2 class="hero-heading">Blogging Platform</h2>
+        <p class="hero-tagline">Stories that connect us all</p>
+
         {% if user.is_authenticated %}
-            <p>Hello, {{ user.get_full_name|default:user.username }}!</p>
+            <a href="{% url 'post_list' %}" class="hero-btn">Blogs</a>
         {% else %}
-            <p>Please <a href="{% url 'login' %}">log in</a> or <a href="{% url 'register' %}">sign up</a>.</p>
+            <div class="hero-btn-group">
+                <a href="{% url 'login' %}" class="hero-btn">Log In</a>
+                <a href="{% url 'register' %}" class="hero-btn">Sign Up</a>
+            </div>
         {% endif %}
     </div>
+
+    <div class="container mt-5">
+        <div class="row text-center">
+            <div class="col-md-4 mb-4">
+                <div class="p-4 border rounded shadow-sm h-100">
+                    <h4>Create</h4>
+                    <p>Write posts and share your thoughts with the community.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="p-4 border rounded shadow-sm h-100">
+                    <h4>Engage</h4>
+                    <p>Comment on posts and join discussions with other readers.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="p-4 border rounded shadow-sm h-100">
+                    <h4>Explore</h4>
+                    <p>Read posts from all over the community and discover new ideas.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .hero-section {
+            padding: 5rem 1rem;
+        }
+
+        .hero-heading {
+            font-family: serif;
+            font-size: 1.3rem;
+            margin-bottom: 1.1rem;
+        }
+
+        .hero-tagline {
+            font-size: 3.5rem;
+            font-weight: 400;
+            text-shadow: 0 0 0.5px black;
+            line-height: 1;
+            margin-bottom: 3rem;
+        }
+
+        .hero-btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        .hero-btn {
+            background-color: #000000;
+            color: #ffffff;
+            width: 175px;
+            height: 75px;
+            font-size: 1.15rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+    </style>
 {% endblock %}

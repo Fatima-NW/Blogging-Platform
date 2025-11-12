@@ -18,9 +18,6 @@ Displays the form for creating/updating a blog post
                 <div class="mb-3">
                     {{ field.label_tag }} 
                     {{ field }}
-                    {% if field.help_text %}
-                        <small class="text-muted">{{ field.help_text }}</small>
-                    {% endif %}
                     {% for error in field.errors %}
                         <div class="text-danger small">{{ error }}</div>
                     {% endfor %}

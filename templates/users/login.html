@@ -13,7 +13,7 @@ Displays the user login page
         <form method="post">
             {% csrf_token %}
             {{ form.as_p }}
-            <button type="submit" class="btn btn-success w-100 rounded">Login</button>
+            <button type="submit" class="btn btn-success w-100 rounded mt-2">Login</button>
         </form>
     </div>
 </div>
@@ -21,6 +21,13 @@ Displays the user login page
 <style>
     form input {
         width: 100%;
+    }
+    .errorlist {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-bottom: 0.6rem;
+        list-style: none;
+        padding: 0;
     }
 </style>
 {% endblock %}
