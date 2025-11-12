@@ -13,14 +13,19 @@ Features:
 {% block content %}
     <div class="hero-section text-center">
         <h2 class="hero-heading">Blogging Platform</h2>
-        <p class="hero-tagline">Stories that connect us all</p>
+        <p class="hero-tagline">
+            <span>Discover stories</span>
+            <span>that connect us all</span>
+        </p>
 
         {% if user.is_authenticated %}
-            <a href="{% url 'post_list' %}" class="hero-btn">Blogs</a>
+            <div class="hero-btn-group">
+                <a href="{% url 'post_list' %}" class="hero-btn">BLOGS</a>
+            </div>
         {% else %}
             <div class="hero-btn-group">
-                <a href="{% url 'login' %}" class="hero-btn">Log In</a>
-                <a href="{% url 'register' %}" class="hero-btn">Sign Up</a>
+                <a href="{% url 'login' %}" class="hero-btn">LOG IN</a>
+                <a href="{% url 'register' %}" class="hero-btn">SIGN UP</a>
             </div>
         {% endif %}
     </div>
@@ -48,7 +53,7 @@ Features:
         </div>
     </div>
 
-    <style>
+    <style>       
         .hero-section {
             padding: 5rem 1rem;
         }
@@ -56,15 +61,18 @@ Features:
         .hero-heading {
             font-family: serif;
             font-size: 1.3rem;
-            margin-bottom: 1.1rem;
+            margin-bottom: 0.8rem;
         }
 
         .hero-tagline {
-            font-size: 3.5rem;
-            font-weight: 400;
-            text-shadow: 0 0 0.5px black;
+            font-family: sans-serif;
+            font-size: clamp(3.3rem, 6vw, 5rem);
             line-height: 1;
-            margin-bottom: 3rem;
+            margin-bottom: 3.5rem;
+        }
+
+        .hero-tagline span {
+            display: block;
         }
 
         .hero-btn-group {
@@ -76,9 +84,10 @@ Features:
         .hero-btn {
             background-color: #000000;
             color: #ffffff;
+            font-family: sans-serif;
             width: 175px;
             height: 75px;
-            font-size: 1.15rem;
+            font-size: 1rem;
             display: flex;
             align-items: center;
             justify-content: center;
