@@ -328,7 +328,6 @@ def delete_comment(request, pk):
         messages.success(request, "Comment deleted successfully!")
         logger.info(f"{request.user} deleted comment {pk}")
     else:
-        messages.error(request, "You are not allowed to delete this comment.")
         logger.warning(f"Unauthorized delete attempt by {request.user} on comment {pk}")
     return redirect("post_detail", pk=comment.post.pk)
 
