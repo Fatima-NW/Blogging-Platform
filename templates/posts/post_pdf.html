@@ -14,15 +14,8 @@ Includes:
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <style>
-        body { font-family: "Helvetica", sans-serif; margin: 40px; }
-        h1 { text-align: center; font-size: 28px; }
-        .meta { text-align: center; margin-bottom: 20px; color: #555; }
-        .content { font-size: 14px; line-height: 1.6; }
-        footer { text-align: center; font-size: 12px; margin-top: 40px; color: #777; }
-        hr { margin: 25px 0; }
-    </style>
 </head>
+
 <body>
     <h1>{{ post.title }}</h1>
     <div class="meta">
@@ -38,5 +31,35 @@ Includes:
         Generated on {{ generation_date|date:"F j, Y, g:i a" }}<br>
         Source: {{ site_name }}
     </footer>
+
+    <style>
+        body { 
+            font-family: "Helvetica", sans-serif; 
+            margin: 40px; 
+        }
+        h1 { 
+            text-align: center; 
+            font-size: 28px; 
+        }
+        .meta { 
+            text-align: center; 
+            margin-bottom: 20px; 
+            color: #555; 
+        }
+        .content { 
+            font-size: 14px; 
+            line-height: 1.6; 
+        }
+        footer { 
+            text-align: center; 
+            font-size: 12px; 
+            margin-top: 40px; 
+            color: #777; 
+        }
+        hr { 
+            margin: 25px 0; 
+        }
+    </style>
+    
 </body>
 </html>

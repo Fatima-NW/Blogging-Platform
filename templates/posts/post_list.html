@@ -12,10 +12,10 @@ Features:
 
 {% extends "base.html" %}
 
-{% block title %}All Posts{% endblock %}
+{% block title %}Posts{% endblock %}
 
 {% block content %}
-    <h2 class="mb-4">All Blog Posts</h2>
+    <h2 class="mb-4">Blog Posts</h2>
 
     <!-- Create new post button-->
     {% if user.is_authenticated %}
@@ -112,11 +112,11 @@ Features:
 
     <style>
         .truncate-3 {
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 3;
-        overflow: hidden;
-        text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
     </style>
 
