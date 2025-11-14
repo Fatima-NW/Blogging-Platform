@@ -7,20 +7,55 @@ Displays the user login page
 {% block title %}Login{% endblock %}
 
 {% block content %}
-<div class="container mt-5" style="max-width: 450px;">
-    <div class="card shadow-sm p-4">
+<div class="container mt-5" style="max-width: 600px;">
+    <div class="card shadow-sm p-4 mx-auto">
         <h2 class="text-center mb-4">Login</h2>
         <form method="post">
             {% csrf_token %}
             {{ form.as_p }}
-            <button type="submit" class="btn btn-success w-100 rounded">Login</button>
+            <button type="submit" class="btn w-100 mt-2 login-btn">Login</button>
         </form>
     </div>
 </div>
 
 <style>
-form input {
-    width: 100%;
-}
+    .card {
+        background-color: #FFFAF1;
+        border: 1px solid #e5e5e5;
+        filter: drop-shadow(0 0 5px rgba(67,36,17,0.05))
+                drop-shadow(0 0 10px rgba(67,36,17,0.02));
+    }
+
+    form input {
+        width: 100%;
+        border-radius: 0;
+        border: 1px solid #8f8f8f;
+        background-color: #FFFAF1;
+    }
+
+    .errorlist {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-bottom: 0.6rem;
+        list-style: none;
+        padding: 0;
+    }
+
+    .login-btn {
+        background-color: #000000;
+        color: #FFFAF1;
+        border-radius: 0;
+    }
+    
+    .login-btn:hover, 
+    .login-btn:active, 
+    .login-btn:focus {
+        background-color: #333333 !important;
+        color: #FFFAF1 !important;
+        border-color: #333333 !important;
+        font-weight: 500;
+        transform: scale(1.01);
+    }
 </style>
+
 {% endblock %}

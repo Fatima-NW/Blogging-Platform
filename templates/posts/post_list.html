@@ -12,10 +12,10 @@ Features:
 
 {% extends "base.html" %}
 
-{% block title %}All Posts{% endblock %}
+{% block title %}Posts{% endblock %}
 
 {% block content %}
-    <h2 class="mb-4">All Blog Posts</h2>
+    <h2 class="mb-4">Blog Posts</h2>
 
     <!-- Create new post button-->
     {% if user.is_authenticated %}
@@ -25,7 +25,7 @@ Features:
     {% endif %}
 
     <!-- Filter Form -->
-    <form method="get" class="mb-4 p-3 border rounded bg-light">
+    <form method="get" class="mb-4 p-3 bg-light filter">
 
         <!-- General Search -->
         <div class="d-flex align-items-center mb-2">
@@ -33,11 +33,11 @@ Features:
 
             <button type="submit" class="btn btn-primary me-2">Search</button>
             <a href="{% url 'post_list' %}" class="btn btn-secondary me-2">Reset</a>
-            <button type="button" id="toggle-filters" class="btn btn-outline-secondary">Filters</button>
+            <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#filters-section">Filters</button>
         </div>
 
         <!-- Filters Section -->
-        <div id="filters-section" style="display: none;">
+        <div class="collapse {% if request.GET.author or request.GET.title or request.GET.content or request.GET.start_date or request.GET.end_date %}show{% endif %}" id="filters-section">
             <div class="row g-2 mt-3">
                 <div class="col-md-3"> <input type="text" name="author" class="form-control" placeholder="Filter by author" value="{{ request.GET.author }}"> </div>
                 <div class="col-md-3"> <input type="text" name="title" class="form-control" placeholder="Filter by title" value="{{ request.GET.title }}"> </div>
@@ -57,11 +57,14 @@ Features:
     {% if posts %}
         <div class="list-group">
             {% for post in posts %}
-                <a href="{% url 'post_detail' post.pk %}" class="list-group-item list-group-item-action">
+                <a href="{% url 'post_detail' post.pk %}" class="list-group-item list-group-item-action py-3">
                     <h5 class="mb-1">{{ post.title }}</h5>
-                    <small>By {{ post.author.get_full_name|default:post.author.username }} on {{ post.created_at|date:"M d, Y" }}</small>
-                    <p class="mb-1">{{ post.content|truncatewords:50 }}</p>
-                    <small> 
+                    <small class="text-muted small mb-2">
+                        {{ post.author.get_full_name|default:post.author.username }} &nbsp; | &nbsp; 
+                        {{ post.created_at|date:"M d, Y" }}
+                    </small>
+                    <p class="truncate-3 mb-1">{{ post.content}}</p>
+                    <small class="text-secondary"> 
                         {{ post.likes.count }} like{{ post.likes.count|pluralize }}
                         •
                         {{ post.comments.count }} comment{{ post.comments.count|pluralize }} 
@@ -107,28 +110,65 @@ Features:
         <p>No posts yet. Be the first to write one!</p>
     {% endif %}
 
-    <div id="filter-data" 
-        data-visible="{% if request.GET.author or request.GET.title or request.GET.content or request.GET.start_date or request.GET.end_date %}true{% else %}false{% endif %}">
-    </div>
+    <style>
+        .truncate-3 {
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
 
-    <!-- JS to handle showing/hiding the filters -->
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const toggleButton = document.getElementById('toggle-filters');
-            const filtersSection = document.getElementById('filters-section');
-            const filterData = document.getElementById('filter-data');
+        /* Filter section*/
+        .filter {
+            background-color: #FFFAF5 !important;
+        }
 
-            const filtersInitiallyVisible = filterData.dataset.visible === "true";
+        form {
+            border: 1px solid #e5e5e5;
+            border-radius: 0.25rem;
+            padding: 1rem;
+            filter: drop-shadow(0 0 3px rgba(67,36,17,0.05))
+                    drop-shadow(0 0 6px rgba(67,36,17,0.02));
+        }
 
-            if (filtersInitiallyVisible) {
-                filtersSection.style.display = 'block';
-            }
+        form input {
+            background-color: #FFFAF1 !important;
+            border-radius: 0;
+            border: 1px solid #8f8f8f;
+        }
 
-            toggleButton.addEventListener('click', () => {
-                const isVisible = filtersSection.style.display === 'block';
-                filtersSection.style.display = isVisible ? 'none' : 'block';
-            });
-        });
-    </script>
+        /* Individual posts */
+        .list-group-item {
+            background-color: #FFFAF1;
+            border: 1px solid #e5e5e5;
+            padding: 1.5rem;
+            transition: transform 0.2s ease, drop-shadow 0.2s ease;
+            filter: drop-shadow(0 0 3px rgba(67,36,17,0.05))
+                    drop-shadow(0 0 6px rgba(67,36,17,0.02));
+        }
+
+        .list-group-item:hover {
+            background-color: #FFFAF5;
+            transform: scale(1.005);
+            filter: drop-shadow(0 0px 6px rgba(67,36,17,0.1));
+            box-shadow: 0 0 3px rgba(67,36,17,0.05);
+        }
+
+        /* Pagination */
+        .pagination .page-link {
+            background-color: #FFFAF1;
+            color: #333333;
+            filter: drop-shadow(0 0 3px rgba(67,36,17,0.05))
+                    drop-shadow(0 0 6px rgba(67,36,17,0.02));
+        }
+
+        .pagination .page-item.active .page-link, 
+        .pagination .page-link:hover {
+            background-color: #333333;
+            color: #FFFAF1;
+            border-color: #333333;
+        }
+    </style>
 
 {% endblock %}

@@ -21,12 +21,12 @@ Features:
 {% block content %}
 <div class="container">
     <div class="border-bottom pb-2 mb-3">
-        <div class="d-flex justify-content-between align-items-center">
-            <h2 class="mb-2">{{ post.title }}</h2>
-            <div>
+        <div class="d-flex justify-content-between align-items-start flex-wrap mb-2">
+            <h2 class="mb-1 me-3 flex-shrink-1">{{ post.title }}</h2>
+            <div class="d-flex flex-wrap gap-2 align-items-center">
                 <!-- Download post buttons -->
                 {% if user.is_authenticated %}
-                <a href="{% url 'generate_post_pdf' post.pk %}" class="btn btn-secondary btn-sm"> Download PDF </a>
+                    <a href="{% url 'generate_post_pdf' post.pk %}" class="btn btn-secondary btn-sm">Download PDF</a>
                 {% endif %}
                 <!-- Edit and Delete post buttons -->
                 {% if user == post.author %}
@@ -37,7 +37,7 @@ Features:
         </div>
         <!-- Author + Date -->
         <div class="text-muted small mt-1">
-            <i class="bi bi-person-circle"></i> {{ post.author }} &nbsp; | &nbsp;
+            <i class="bi bi-person-circle"></i> {{ post.author.get_full_name|default:post.author.username }} &nbsp; | &nbsp;
             <i class="bi bi-calendar3"></i> {{ post.created_at|date:"M d, Y" }}
         </div>
     </div>
@@ -51,14 +51,10 @@ Features:
     <!-- Like Button -->
     <div class="mb-3">
         {% if user.is_authenticated %}
-            <button id="like-btn"
-                    data-post-id="{{ post.id }}"
-                    class="btn {% if user_has_liked %}btn-danger{% else %}btn-success{% endif %}">
+            <button id="like-btn" data-post-id="{{ post.id }}" class="btn btn-sm {% if user_has_liked %}btn-danger{% else %}btn-success{% endif %}" style="width:70px">
                 {% if user_has_liked %}Unlike{% else %}Like{% endif %}
             </button>
-            <span id="like-count" class="ms-2">
-                {{ like_count }} like{{ like_count|pluralize }}
-            </span>
+            <span id="like-count" class="ms-2"> {{ like_count }} like{{ like_count|pluralize }} </span>
         {% else %}
             <span>{{ like_count }} like{{ like_count|pluralize }}</span>
         {% endif %}
@@ -68,12 +64,10 @@ Features:
 
     <!--Comment Form -->
     {% if user.is_authenticated %}
-        <form method="post" action="{% url 'add_comment' post.pk %}">
+        <form method="post" action="{% url 'add_comment' post.pk %}" class="mb-3">
             {% csrf_token %}
-            <div class="mb-2">
-                {{ comment_form.content}}
-            </div>
-            <button type="submit" class="btn btn-sm btn-primary">Post Comment</button>
+            <div class="mb-2"> {{ comment_form.content}} </div>
+            <button type="submit" class="btn btn-sm btn-primary" style="width:70px">Submit</button>
         </form>
     {% endif %}
 
@@ -90,11 +84,13 @@ Features:
 
                         <div class="d-flex align-items-center">
                             <!-- Reply button -->
-                            <button class="btn btn-link btn-sm fw-bold text-muted text-decoration-none me-2 reply-btn"
-                                    data-comment-id="{{ comment.id }}"
-                                    data-username="{{ comment.author.username }}">
-                                Reply
-                            </button>
+                             {% if user.is_authenticated %}
+                                <button class="btn btn-link btn-sm fw-bold text-muted text-decoration-none me-2 reply-btn"
+                                        data-comment-id="{{ comment.id }}"
+                                        data-username="{{ comment.author.username }}">
+                                    Reply
+                                </button>
+                            {% endif %}
 
                             <!-- Three-dot dropdown for updating and deleting comment -->
                             <div class="dropdown" style="min-width: 24px;">
@@ -106,19 +102,12 @@ Features:
                                         &#x22EE;
                                     </button>
                                     <ul class="dropdown-menu" aria-labelledby="dropdownMenu{{ comment.id }}">
-                                        <li>
-                                            <a href="#" class="dropdown-item edit-comment" 
-                                            data-comment-id="{{ comment.pk }}">Edit</a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item text-danger"
-                                            href="{% url 'delete_comment' comment.pk %}">Delete</a>
-                                        </li>
+                                        <li> <a href="#" class="dropdown-item edit-comment" data-comment-id="{{ comment.pk }}">Edit</a> </li>
+                                        <li> <a class="dropdown-item text-danger" href="{% url 'delete_comment' comment.pk %}">Delete</a> </li>
                                     </ul>
                                 {% else %}
                                     <!-- Invisible placeholder to keep Reply aligned -->
-                                    <button class="btn btn-link btn-sm fw-bold text-dark text-decoration-none invisible"
-                                            style="font-size: 1.05rem; line-height: 1;">
+                                    <button class="btn btn-link btn-sm fw-bold text-dark text-decoration-none invisible" style="font-size: 1.05rem; line-height: 1;">
                                         &#x22EE;
                                     </button>
                                 {% endif %}
@@ -129,11 +118,7 @@ Features:
                     <p class="mb-1">{{ comment.content }}</p>
 
                     <!-- hidden reply form -->
-                    <form method="post"
-                            action="{% url 'add_comment' post.pk %}"
-                            class="reply-form mt-2"
-                            id="reply-form-{{ comment.id }}"
-                            style="display: none;">
+                    <form method="post" action="{% url 'add_comment' post.pk %}" class="reply-form mt-2" id="reply-form-{{ comment.id }}" style="display: none;">
                         {% csrf_token %}
                         {{ comment_form.as_p }}
                         <input type="hidden" name="parent_id" value="{{ comment.id }}">
@@ -151,11 +136,13 @@ Features:
 
                                 <div class="d-flex align-items-center">
                                     <!-- Reply button -->
-                                    <button class="btn btn-link btn-sm fw-bold text-muted text-decoration-none me-2 reply-btn"
-                                            data-comment-id="{{ reply.id }}"
-                                            data-username="{{ reply.author.username }}">
-                                        Reply
-                                    </button>
+                                     {% if user.is_authenticated %}
+                                        <button class="btn btn-link btn-sm fw-bold text-muted text-decoration-none me-2 reply-btn"
+                                                data-comment-id="{{ reply.id }}"
+                                                data-username="{{ reply.author.username }}">
+                                            Reply
+                                        </button>
+                                    {% endif %}
 
                                     <!-- Three-dot dropdown updating and deleting replies -->
                                     <div class="dropdown" style="min-width: 24px;">
@@ -167,19 +154,12 @@ Features:
                                                 &#x22EE;
                                             </button>
                                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuReply{{ reply.id }}">
-                                                <li>
-                                                    <a href="#" class="dropdown-item edit-comment" 
-                                                    data-comment-id="{{ reply.pk }}">Edit</a>
-                                                </li>
-                                                <li>
-                                                    <a class="dropdown-item text-danger"
-                                                    href="{% url 'delete_comment' reply.pk %}">Delete</a>
-                                                </li>
+                                                <li> <a href="#" class="dropdown-item edit-comment" data-comment-id="{{ reply.pk }}">Edit</a> </li>
+                                                <li> <a class="dropdown-item text-danger" href="{% url 'delete_comment' reply.pk %}">Delete</a> </li>
                                             </ul>
                                         {% else %}
                                             <!-- Invisible placeholder to keep Reply aligned -->
-                                            <button class="btn btn-link btn-sm fw-bold text-dark text-decoration-none invisible"
-                                                    style="font-size: 1.05rem; line-height: 1;">
+                                            <button class="btn btn-link btn-sm fw-bold text-dark text-decoration-none invisible" style="font-size: 1.05rem; line-height: 1;">
                                                 &#x22EE;
                                             </button>
                                         {% endif %}
@@ -188,12 +168,8 @@ Features:
                             </div>
                             <p>{{ reply.content }}</p>
 
-                            <!-- hidden reply form for replies -->
-                            <form method="post"
-                                action="{% url 'add_comment' post.pk %}"
-                                class="reply-form mt-2"
-                                id="reply-form-{{ reply.id }}"
-                                style="display: none;">
+                            <!-- Hidden reply form for replies -->
+                            <form method="post" action="{% url 'add_comment' post.pk %}" class="reply-form mt-2" id="reply-form-{{ reply.id }}" style="display: none;">
                                 {% csrf_token %}
                                 <input type="hidden" name="parent_id" value="{{ reply.id }}">
                                 <textarea name="content" class="form-control mb-2"></textarea>

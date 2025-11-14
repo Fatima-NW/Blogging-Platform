@@ -11,12 +11,104 @@ Features:
 {% block title %}Home{% endblock %}
 
 {% block content %}
-    <div class="text-center">
-        <h1>Blogging Platform</h1>
+    <div class="hero-section text-center">
+        <h2 class="hero-heading">Blogging Platform</h2>
+        <p class="hero-tagline">
+            <span>Discover stories</span>
+            <span>that connect us all</span>
+        </p>
+
         {% if user.is_authenticated %}
-            <p>Hello, {{ user.get_full_name|default:user.username }}!</p>
+            <div class="hero-btn-group">
+                <a href="{% url 'post_list' %}" class="hero-btn">BLOGS</a>
+            </div>
         {% else %}
-            <p>Please <a href="{% url 'login' %}">log in</a> or <a href="{% url 'register' %}">sign up</a>.</p>
+            <div class="hero-btn-group">
+                <a href="{% url 'login' %}" class="hero-btn">LOG IN</a>
+                <a href="{% url 'register' %}" class="hero-btn">SIGN UP</a>
+            </div>
         {% endif %}
     </div>
+
+    <div class="container mt-5">
+        <div class="row text-center">
+            <div class="col-md-4 mb-4">
+                <div class="card p-5 border rounded h-100">
+                    <h4>Create</h4>
+                    <p>Write posts and share your thoughts with the community.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card p-5 border rounded h-100">
+                    <h4>Engage</h4>
+                    <p>Comment on posts and join discussions with other readers.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card p-5 border rounded h-100">
+                    <h4>Explore</h4>
+                    <p>Read posts from all over the community and discover new ideas.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .card {
+            background-color: #FFFAF1;
+            border: 1px solid #e5e5e5;
+            filter: drop-shadow(0 0 5px rgba(67,36,17,0.05))
+                    drop-shadow(0 0 10px rgba(67,36,17,0.02));
+        }
+
+        .hero-section {
+            padding: 5rem 1rem;
+        }
+
+        .hero-heading {
+            font-family: serif;
+            font-size: 1.3rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .hero-tagline {
+            font-family: sans-serif;
+            font-size: clamp(3.3rem, 6vw, 5rem);
+            line-height: 1;
+            margin-bottom: 3.5rem;
+        }
+
+        .hero-tagline span {
+            display: block;
+            color: #000000;
+        }
+
+        .hero-btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 1.7rem;
+        }
+
+        .hero-btn {
+            background-color: #000000;
+            color: #FFFAF1;
+            font-family: sans-serif;
+            width: 175px;
+            height: 75px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: transform 1s ease, box-shadow 1s ease, filter 1s ease;
+        }
+        
+        .hero-btn:hover {
+            background-color: #333333;
+            transform: scale(1.04);
+            box-shadow: 0 6px 12px rgba(67,36,17,0.25);
+            font-weight: 600;
+        }
+    </style>
+
 {% endblock %}

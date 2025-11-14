@@ -4,3 +4,5 @@ __pycache__/
 PDFs/
 celerybeat-schedule*
 *.egg-info/
+/static/admin/
+/static/rest_framework/

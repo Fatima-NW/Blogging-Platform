@@ -4,28 +4,66 @@ Displays the form for creating/updating a blog post
 
 {% extends "base.html" %}
 
-{% block title %}{% if is_create %}New Post{% else %}Edit Post{% endif %}{% endblock %}
+{% block title %}{% if is_create %}Create Post{% else %}Edit Post{% endif %}{% endblock %}
 
 {% block content %}
-<div class="container mt-5" style="max-width: 700px;">
-    <div class="card shadow-sm p-4">
+<div class="container d-flex justify-content-center mt-5 mb-5">
+    <div class="card shadow-sm p-5" style="max-width: 700px; width: 100%;">
         <h2 class="text-center mb-4">
-            {% if is_create %}Create a New Post{% else %}Edit Post{% endif %}
+            {% if is_create %}Create Post{% else %}Edit Post{% endif %}
         </h2>
         <form method="POST">
             {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary w-100 rounded">{% if is_create %}Publish{% else %}Update{% endif %}</button>
+            {% for field in form %}
+                <div class="mb-3">
+                    {{ field.label_tag }} 
+                    {{ field }}
+                    {% for error in field.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn w-100 mt-2 post-btn">
+                {% if is_create %}Publish{% else %}Update{% endif %}
+            </button>
         </form>
     </div>
 </div>
 
 <style>
-form input, form textarea {
-    width: 100%;
-}
-form label {
-    font-weight: bold;
-}
+    .card {
+        background-color: #FFFAF1;
+        border: 1px solid #e5e5e5;
+        filter: drop-shadow(0 0 5px rgba(67,36,17,0.05))
+                drop-shadow(0 0 10px rgba(67,36,17,0.02));
+    }
+
+    form input, form textarea {
+        width: 100%;
+        border-radius: 0;
+        border: 1px solid #8f8f8f;
+        background-color: #FFFAF1;
+    }
+
+    form textarea {
+        min-height: 300px;
+    }
+
+    .post-btn {
+        background-color: #000000;
+        color: #FFFAF1;
+        border-radius: 0;
+    }
+
+    .post-btn:hover, 
+    .post-btn:active, 
+    .post-btn:focus {
+        background-color: #333333 !important;
+        color: #FFFAF1 !important;
+        border-color: #333333 !important;
+        font-weight: 500;
+        transform: scale(1.01);
+    }
 </style>
+
 {% endblock %}

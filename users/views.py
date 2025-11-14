@@ -28,7 +28,6 @@ def register_view(request):
             return redirect("login")  
         else:
             logger.warning(f"Failed registration attempt: {form.errors.as_json()}")
-            messages.error(request, "Registration failed. Please correct the errors.")
     else:
         form = CustomUserCreationForm()
         logger.info(f"User accessed registration page")
