@@ -18,8 +18,8 @@ Features:
         <p class="mb-4" style="font-size: 1.3rem;">{{ object.title }}</p>
         <form method="post" class="d-flex justify-content-between">
             {% csrf_token %}
-            <button type="submit" class="btn btn-danger flex-grow-1 me-2">Delete</button>
-            <a href="{% url 'post_detail' object.pk %}" class="btn btn-secondary flex-grow-1 ms-2">Cancel</a>
+            <button type="submit" class="btn btn-danger flex-grow-1 me-2 delete-btn">Delete</button>
+            <a href="{% url 'post_detail' object.pk %}" class="btn btn-secondary flex-grow-1 ms-2 cancel-btn">Cancel</a>
         </form>
     </div>
 </div>
@@ -30,6 +30,12 @@ Features:
         border: 1px solid #e5e5e5;
         filter: drop-shadow(0 0 5px rgba(67,36,17,0.05))
                 drop-shadow(0 0 10px rgba(67,36,17,0.02));
+    }
+
+    .delete-btn, .cancel-btn {
+        border-radius: 0;
+        color:  #FFFAF1;
+        border: none;
     }
 </style>
 

@@ -7,12 +7,43 @@ Displays a page when user tries accessing an expired pdf link
 {% block title %}Link Expired{% endblock %}
 
 {% block content %}
-    <div class="container text-center my-5">
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 60vh;">
+    <div class="card p-5 border rounded shadow-sm text-center col-12 col-md-7 col-lg-5">
         <h2>⚠️ Download Link Expired</h2>
         <p class="text-muted mt-3">
-            The PDF you're trying to access is no longer available
+            The PDF you're trying to access is no longer available.
             <br>
-            Links expire {{ expiry_minutes }} minutes after they are created or once downloaded
+            Links expire {{ expiry_minutes }} minutes after they are created or once downloaded.
         </p>
+        <form action="{% url 'post_list' %}" method="get">
+            <button type="submit" class="btn w-100 mt-2 blog-btn">Go to Blogs</button>
+        </form>
     </div>
+</div>
+
+<style>
+    .card {
+        background-color: #FFFAF1;
+        border: 1px solid #e5e5e5;
+        filter: drop-shadow(0 0 5px rgba(67,36,17,0.05))
+                drop-shadow(0 0 10px rgba(67,36,17,0.02));
+    }
+
+    .blog-btn {
+        background-color: #000000;
+        color: #FFFAF1;
+        border-radius: 0;
+    }
+
+    .blog-btn:hover, 
+    .blog-btn:active, 
+    .blog-btn:focus {
+        background-color: #333333 !important;
+        color: #FFFAF1 !important;
+        border-color: #333333 !important;
+        font-weight: 500;
+        transform: scale(1.01);
+    }
+</style>
+
 {% endblock %}
