@@ -25,7 +25,7 @@ Features:
     {% endif %}
 
     <!-- Filter Form -->
-    <form method="get" class="mb-4 p-3 border rounded bg-light">
+    <form method="get" class="mb-4 p-3 bg-light filter">
 
         <!-- General Search -->
         <div class="d-flex align-items-center mb-2">
@@ -117,6 +117,57 @@ Features:
             -webkit-line-clamp: 3;
             overflow: hidden;
             text-overflow: ellipsis;
+        }
+
+        /* Filter section*/
+        .filter {
+            background-color: #FFFAF5 !important;
+        }
+
+        form {
+            border: 1px solid #e5e5e5;
+            border-radius: 0.25rem;
+            padding: 1rem;
+            filter: drop-shadow(0 0 3px rgba(67,36,17,0.05))
+                    drop-shadow(0 0 6px rgba(67,36,17,0.02));
+        }
+
+        form input {
+            background-color: #FFFAF1 !important;
+            border-radius: 0;
+            border: 1px solid #8f8f8f;
+        }
+
+        /* Individual posts */
+        .list-group-item {
+            background-color: #FFFAF1;
+            border: 1px solid #e5e5e5;
+            padding: 1.5rem;
+            transition: transform 0.2s ease, drop-shadow 0.2s ease;
+            filter: drop-shadow(0 0 3px rgba(67,36,17,0.05))
+                    drop-shadow(0 0 6px rgba(67,36,17,0.02));
+        }
+
+        .list-group-item:hover {
+            background-color: #FFFAF5;
+            transform: scale(1.005);
+            filter: drop-shadow(0 0px 6px rgba(67,36,17,0.1));
+            box-shadow: 0 0 3px rgba(67,36,17,0.05);
+        }
+
+        /* Pagination */
+        .pagination .page-link {
+            background-color: #FFFAF1;
+            color: #333333;
+            filter: drop-shadow(0 0 3px rgba(67,36,17,0.05))
+                    drop-shadow(0 0 6px rgba(67,36,17,0.02));
+        }
+
+        .pagination .page-item.active .page-link, 
+        .pagination .page-link:hover {
+            background-color: #333333;
+            color: #FFFAF1;
+            border-color: #333333;
         }
     </style>
 

@@ -21,9 +21,9 @@ Features:
 
 <body>
     <!-- Navigation bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-black sticky-top py-3 mb-4">
+    <nav class="navbar navbar-expand-lg navbar-light custom-nav sticky-top py-3 mb-5">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{% url 'home' %}">BLOGS</a>
+            <strong><a class="navbar-brand" href="{% url 'home' %}">BLOGS</a></strong>
 
             <!-- Toggler button for small screens -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -73,16 +73,38 @@ Features:
         body {
             font-family: 'IBM Plex Sans', sans-serif;
             font-weight: lighter;
-            color:#000000 ;
-            background-color: #FFFAF0;
+            color: #333333;
+            background-color: #FFFAF1;
         }
 
         h1, h2, h3, h4, h5, h6, strong, b {
             font-weight: 500;
+            color: #000000;
         }
 
-        .bg-black { 
-            background-color: #432411 !important;
+        /* Navbar */
+        .custom-nav { 
+            background-color: #FFFAF1 !important;
+            border-bottom: 1px solid #333333;
+        }
+
+        .custom-nav .container-fluid {
+            padding-left: 2.5rem;
+            padding-right: 2.5rem;
+        }
+
+        .navbar-brand, .nav-link {
+            color: #333333 !important;
+            min-width: 70px;
+        }
+
+        .navbar-nav .nav-link:hover {
+            font-weight: 500;
+        }
+
+        .navbar-toggler, .navbar-toggler:focus {
+            border: none;
+            box-shadow: none;
         }
     </style>
 

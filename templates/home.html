@@ -33,19 +33,19 @@ Features:
     <div class="container mt-5">
         <div class="row text-center">
             <div class="col-md-4 mb-4">
-                <div class="card p-5 border rounded shadow-sm h-100">
+                <div class="card p-5 border rounded h-100">
                     <h4>Create</h4>
                     <p>Write posts and share your thoughts with the community.</p>
                 </div>
             </div>
             <div class="col-md-4 mb-4">
-                <div class="card p-5 border rounded shadow-sm h-100">
+                <div class="card p-5 border rounded h-100">
                     <h4>Engage</h4>
                     <p>Comment on posts and join discussions with other readers.</p>
                 </div>
             </div>
             <div class="col-md-4 mb-4">
-                <div class="card p-5 border rounded shadow-sm h-100">
+                <div class="card p-5 border rounded h-100">
                     <h4>Explore</h4>
                     <p>Read posts from all over the community and discover new ideas.</p>
                 </div>
@@ -55,7 +55,7 @@ Features:
 
     <style>
         .card {
-            background-color: #FFFAF0;
+            background-color: #FFFAF1;
             border: 1px solid #e5e5e5;
             filter: drop-shadow(0 0 5px rgba(67,36,17,0.05))
                     drop-shadow(0 0 10px rgba(67,36,17,0.02));
@@ -80,6 +80,7 @@ Features:
 
         .hero-tagline span {
             display: block;
+            color: #000000;
         }
 
         .hero-btn-group {
@@ -89,8 +90,8 @@ Features:
         }
 
         .hero-btn {
-            background-color: #432411;
-            color: #FFFAF0;
+            background-color: #000000;
+            color: #FFFAF1;
             font-family: sans-serif;
             width: 175px;
             height: 75px;
@@ -103,10 +104,11 @@ Features:
         }
         
         .hero-btn:hover {
-            font-weight: 600;
+            background-color: #333333;
             transform: scale(1.04);
             box-shadow: 0 6px 12px rgba(67,36,17,0.25);
-            filter: brightness(1.3); 
+            font-weight: 600;
         }
     </style>
+
 {% endblock %}
