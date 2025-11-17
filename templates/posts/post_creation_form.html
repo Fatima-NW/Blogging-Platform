@@ -23,7 +23,7 @@ Displays the form for creating/updating a blog post
                     {% endfor %}
                 </div>
             {% endfor %}
-            <button type="submit" class="btn w-100 mt-2 post-btn">
+            <button type="submit" class="btn post-btn imp-btn w-100 mt-2">
                 {% if is_create %}Publish{% else %}Update{% endif %}
             </button>
         </form>
@@ -32,7 +32,7 @@ Displays the form for creating/updating a blog post
 
 <style>
     .card {
-        background-color: #FFFAF1;
+        background-color: #FFFAF5;
         border: 1px solid #e5e5e5;
         filter: drop-shadow(0 0 5px rgba(67,36,17,0.05))
                 drop-shadow(0 0 10px rgba(67,36,17,0.02));
@@ -42,25 +42,34 @@ Displays the form for creating/updating a blog post
         width: 100%;
         border-radius: 0;
         border: 1px solid #8f8f8f;
-        background-color: #FFFAF1;
+        background-color: #FFFAF5;
     }
 
     form textarea {
         min-height: 300px;
     }
 
-    .post-btn {
-        background-color: #000000;
-        color: #FFFAF1;
+    .btn {
+        color: #FFFAF5;
         border-radius: 0;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
-    .post-btn:hover, 
-    .post-btn:active, 
-    .post-btn:focus {
-        background-color: #333333 !important;
-        color: #FFFAF1 !important;
-        border-color: #333333 !important;
+    .post-btn {
+        height: 42px;
+        background-color: #000000;
+        border-color: #000000;
+    }
+
+    .imp-btn:hover,
+    .imp-btn:active,
+    .imp-btn:focus {
+        background-color: #000000 !important;
+        color: #FFFAF5 !important;
+        border-color: #000000 !important;
         font-weight: 500;
         transform: scale(1.01);
     }

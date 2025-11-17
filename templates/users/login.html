@@ -13,14 +13,14 @@ Displays the user login page
         <form method="post">
             {% csrf_token %}
             {{ form.as_p }}
-            <button type="submit" class="btn w-100 mt-2 login-btn">Login</button>
+            <button type="submit" class="btn login-btn imp-btn w-100">Login</button>
         </form>
     </div>
 </div>
 
 <style>
     .card {
-        background-color: #FFFAF1;
+        background-color: #FFFAF5;
         border: 1px solid #e5e5e5;
         filter: drop-shadow(0 0 5px rgba(67,36,17,0.05))
                 drop-shadow(0 0 10px rgba(67,36,17,0.02));
@@ -30,7 +30,7 @@ Displays the user login page
         width: 100%;
         border-radius: 0;
         border: 1px solid #8f8f8f;
-        background-color: #FFFAF1;
+        background-color: #FFFAF5;
     }
 
     .errorlist {
@@ -40,19 +40,28 @@ Displays the user login page
         list-style: none;
         padding: 0;
     }
+    
+    .btn {
+        color: #FFFAF5;
+        border-radius: 0;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
     .login-btn {
         background-color: #000000;
-        color: #FFFAF1;
-        border-radius: 0;
+        border-color: #000000;
+        margin-top: 1.5rem;
     }
-    
-    .login-btn:hover, 
-    .login-btn:active, 
-    .login-btn:focus {
-        background-color: #333333 !important;
-        color: #FFFAF1 !important;
-        border-color: #333333 !important;
+
+    .imp-btn:hover,
+    .imp-btn:active,
+    .imp-btn:focus {
+        background-color: #000000 !important;
+        color: #FFFAF5 !important;
+        border-color: #000000 !important;
         font-weight: 500;
         transform: scale(1.01);
     }

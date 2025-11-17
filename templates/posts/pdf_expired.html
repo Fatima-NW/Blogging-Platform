@@ -16,31 +16,39 @@ Displays a page when user tries accessing an expired pdf link
             Links expire {{ expiry_minutes }} minutes after they are created or once downloaded.
         </p>
         <form action="{% url 'post_list' %}" method="get">
-            <button type="submit" class="btn w-100 mt-2 blog-btn">Go to Blogs</button>
+            <button type="submit" class="btn blog-btn imp-btn w-100 mt-2">Go to Blogs</button>
         </form>
     </div>
 </div>
 
 <style>
     .card {
-        background-color: #FFFAF1;
+        background-color: #FFFAF5;
         border: 1px solid #e5e5e5;
         filter: drop-shadow(0 0 5px rgba(67,36,17,0.05))
                 drop-shadow(0 0 10px rgba(67,36,17,0.02));
     }
 
-    .blog-btn {
-        background-color: #000000;
-        color: #FFFAF1;
+    .btn {
+        color: #FFFAF5;
         border-radius: 0;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
-    .blog-btn:hover, 
-    .blog-btn:active, 
-    .blog-btn:focus {
-        background-color: #333333 !important;
-        color: #FFFAF1 !important;
-        border-color: #333333 !important;
+    .blog-btn {
+        background-color: #000000;
+        border-color: #000000;
+    }
+
+    .imp-btn:hover,
+    .imp-btn:active,
+    .imp-btn:focus {
+        background-color: #000000 !important;
+        color: #FFFAF5 !important;
+        border-color: #000000 !important;
         font-weight: 500;
         transform: scale(1.01);
     }

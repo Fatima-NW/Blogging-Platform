@@ -19,7 +19,7 @@ Features:
 
     <!-- Create new post button-->
     {% if user.is_authenticated %}
-        <a href="{% url 'post_create' %}" class="btn btn-success mb-3">
+        <a href="{% url 'post_create' %}" class="btn create-btn mb-3">
             + Create New Post
         </a>
     {% endif %}
@@ -31,9 +31,9 @@ Features:
         <div class="d-flex align-items-center mb-2">
             <input type="text" name="query" class="form-control flex-grow-1 me-2" placeholder="Search anything" value="{{ request.GET.query }}">
 
-            <button type="submit" class="btn btn-primary me-2">Search</button>
-            <a href="{% url 'post_list' %}" class="btn btn-secondary me-2">Reset</a>
-            <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#filters-section">Filters</button>
+            <button type="submit" class="btn search-btn me-2">Search</button>
+            <button class="btn filter-btn me-2" type="button" data-bs-toggle="collapse" data-bs-target="#filters-section">Filters</button>
+            <a href="{% url 'post_list' %}" class="btn reset-btn">Reset</a>
         </div>
 
         <!-- Filters Section -->
@@ -134,22 +134,21 @@ Features:
 
         form input {
             background-color: #FFFAF1 !important;
-            border-radius: 0;
+            border-radius: 0 !important;
             border: 1px solid #8f8f8f;
         }
 
         /* Individual posts */
         .list-group-item {
-            background-color: #FFFAF1;
+            background-color: #FFFAF5;
             border: 1px solid #e5e5e5;
             padding: 1.5rem;
-            transition: transform 0.2s ease, drop-shadow 0.2s ease;
             filter: drop-shadow(0 0 3px rgba(67,36,17,0.05))
                     drop-shadow(0 0 6px rgba(67,36,17,0.02));
         }
 
         .list-group-item:hover {
-            background-color: #FFFAF5;
+            background-color: #FFFFFF;
             transform: scale(1.005);
             filter: drop-shadow(0 0px 6px rgba(67,36,17,0.1));
             box-shadow: 0 0 3px rgba(67,36,17,0.05);
@@ -157,7 +156,7 @@ Features:
 
         /* Pagination */
         .pagination .page-link {
-            background-color: #FFFAF1;
+            background-color: #FFFAF5;
             color: #333333;
             filter: drop-shadow(0 0 3px rgba(67,36,17,0.05))
                     drop-shadow(0 0 6px rgba(67,36,17,0.02));
@@ -166,8 +165,52 @@ Features:
         .pagination .page-item.active .page-link, 
         .pagination .page-link:hover {
             background-color: #333333;
-            color: #FFFAF1;
+            color: #FFFAF5;
+            font-weight: 500;
             border-color: #333333;
+        }
+
+        /* Buttons */
+        .btn {
+            color: #FFFAF5;
+            border-radius: 0;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .create-btn {
+            width: 175px;
+            height: 55px;
+            background-color: #1A8917 !important;
+            border-color: #1A8917 !important;
+        }
+
+        .search-btn {
+            width: 125px;
+            background-color: #6e285d !important;
+            border-color: #6e285d !important;
+        }
+
+        .filter-btn {
+            width: 125px;
+            background-color: #cb950a !important;
+            border-color: #cb950a !important;
+        }
+
+        .reset-btn {
+            width: 125px;
+            background-color: #333333 !important;
+            border-color: #333333 !important;
+        }
+
+        .btn:hover,
+        .btn:active,
+        .btn:focus {
+            color: #FFFAF5 !important;
+            filter: brightness(1.15);
+            font-weight: 500;
         }
     </style>
 

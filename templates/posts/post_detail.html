@@ -26,12 +26,12 @@ Features:
             <div class="d-flex flex-wrap gap-2 align-items-center">
                 <!-- Download post buttons -->
                 {% if user.is_authenticated %}
-                    <a href="{% url 'generate_post_pdf' post.pk %}" class="btn btn-secondary btn-sm">Download PDF</a>
+                    <a href="{% url 'generate_post_pdf' post.pk %}" class="btn download-btn btn-sm">Download PDF</a>
                 {% endif %}
                 <!-- Edit and Delete post buttons -->
                 {% if user == post.author %}
-                        <a href="{% url 'post_edit' post.pk %}" class="btn btn-warning btn-sm">Edit</a>
-                        <a href="{% url 'post_delete' post.pk %}" class="btn btn-danger btn-sm">Delete</a>
+                        <a href="{% url 'post_edit' post.pk %}" class="btn edit-btn btn-sm">Edit</a>
+                        <a href="{% url 'post_delete' post.pk %}" class="btn delete-btn btn-sm">Delete</a>
                 {% endif %}
             </div>
         </div>
@@ -49,12 +49,12 @@ Features:
     <hr>
 
     <!-- Like Button -->
-    <div class="mb-3">
+    <div class="mb-3 d-flex align-items-center">
         {% if user.is_authenticated %}
-            <button id="like-btn" data-post-id="{{ post.id }}" class="btn btn-sm {% if user_has_liked %}btn-danger{% else %}btn-success{% endif %}" style="width:70px">
-                {% if user_has_liked %}Unlike{% else %}Like{% endif %}
+            <button id="like-btn" data-post-id="{{ post.id }}" class="btn like-btn {% if user_has_liked %}btn-liked{% else %}btn-unliked{% endif %}">
+                {% if user_has_liked %}Liked{% else %}Like{% endif %}
             </button>
-            <span id="like-count" class="ms-2"> {{ like_count }} like{{ like_count|pluralize }} </span>
+            <span id="like-count" class="ms-3"> {{ like_count }} like{{ like_count|pluralize }} </span>
         {% else %}
             <span>{{ like_count }} like{{ like_count|pluralize }}</span>
         {% endif %}
@@ -67,124 +67,224 @@ Features:
         <form method="post" action="{% url 'add_comment' post.pk %}" class="mb-3">
             {% csrf_token %}
             <div class="mb-2"> {{ comment_form.content}} </div>
-            <button type="submit" class="btn btn-sm btn-primary" style="width:70px">Submit</button>
+            <button type="submit" class="btn submit-btn">Submit</button>
         </form>
     {% endif %}
 
     <!-- All Comments -->
     {% if comments %}
-        <ul>
-            {% for comment in comments %}
-                <div class="mb-3 p-2 border rounded">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <strong>{{ comment.author }}</strong>
-                            <small class="text-muted">{{ comment.created_at|date:"M d, Y H:i" }}</small>
-                        </div>
+        {% for comment in comments %}
+            <div class="card mb-3 p-2 border rounded">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>{{ comment.author }}</strong>
+                        <small class="text-muted">{{ comment.created_at|date:"M d, Y H:i" }}</small>
+                    </div>
 
-                        <div class="d-flex align-items-center">
-                            <!-- Reply button -->
-                             {% if user.is_authenticated %}
-                                <button class="btn btn-link btn-sm fw-bold text-muted text-decoration-none me-2 reply-btn"
-                                        data-comment-id="{{ comment.id }}"
-                                        data-username="{{ comment.author.username }}">
-                                    Reply
+                    <div class="d-flex align-items-center">
+                        <!-- Reply button -->
+                            {% if user.is_authenticated %}
+                            <button class="btn btn-link btn-sm fw-bold text-muted text-decoration-none me-2 reply-btn"
+                                    data-comment-id="{{ comment.id }}"
+                                    data-username="{{ comment.author.username }}">
+                                Reply
+                            </button>
+                        {% endif %}
+
+                        <!-- Three-dot dropdown for updating and deleting comment -->
+                        <div class="dropdown" style="min-width: 24px;">
+                            {% if user == comment.author %}
+                                <button class="btn btn-link btn-sm fw-bold text-dark text-decoration-none"
+                                        type="button"
+                                        id="dropdownMenu{{ comment.id }}" data-bs-toggle="dropdown" aria-expanded="false"
+                                        style="font-size: 1.05rem; line-height: 1;">
+                                    &#x22EE;
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenu{{ comment.id }}">
+                                    <li> <a href="#" class="dropdown-item edit-comment" data-comment-id="{{ comment.pk }}">Edit</a> </li>
+                                    <li> <a class="dropdown-item text-danger" href="{% url 'delete_comment' comment.pk %}">Delete</a> </li>
+                                </ul>
+                            {% else %}
+                                <!-- Invisible placeholder to keep Reply aligned -->
+                                <button class="btn btn-link btn-sm fw-bold text-dark text-decoration-none invisible" style="font-size: 1.05rem; line-height: 1;">
+                                    &#x22EE;
                                 </button>
                             {% endif %}
-
-                            <!-- Three-dot dropdown for updating and deleting comment -->
-                            <div class="dropdown" style="min-width: 24px;">
-                                {% if user == comment.author %}
-                                    <button class="btn btn-link btn-sm fw-bold text-dark text-decoration-none"
-                                            type="button"
-                                            id="dropdownMenu{{ comment.id }}" data-bs-toggle="dropdown" aria-expanded="false"
-                                            style="font-size: 1.05rem; line-height: 1;">
-                                        &#x22EE;
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu{{ comment.id }}">
-                                        <li> <a href="#" class="dropdown-item edit-comment" data-comment-id="{{ comment.pk }}">Edit</a> </li>
-                                        <li> <a class="dropdown-item text-danger" href="{% url 'delete_comment' comment.pk %}">Delete</a> </li>
-                                    </ul>
-                                {% else %}
-                                    <!-- Invisible placeholder to keep Reply aligned -->
-                                    <button class="btn btn-link btn-sm fw-bold text-dark text-decoration-none invisible" style="font-size: 1.05rem; line-height: 1;">
-                                        &#x22EE;
-                                    </button>
-                                {% endif %}
-                            </div>
                         </div>
-
                     </div>
-                    <p class="mb-1">{{ comment.content }}</p>
-
-                    <!-- hidden reply form -->
-                    <form method="post" action="{% url 'add_comment' post.pk %}" class="reply-form mt-2" id="reply-form-{{ comment.id }}" style="display: none;">
-                        {% csrf_token %}
-                        {{ comment_form.as_p }}
-                        <input type="hidden" name="parent_id" value="{{ comment.id }}">
-                        <button type="submit" class="btn btn-secondary btn-sm">Reply</button>
-                    </form>
-
-                    <!-- nested replies -->
-                    {% for reply in comment.replies_ordered %}
-                        <div class="ms-4 p-2 border-start">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <strong>{{ reply.author }}</strong>
-                                    <small class="text-muted">{{ reply.created_at|date:"M d, Y H:i" }}</small>
-                                </div>
-
-                                <div class="d-flex align-items-center">
-                                    <!-- Reply button -->
-                                     {% if user.is_authenticated %}
-                                        <button class="btn btn-link btn-sm fw-bold text-muted text-decoration-none me-2 reply-btn"
-                                                data-comment-id="{{ reply.id }}"
-                                                data-username="{{ reply.author.username }}">
-                                            Reply
-                                        </button>
-                                    {% endif %}
-
-                                    <!-- Three-dot dropdown updating and deleting replies -->
-                                    <div class="dropdown" style="min-width: 24px;">
-                                        {% if user == reply.author %}
-                                            <button class="btn btn-link btn-sm fw-bold text-dark text-decoration-none"
-                                                    type="button"
-                                                    id="dropdownMenuReply{{ reply.id }}" data-bs-toggle="dropdown" aria-expanded="false"
-                                                    style="font-size: 1.05rem; line-height: 1;">
-                                                &#x22EE;
-                                            </button>
-                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuReply{{ reply.id }}">
-                                                <li> <a href="#" class="dropdown-item edit-comment" data-comment-id="{{ reply.pk }}">Edit</a> </li>
-                                                <li> <a class="dropdown-item text-danger" href="{% url 'delete_comment' reply.pk %}">Delete</a> </li>
-                                            </ul>
-                                        {% else %}
-                                            <!-- Invisible placeholder to keep Reply aligned -->
-                                            <button class="btn btn-link btn-sm fw-bold text-dark text-decoration-none invisible" style="font-size: 1.05rem; line-height: 1;">
-                                                &#x22EE;
-                                            </button>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            </div>
-                            <p>{{ reply.content }}</p>
-
-                            <!-- Hidden reply form for replies -->
-                            <form method="post" action="{% url 'add_comment' post.pk %}" class="reply-form mt-2" id="reply-form-{{ reply.id }}" style="display: none;">
-                                {% csrf_token %}
-                                <input type="hidden" name="parent_id" value="{{ reply.id }}">
-                                <textarea name="content" class="form-control mb-2"></textarea>
-                                <button type="submit" class="btn btn-secondary btn-sm">Reply</button>
-                            </form>
-                        </div>
-                    {% endfor %}
 
                 </div>
-            {% endfor %}
+                <p class="mb-1">{{ comment.content }}</p>
 
-        </ul>
+                <!-- hidden reply form -->
+                <form method="post" action="{% url 'add_comment' post.pk %}" class="reply-form mt-2" id="reply-form-{{ comment.id }}" style="display: none;">
+                    {% csrf_token %}
+                    <input type="hidden" name="parent_id" value="{{ comment.id }}">
+                    <textarea name="content" class="form-control mb-2"></textarea>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn hidden-reply-btn btn-sm">Reply</button>
+                        <button type="button" class="btn cancel-reply-btn btn-sm">Cancel</button>
+                    </div>
+                </form>
+
+                <!-- nested replies -->
+                {% for reply in comment.replies_ordered %}
+                    <div class="ms-4 p-2 border-start">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ reply.author }}</strong>
+                                <small class="text-muted">{{ reply.created_at|date:"M d, Y H:i" }}</small>
+                            </div>
+
+                            <div class="d-flex align-items-center">
+                                <!-- Reply button -->
+                                    {% if user.is_authenticated %}
+                                    <button class="btn btn-link btn-sm fw-bold text-muted text-decoration-none me-2 reply-btn"
+                                            data-comment-id="{{ reply.id }}"
+                                            data-username="{{ reply.author.username }}">
+                                        Reply
+                                    </button>
+                                {% endif %}
+
+                                <!-- Three-dot dropdown updating and deleting replies -->
+                                <div class="dropdown" style="min-width: 24px;">
+                                    {% if user == reply.author %}
+                                        <button class="btn btn-link btn-sm fw-bold text-dark text-decoration-none"
+                                                type="button"
+                                                id="dropdownMenuReply{{ reply.id }}" data-bs-toggle="dropdown" aria-expanded="false"
+                                                style="font-size: 1.05rem; line-height: 1;">
+                                            &#x22EE;
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuReply{{ reply.id }}">
+                                            <li> <a href="#" class="dropdown-item edit-comment" data-comment-id="{{ reply.pk }}">Edit</a> </li>
+                                            <li> <a class="dropdown-item text-danger" href="{% url 'delete_comment' reply.pk %}">Delete</a> </li>
+                                        </ul>
+                                    {% else %}
+                                        <!-- Invisible placeholder to keep Reply aligned -->
+                                        <button class="btn btn-link btn-sm fw-bold text-dark text-decoration-none invisible" style="font-size: 1.05rem; line-height: 1;">
+                                            &#x22EE;
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <p>{{ reply.content }}</p>
+
+                        <!-- Hidden reply form for replies -->
+                        <form method="post" action="{% url 'add_comment' post.pk %}" class="reply-form mt-2" id="reply-form-{{ reply.id }}" style="display: none;">
+                            {% csrf_token %}
+                            <input type="hidden" name="parent_id" value="{{ reply.id }}">
+                            <textarea name="content" class="form-control mb-2"></textarea>
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn hidden-reply-btn btn-sm">Reply</button>
+                                <button type="button" class="btn btn-secondary btn-sm cancel-reply-btn">Cancel</button>
+                            </div>
+                            </form>
+                        </form>
+                    </div>
+                {% endfor %}
+
+            </div>
+        {% endfor %}
+
     {% else %}
         <p>No comments yet.</p>
     {% endif %}
+
+    <style>
+        .card {
+            background-color: #FFFAF5;
+            border: 1px solid #e5e5e5;
+            box-shadow: 
+                0 0 5px rgba(67,36,17,0.07),
+                0 0 10px rgba(67,36,17,0.03);
+            overflow: visible;
+        }
+
+        form.mb-3 textarea,
+        .reply-form textarea,
+        .edit-textarea  {
+            border-radius: 0;
+            background-color: #FFFAF5;
+            border: 1px solid #e5e5e5;
+            box-shadow: 
+                0 0 5px rgba(67,36,17,0.07),
+                0 0 10px rgba(67,36,17,0.03);
+        }
+
+        /* Buttons */
+        .btn {
+            color: #FFFAF5;
+            border-radius: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .download-btn {
+            width: 120px;
+            height: 32px;
+            background-color: #333333 !important;
+            border-color: #333333 !important;
+        }
+
+        .edit-btn {
+            width: 50px;
+            height: 32px;
+            background-color: #cb950a !important;
+            border-color: #cb950a !important;
+        }
+
+        .delete-btn {
+            width: 70px;
+            height: 32px;
+            background-color: #d12216 !important;
+            border-color: #d12216 !important;
+        }
+
+        .submit-btn,
+        .hidden-reply-btn,
+        .save-edit {
+            font-size: 15px;
+            width: 80px;
+            height: 35px;
+            background-color: #6e285d !important;
+            border-color: #6e285d !important;
+        }
+
+        .like-btn {
+            font-size: 15px;
+            width: 80px;
+            height: 35px;
+        }
+
+        .btn-liked {
+            background-color: #1A8917 !important;
+            border-color: #1A8917 !important;
+        }
+
+        .btn-unliked,
+        .cancel-reply-btn,
+        .cancel-edit-btn {
+            width: 80px;
+            background-color: #737373 !important;
+            border-color: #737373 !important;
+        }
+
+        .btn:hover,
+        .btn:active,
+        .btn:focus {
+            color: #FFFAF5 !important;
+            filter: brightness(1.15);
+            font-weight: 500;
+        }
+
+        .reply-btn:hover, .btn-link:hover,
+        .reply-btn:active, .btn-link:focus,
+        .reply-btn:focus, .btn-link:active  {
+            color: #333333 !important;
+        }
+    </style>
 
     <script>
 
@@ -205,6 +305,15 @@ Features:
                     let textarea = form.querySelector("textarea");
                     textarea.value = "@" + username + " ";
                     textarea.focus();
+                });
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll(".reply-form .cancel-reply-btn").forEach(btn => {
+                btn.addEventListener("click", function () {
+                    const form = this.closest(".reply-form");
+                    if (form) form.style.display = "none";
                 });
             });
         });
@@ -252,13 +361,13 @@ Features:
 
                     // Update button
                     if (data.liked) {
-                        likeBtn.textContent = "Unlike";
-                        likeBtn.classList.remove("btn-success");
-                        likeBtn.classList.add("btn-danger");
+                        likeBtn.textContent = "Liked";
+                        likeBtn.classList.remove("btn-unliked");
+                        likeBtn.classList.add("btn-liked");
                     } else {
                         likeBtn.textContent = "Like";
-                        likeBtn.classList.remove("btn-danger");
-                        likeBtn.classList.add("btn-success");
+                        likeBtn.classList.remove("btn-liked");
+                        likeBtn.classList.add("btn-unliked");
                     }
 
                     // Update like count
@@ -316,10 +425,10 @@ Features:
                 const originalText = contentP.textContent.trim();
 
                 contentP.innerHTML = `
-                    <textarea class="form-control edit-textarea mb-2" rows="3">${escapeHtml(originalText)}</textarea>
-                    <div>
+                    <textarea class="form-control edit-textarea mb-2" rows="2">${escapeHtml(originalText)}</textarea>
+                    <div class="d-flex gap-2">
                         <button class="btn btn-sm btn-primary save-edit" data-comment-id="${commentId}">Save</button>
-                        <button class="btn btn-sm btn-secondary cancel-edit">Cancel</button>
+                        <button class="btn btn-sm btn-secondary cancel-edit-btn">Cancel</button>
                     </div>
                 `;
 
@@ -329,8 +438,8 @@ Features:
             // Handle Save and Cancel actions
             document.body.addEventListener("click", function (e) {
                 // Cancel edit
-                if (e.target.closest && e.target.closest(".cancel-edit")) {
-                    const container = e.target.closest(".mb-3");
+                if (e.target.closest && e.target.closest(".cancel-edit-btn")) {
+                    const container = e.target.closest(".card, .border-start");
                     if (!container) return;
                     const contentP = container.querySelector("p.mb-1, p");
                     if (!contentP) return;
