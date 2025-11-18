@@ -51,7 +51,7 @@ Features:
     <!-- Like Button -->
     <div class="mb-3 d-flex align-items-center">
         {% if user.is_authenticated %}
-            <button id="like-btn" data-post-id="{{ post.id }}" class="btn like-btn {% if user_has_liked %}btn-liked{% else %}btn-unliked{% endif %}">
+            <button id="like-btn" data-post-id="{{ post.id }}" class="btn like-btn {% if user_has_liked %}liked-btn{% else %}unliked-btn{% endif %}">
                 {% if user_has_liked %}Liked{% else %}Like{% endif %}
             </button>
             <span id="like-count" class="ms-3"> {{ like_count }} like{{ like_count|pluralize }} </span>
@@ -74,7 +74,7 @@ Features:
     <!-- All Comments -->
     {% if comments %}
         {% for comment in comments %}
-            <div class="card mb-3 p-2 border rounded">
+            <div class="card comment-card mb-3 p-2 border rounded">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <strong>{{ comment.author }}</strong>
@@ -177,7 +177,7 @@ Features:
                             <textarea name="content" class="form-control mb-2"></textarea>
                             <div class="d-flex gap-2">
                                 <button type="submit" class="btn hidden-reply-btn btn-sm">Reply</button>
-                                <button type="button" class="btn btn-secondary btn-sm cancel-reply-btn">Cancel</button>
+                                <button type="button" class="btn cancel-reply-btn btn-sm">Cancel</button>
                             </div>
                             </form>
                         </form>
@@ -192,15 +192,6 @@ Features:
     {% endif %}
 
     <style>
-        .card {
-            background-color: #FFFAF5;
-            border: 1px solid #e5e5e5;
-            box-shadow: 
-                0 0 5px rgba(67,36,17,0.07),
-                0 0 10px rgba(67,36,17,0.03);
-            overflow: visible;
-        }
-
         form.mb-3 textarea,
         .reply-form textarea,
         .edit-textarea  {
@@ -210,79 +201,6 @@ Features:
             box-shadow: 
                 0 0 5px rgba(67,36,17,0.07),
                 0 0 10px rgba(67,36,17,0.03);
-        }
-
-        /* Buttons */
-        .btn {
-            color: #FFFAF5;
-            border-radius: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .download-btn {
-            width: 120px;
-            height: 32px;
-            background-color: #333333 !important;
-            border-color: #333333 !important;
-        }
-
-        .edit-btn {
-            width: 50px;
-            height: 32px;
-            background-color: #cb950a !important;
-            border-color: #cb950a !important;
-        }
-
-        .delete-btn {
-            width: 70px;
-            height: 32px;
-            background-color: #d12216 !important;
-            border-color: #d12216 !important;
-        }
-
-        .submit-btn,
-        .hidden-reply-btn,
-        .save-edit {
-            font-size: 15px;
-            width: 80px;
-            height: 35px;
-            background-color: #6e285d !important;
-            border-color: #6e285d !important;
-        }
-
-        .like-btn {
-            font-size: 15px;
-            width: 80px;
-            height: 35px;
-        }
-
-        .btn-liked {
-            background-color: #1A8917 !important;
-            border-color: #1A8917 !important;
-        }
-
-        .btn-unliked,
-        .cancel-reply-btn,
-        .cancel-edit-btn {
-            width: 80px;
-            background-color: #737373 !important;
-            border-color: #737373 !important;
-        }
-
-        .btn:hover,
-        .btn:active,
-        .btn:focus {
-            color: #FFFAF5 !important;
-            filter: brightness(1.15);
-            font-weight: 500;
-        }
-
-        .reply-btn:hover, .btn-link:hover,
-        .reply-btn:active, .btn-link:focus,
-        .reply-btn:focus, .btn-link:active  {
-            color: #333333 !important;
         }
     </style>
 
@@ -362,12 +280,12 @@ Features:
                     // Update button
                     if (data.liked) {
                         likeBtn.textContent = "Liked";
-                        likeBtn.classList.remove("btn-unliked");
-                        likeBtn.classList.add("btn-liked");
+                        likeBtn.classList.remove("unliked-btn");
+                        likeBtn.classList.add("liked-btn");
                     } else {
                         likeBtn.textContent = "Like";
-                        likeBtn.classList.remove("btn-liked");
-                        likeBtn.classList.add("btn-unliked");
+                        likeBtn.classList.remove("liked-btn");
+                        likeBtn.classList.add("unliked-btn");
                     }
 
                     // Update like count
@@ -427,8 +345,8 @@ Features:
                 contentP.innerHTML = `
                     <textarea class="form-control edit-textarea mb-2" rows="2">${escapeHtml(originalText)}</textarea>
                     <div class="d-flex gap-2">
-                        <button class="btn btn-sm btn-primary save-edit" data-comment-id="${commentId}">Save</button>
-                        <button class="btn btn-sm btn-secondary cancel-edit-btn">Cancel</button>
+                        <button class="btn btn-sm save-edit-btn" data-comment-id="${commentId}">Save</button>
+                        <button class="btn btn-sm cancel-edit-btn">Cancel</button>
                     </div>
                 `;
 
@@ -449,7 +367,7 @@ Features:
                 }
 
                 // Save edit
-                const saveBtn = e.target.closest && e.target.closest(".save-edit");
+                const saveBtn = e.target.closest && e.target.closest(".save-edit-btn");
                 if (!saveBtn) return;
 
                 e.preventDefault();

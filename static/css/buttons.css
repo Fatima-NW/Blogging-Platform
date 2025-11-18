@@ -1,0 +1,182 @@
+/* Global Buttons */
+
+.btn {
+    color: #FFFAF5;
+    border-radius: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn:hover,
+.btn:active,
+.btn:focus {
+    color: #FFFAF5 !important;
+    filter: brightness(1.15);
+    font-weight: 500;
+}
+
+.imp-btn:hover,
+.imp-btn:active,
+.imp-btn:focus {
+    background-color: #000000 !important;
+    color: #FFFAF5 !important;
+    border-color: #000000 !important;
+    font-weight: 500;
+    transform: scale(1.01);
+}
+
+
+/* Home */
+.hero-btn-group {
+    display: flex;
+    justify-content: center;
+    gap: 1.7rem;
+}
+
+.hero-btn {
+    background-color: #000000;
+    color: #FFFAF5;
+    font-family: sans-serif;
+    width: 175px;
+    height: 75px;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: transform 1s ease, box-shadow 1s ease;
+}
+
+.hero-btn:hover {
+    background-color: #000000;
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    font-weight: 600;
+}
+
+/* Login */
+.login-btn {
+    background-color: #000000;
+    border-color: #000000;
+    margin-top: 1.5rem;
+}
+
+/* Register */
+.register-btn {
+    background-color: #000000;
+    border-color: #000000;
+    margin-top: 1rem;
+}
+
+/* Create Post */
+.post-btn {
+    height: 42px;
+    background-color: #000000;
+    border-color: #000000;
+}
+
+/* PDF Expire */
+.expire-btn {
+    background-color: #000000;
+    border-color: #000000;
+}
+
+/* Confirm delete */
+.confirm-delete-btn {
+    height: 42px;
+    background-color: #d12216 !important;
+    border-color: #d12216 !important;
+}
+
+.cancel-delete-btn {
+    height: 42px;
+    background-color: #333333 !important;
+    border-color: #333333 !important;
+}
+
+/* Post List */
+.create-btn {
+    width: 175px;
+    height: 55px;
+    background-color: #1A8917 !important;
+    border-color: #1A8917 !important;
+}
+
+.search-btn {
+    width: 125px;
+    background-color: #6e285d !important;
+    border-color: #6e285d !important;
+}
+
+.filter-btn {
+    width: 125px;
+    background-color: #cb950a !important;
+    border-color: #cb950a !important;
+}
+
+.reset-btn {
+    width: 125px;
+    background-color: #333333 !important;
+    border-color: #333333 !important;
+}
+
+/* Post Detail */
+.download-btn {
+    width: 120px;
+    height: 32px;
+    background-color: #333333 !important;
+    border-color: #333333 !important;
+}
+
+.edit-btn {
+    width: 50px;
+    height: 32px;
+    background-color: #cb950a !important;
+    border-color: #cb950a !important;
+}
+
+.delete-btn {
+    width: 70px;
+    height: 32px;
+    background-color: #d12216 !important;
+    border-color: #d12216 !important;
+}
+
+.submit-btn,
+.hidden-reply-btn,
+.save-edit-btn {
+    font-size: 15px;
+    width: 80px;
+    height: 35px;
+    background-color: #6e285d !important;
+    border-color: #6e285d !important;
+}
+
+.like-btn {
+    font-size: 15px;
+    width: 80px;
+    height: 35px;
+}
+
+.liked-btn {
+    background-color: #1A8917 !important;
+    border-color: #1A8917 !important;
+}
+
+.unliked-btn,
+.cancel-reply-btn,
+.cancel-edit-btn {
+    width: 80px;
+    background-color: #737373 !important;
+    border-color: #737373 !important;
+}
+
+.reply-btn:hover,
+.reply-btn:active,
+.reply-btn:focus, 
+.btn-link:hover,
+.btn-link:focus,
+.btn-link:active  {
+    color: #333333 !important;
+}

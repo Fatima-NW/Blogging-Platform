@@ -18,49 +18,10 @@ Features:
         <p class="mb-4" style="font-size: 1.3rem;">{{ object.title }}</p>
         <form method="post" class="d-flex justify-content-between">
             {% csrf_token %}
-            <button type="submit" class="btn delete-btn flex-grow-1 me-2">Delete</button>
-            <a href="{% url 'post_detail' object.pk %}" class="btn cancel-btn flex-grow-1 ms-2">Cancel</a>
+            <button type="submit" class="btn confirm-delete-btn flex-grow-1 me-2">Delete</button>
+            <a href="{% url 'post_detail' object.pk %}" class="btn cancel-delete-btn flex-grow-1 ms-2">Cancel</a>
         </form>
     </div>
 </div>
-
-<style>
-    .card {
-        background-color: #FFFAF5;
-        border: 1px solid #e5e5e5;
-        filter: drop-shadow(0 0 5px rgba(67,36,17,0.05))
-                drop-shadow(0 0 10px rgba(67,36,17,0.02));
-    }
-
-    /* Buttons */
-    .btn {
-        color: #FFFAF5;
-        border-radius: 0;
-        font-size: 1rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .delete-btn {
-        height: 42px;
-        background-color: #d12216 !important;
-        border-color: #d12216 !important;
-    }
-
-    .cancel-btn {
-        height: 42px;
-        background-color: #333333 !important;
-        border-color: #333333 !important;
-    }
-
-    .btn:hover,
-    .btn:active,
-    .btn:focus {
-        color: #FFFAF5 !important;
-        filter: brightness(1.15);
-        font-weight: 500;
-    }
-</style>
 
 {% endblock %}
