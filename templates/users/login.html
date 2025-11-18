@@ -10,29 +10,11 @@ Displays the user login page
 <div class="container mt-5" style="max-width: 600px;">
     <div class="card shadow-sm p-4 mx-auto">
         <h2 class="text-center mb-4">Login</h2>
-        <form method="post">
+        <form method="post" class="login-form">
             {% csrf_token %}
             {{ form.as_p }}
             <button type="submit" class="btn login-btn imp-btn w-100">Login</button>
         </form>
     </div>
 </div>
-
-<style>
-    form input {
-        width: 100%;
-        border-radius: 0;
-        border: 1px solid #8f8f8f;
-        background-color: #FFFAF5;
-    }
-
-    .errorlist {
-        color: #dc3545;
-        font-size: 0.875rem;
-        margin-bottom: 0.6rem;
-        list-style: none;
-        padding: 0;
-    }
-</style>
-
 {% endblock %}

@@ -10,7 +10,7 @@ Displays the user registration page
 <div class="container mt-5 mb-5" style="max-width: 600px;">
     <div class="card shadow-sm p-4 mx-auto">
         <h2 class="text-center mb-4">Sign Up</h2>
-        <form method="post">
+        <form method="post" class="register-form">
             {% csrf_token %}
             {% for field in form %}
                 <div class="mb-3">
@@ -25,18 +25,4 @@ Displays the user registration page
         </form>
     </div>
 </div>
-
-<style>
-    form input, form textarea {
-        width: 100%;
-        border-radius: 0;
-        border: 1px solid #8f8f8f;
-        background-color: #FFFAF5;
-    }
-
-    form textarea {
-        height: 90px;
-    }
-</style>
-
 {% endblock %}

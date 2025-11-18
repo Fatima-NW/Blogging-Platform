@@ -12,7 +12,7 @@ Displays the form for creating/updating a blog post
         <h2 class="text-center mb-4">
             {% if is_create %}Create Post{% else %}Edit Post{% endif %}
         </h2>
-        <form method="POST">
+        <form method="POST" class="post-form">
             {% csrf_token %}
             {% for field in form %}
                 <div class="mb-3">
@@ -29,18 +29,4 @@ Displays the form for creating/updating a blog post
         </form>
     </div>
 </div>
-
-<style>
-    form input, form textarea {
-        width: 100%;
-        border-radius: 0;
-        border: 1px solid #8f8f8f;
-        background-color: #FFFAF5;
-    }
-
-    form textarea {
-        min-height: 300px;
-    }
-</style>
-
 {% endblock %}

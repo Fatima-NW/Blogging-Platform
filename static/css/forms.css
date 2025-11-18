@@ -1,0 +1,64 @@
+/* Global styles */
+form input, 
+form textarea {
+    width: 100%;
+    background-color: #FFFAF5;
+    border: 1px solid #8f8f8f;
+    border-radius: 0;
+}
+
+/* Form-specific styles */
+.register-form textarea {
+    height: 100px;
+}
+
+.post-form textarea {
+    min-height: 300px;
+}
+
+.login-form .errorlist {
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-bottom: 0.6rem;
+    list-style: none;
+    padding: 0;
+}
+
+/* Filter form */
+.filter {
+    background-color: #FFFAF5 !important;
+    border: 1px solid #e5e5e5;
+    border-radius: 0.25rem;
+    filter: drop-shadow(0 0 3px rgba(67,36,17,0.05))
+            drop-shadow(0 0 6px rgba(67,36,17,0.02));
+}
+
+.filter input {
+    background-color: #FFFAF1 !important;
+    border: 1px solid #e5e5e5 !important;
+    border-radius: 0 !important;
+    }
+
+/* Post detail forms */
+.comment-form textarea,
+.reply-form textarea,
+.edit-textarea  {
+    border-radius: 0;
+    background-color: #FFFAF5;
+    border: 1px solid #e5e5e5;
+    box-shadow: 
+        0 0 5px rgba(67,36,17,0.07),
+        0 0 10px rgba(67,36,17,0.03);
+}
+
+/* Focus */
+form input:focus, 
+form textarea:focus,
+.filter input:focus,
+.comment-form textarea:focus,
+.reply-form textarea:focus,
+.edit-textarea:focus  {
+    background-color: #FFFAF9 !important;
+    outline: 1px solid #000000; 
+    box-shadow: none;
+}
