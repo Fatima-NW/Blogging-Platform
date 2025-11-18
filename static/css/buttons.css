@@ -55,12 +55,14 @@
     font-weight: 600;
 }
 
+
 /* Login */
 .login-btn {
     background-color: #000000;
     border-color: #000000;
     margin-top: 1.5rem;
 }
+
 
 /* Register */
 .register-btn {
@@ -69,6 +71,7 @@
     margin-top: 1rem;
 }
 
+
 /* Create Post */
 .post-btn {
     height: 42px;
@@ -76,11 +79,13 @@
     border-color: #000000;
 }
 
+
 /* PDF Expire */
 .expire-btn {
     background-color: #000000;
     border-color: #000000;
 }
+
 
 /* Confirm delete */
 .confirm-delete-btn {
@@ -94,6 +99,7 @@
     background-color: #333333 !important;
     border-color: #333333 !important;
 }
+
 
 /* Post List */
 .create-btn {
@@ -121,6 +127,7 @@
     border-color: #333333 !important;
 }
 
+
 /* Post Detail */
 .download-btn {
     width: 120px;
@@ -143,16 +150,6 @@
     border-color: #d12216 !important;
 }
 
-.submit-btn,
-.hidden-reply-btn,
-.save-edit-btn {
-    font-size: 15px;
-    width: 80px;
-    height: 35px;
-    background-color: #6e285d !important;
-    border-color: #6e285d !important;
-}
-
 .like-btn {
     font-size: 15px;
     width: 80px;
@@ -172,6 +169,22 @@
     border-color: #737373 !important;
 }
 
+.reply-btn,
+.btn-link {
+    color: #737373;
+    font-weight: 500;
+}
+
+.submit-btn,
+.hidden-reply-btn,
+.save-edit-btn {
+    font-size: 15px;
+    width: 80px;
+    height: 35px;
+    background-color: #6e285d !important;
+    border-color: #6e285d !important;
+}
+
 .reply-btn:hover,
 .reply-btn:active,
 .reply-btn:focus, 
@@ -179,4 +192,5 @@
 .btn-link:focus,
 .btn-link:active  {
     color: #333333 !important;
+    font-weight: 600 !important;
 }

@@ -64,7 +64,7 @@ Features:
 
     <!--Comment Form -->
     {% if user.is_authenticated %}
-        <form method="post" action="{% url 'add_comment' post.pk %}" class="mb-3">
+        <form method="post" action="{% url 'add_comment' post.pk %}" class="comment-form mb-3">
             {% csrf_token %}
             <div class="mb-2"> {{ comment_form.content}} </div>
             <button type="submit" class="btn submit-btn">Submit</button>
@@ -77,14 +77,15 @@ Features:
             <div class="card comment-card mb-3 p-2 border rounded">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <strong>{{ comment.author }}</strong>
-                        <small class="text-muted">{{ comment.created_at|date:"M d, Y H:i" }}</small>
+                        <strong>{{ comment.author }}</strong> 
+                        &nbsp;
+                        <small class="text-muted">{{ comment.created_at|date:"M d, Y ◦  H:i" }}</small>
                     </div>
 
                     <div class="d-flex align-items-center">
                         <!-- Reply button -->
                             {% if user.is_authenticated %}
-                            <button class="btn btn-link btn-sm fw-bold text-muted text-decoration-none me-2 reply-btn"
+                            <button class="btn btn-link btn-sm text-decoration-none me-2 reply-btn"
                                     data-comment-id="{{ comment.id }}"
                                     data-username="{{ comment.author.username }}">
                                 Reply
@@ -94,7 +95,7 @@ Features:
                         <!-- Three-dot dropdown for updating and deleting comment -->
                         <div class="dropdown" style="min-width: 24px;">
                             {% if user == comment.author %}
-                                <button class="btn btn-link btn-sm fw-bold text-dark text-decoration-none"
+                                <button class="btn btn-link btn-sm fw-bold text-decoration-none"
                                         type="button"
                                         id="dropdownMenu{{ comment.id }}" data-bs-toggle="dropdown" aria-expanded="false"
                                         style="font-size: 1.05rem; line-height: 1;">
@@ -133,13 +134,14 @@ Features:
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <strong>{{ reply.author }}</strong>
-                                <small class="text-muted">{{ reply.created_at|date:"M d, Y H:i" }}</small>
+                                &nbsp;
+                                <small class="text-muted">{{ reply.created_at|date:"M d, Y ◦  H:i"  }}</small>
                             </div>
 
                             <div class="d-flex align-items-center">
                                 <!-- Reply button -->
                                     {% if user.is_authenticated %}
-                                    <button class="btn btn-link btn-sm fw-bold text-muted text-decoration-none me-2 reply-btn"
+                                    <button class="btn btn-link btn-sm text-decoration-none me-2 reply-btn"
                                             data-comment-id="{{ reply.id }}"
                                             data-username="{{ reply.author.username }}">
                                         Reply
@@ -149,7 +151,7 @@ Features:
                                 <!-- Three-dot dropdown updating and deleting replies -->
                                 <div class="dropdown" style="min-width: 24px;">
                                     {% if user == reply.author %}
-                                        <button class="btn btn-link btn-sm fw-bold text-dark text-decoration-none"
+                                        <button class="btn btn-link btn-sm fw-bold text-decoration-none"
                                                 type="button"
                                                 id="dropdownMenuReply{{ reply.id }}" data-bs-toggle="dropdown" aria-expanded="false"
                                                 style="font-size: 1.05rem; line-height: 1;">
@@ -190,19 +192,6 @@ Features:
     {% else %}
         <p>No comments yet.</p>
     {% endif %}
-
-    <style>
-        form.mb-3 textarea,
-        .reply-form textarea,
-        .edit-textarea  {
-            border-radius: 0;
-            background-color: #FFFAF5;
-            border: 1px solid #e5e5e5;
-            box-shadow: 
-                0 0 5px rgba(67,36,17,0.07),
-                0 0 10px rgba(67,36,17,0.03);
-        }
-    </style>
 
     <script>
 
