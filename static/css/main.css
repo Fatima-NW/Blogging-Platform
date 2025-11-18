@@ -79,3 +79,47 @@ h1, h2, h3, h4, h5, h6, strong, b {
         0 0 5px rgba(67,36,17,0.07),
         0 0 10px rgba(67,36,17,0.03);
 }
+
+
+/* Post Display */
+.truncate-3 {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/* Individual posts */
+.list-group-item {
+    background-color: #FFFAF5;
+    border: 1px solid #e5e5e5;
+    padding: 1.5rem;
+    filter: drop-shadow(0 0 3px rgba(67,36,17,0.05))
+            drop-shadow(0 0 6px rgba(67,36,17,0.02));
+}
+
+.list-group-item:hover {
+    background-color: #FFFAF9;
+    transform: scale(1.005);
+    filter: drop-shadow(0 0px 6px rgba(67,36,17,0.1));
+    box-shadow: 0 0 3px rgba(67,36,17,0.05);
+}
+
+
+/* Pagination */
+.pagination .page-link {
+    background-color: #FFFAF5;
+    color: #333333;
+    filter: drop-shadow(0 0 3px rgba(67,36,17,0.05))
+            drop-shadow(0 0 6px rgba(67,36,17,0.02));
+}
+
+.pagination .page-item.active .page-link, 
+.pagination .page-link:hover {
+    background-color: #333333;
+    color: #FFFAF5;
+    font-weight: 500;
+    border-color: #333333;
+}
