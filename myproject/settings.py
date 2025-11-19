@@ -189,7 +189,7 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 PDFS_TEMP_ROOT = os.path.join(BASE_DIR, "PDFs")
 
 # Site URL used in email links
-SITE_URL = "http://127.0.0.1:8000"  
+SITE_URL = "http://localhost:8000"  
 
 # Timeout threshold for synchronous generation
 PDF_SYNC_TIMEOUT_SECONDS = 1

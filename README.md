@@ -70,8 +70,8 @@ DEBUG=False
 PAGINATE_BY=posts-per-page
 EMAIL_USER=sender-email-address
 EMAIL_PASS=sender-app-password
-CELERY_BROKER="redis://127.0.0.1:6379/0"  
-CELERY_RESULT="redis://127.0.0.1:6379/0" 
+CELERY_BROKER="redis://localhost:6379/0"  
+CELERY_RESULT="redis://localhost:6379/0" 
 ```
 
 ### 5. Apply database migrations
