@@ -1,4 +1,4 @@
-/* Base template */
+/* BASE STYLES */
 
 body {
     font-family: 'IBM Plex Sans', sans-serif;
@@ -39,6 +39,26 @@ h1, h2, h3, h4, h5, h6, strong, b {
 }
 
 
+/* Cards */
+.card {
+    background-color: #FFFAF5;
+    border: 1px solid #e5e5e5;
+    filter: drop-shadow(0 0 5px rgba(67,36,17,0.05))
+            drop-shadow(0 0 10px rgba(67,36,17,0.02));
+}
+
+.comment-card {
+    background-color: #FFFAF5;
+    border: 1px solid #e5e5e5;
+    filter: none;
+    box-shadow: 
+        0 0 5px rgba(67,36,17,0.07),
+        0 0 10px rgba(67,36,17,0.03);
+}
+
+
+/* HOME PAGE */
+
 /* Hero Section */
 .hero-section {
     padding: 5rem 1rem;
@@ -63,23 +83,7 @@ h1, h2, h3, h4, h5, h6, strong, b {
 }
 
 
-/* Card */
-.card {
-    background-color: #FFFAF5;
-    border: 1px solid #e5e5e5;
-    filter: drop-shadow(0 0 5px rgba(67,36,17,0.05))
-            drop-shadow(0 0 10px rgba(67,36,17,0.02));
-}
-
-.comment-card {
-    background-color: #FFFAF5;
-    border: 1px solid #e5e5e5;
-    filter: none;
-    box-shadow: 
-        0 0 5px rgba(67,36,17,0.07),
-        0 0 10px rgba(67,36,17,0.03);
-}
-
+/* POST LIST */
 
 /* Post Display */
 .truncate-3 {
@@ -90,8 +94,6 @@ h1, h2, h3, h4, h5, h6, strong, b {
     text-overflow: ellipsis;
 }
 
-
-/* Individual posts */
 .list-group-item {
     background-color: #FFFAF5;
     border: 1px solid #e5e5e5;
@@ -104,7 +106,7 @@ h1, h2, h3, h4, h5, h6, strong, b {
     background-color: #FFFAF9;
     transform: scale(1.005);
     filter: drop-shadow(0 0px 6px rgba(67,36,17,0.1));
-    box-shadow: 0 0 3px rgba(67,36,17,0.05);
+    box-shadow: 0 0 5px rgba(67,36,17,0.05);
 }
 
 
@@ -122,4 +124,34 @@ h1, h2, h3, h4, h5, h6, strong, b {
     color: #FFFAF5;
     font-weight: 500;
     border-color: #333333;
+}
+
+
+/* POST DETAIL */
+
+/* Mentions */
+.mention-dropdown {
+    position: absolute;
+    background: #FFFAF9;
+    border: 1px solid #ccc;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: none;
+    z-index: 1000;
+    box-shadow: 3px 0px 10px rgba(67,36,17,0.05),
+                -3px 0px 10px rgba(67,36,17,0.05),
+                0px 3px 10px rgba(67,36,17,0.05);
+    border-radius: 6px;
+}
+
+.mention-dropdown li {
+    padding: 5px;
+    padding-left: 12px;
+    cursor: pointer;
+}
+
+.mention-dropdown li:hover {
+    font-weight: bold;
+    background-color: #FFFAF1;
 }

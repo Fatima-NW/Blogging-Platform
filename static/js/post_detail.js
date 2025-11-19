@@ -205,28 +205,7 @@ document.addEventListener("DOMContentLoaded", function() {
     // Create dropdown
     let dropdown = document.createElement('ul');
     dropdown.classList.add('mention-dropdown');
-    Object.assign(dropdown.style, {
-        position: 'absolute',
-        background: 'white',
-        border: '1px solid #ccc',
-        listStyle: 'none',
-        padding: '0',
-        margin: '0',
-        display: 'none',
-        zIndex: 1000,
-    });
     document.body.appendChild(dropdown);
-
-    // Add hover effect via style tag
-    const style = document.createElement('style');
-    style.textContent = `
-        .mention-dropdown li:hover {
-            font-weight: bold;
-            background-color: #f0f0f0;
-        }
-    `;
-    document.head.appendChild(style);
-
 
     let activeTextarea = null;
 
@@ -246,14 +225,14 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
 
                 dropdown.innerHTML = usernames
-                    .map(u => `<li class="mention-item" style="padding:5px; cursor:pointer;">@${u}</li>`)
+                    .map(u => `<li class="mention-item">@${u}</li>`)
                     .join('');
 
                 // Position dropdown relative to the textarea
                 const rect = textarea.getBoundingClientRect();
                 dropdown.style.top = `${rect.bottom + window.scrollY}px`;
                 dropdown.style.left = `${rect.left + window.scrollX}px`;
-                dropdown.style.width = `${rect.width}px`; // match textarea width
+                dropdown.style.width = `${rect.width}px`;
                 dropdown.style.display = 'block';
             } else {
                 dropdown.style.display = 'none';
