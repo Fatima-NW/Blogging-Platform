@@ -72,7 +72,7 @@ def generate_post_pdf_bytes(post):
     html_content = render_to_string("posts/post_pdf.html", {
         "post": post,
         "generation_date": timezone.localtime(timezone.now()),
-        "site_name": getattr(settings, "SITE_NAME", "Fatima's Blog"),
+        "site_name": getattr(settings, "SITE_NAME"),
     })
     pdf_io = BytesIO()
     HTML(string=html_content, base_url=settings.BASE_DIR).write_pdf(pdf_io)

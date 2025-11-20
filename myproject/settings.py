@@ -187,16 +187,12 @@ EMAIL_HOST_USER = config('EMAIL_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_PASS') 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-
-# Temporary PDF storage
-PDFS_TEMP_ROOT = os.path.join(BASE_DIR, "PDFs")
-
 # Site URL used in email links
 SITE_URL = "http://localhost:8000"  
 
-# Timeout threshold for synchronous generation
+
+# PDF
+SITE_NAME = "Blogs"
 PDF_SYNC_TIMEOUT_SECONDS = 1
-
-# Max time after which PDF links expire
 PDF_LINK_EXPIRY_MINUTES = 15
-
+PDFS_TEMP_ROOT = os.path.join(BASE_DIR, "PDFs")
