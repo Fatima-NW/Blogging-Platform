@@ -134,16 +134,21 @@ class PostUpdateView(LoginRequiredMixin, UpdateView):
         context = super().get_context_data(**kwargs)
         context["is_create"] = False
         return context
+    
+    def dispatch(self, request, *args, **kwargs):
+        post = super().get_object()
+        if post.author != request.user:
+            logger.warning(f"{request.user} tried to edit post '{post.title}' without permission")
+            messages.warning(request, f"You cannot edit post '{post.title}'")
+            return redirect("post_detail", pk=post.pk)
+
+        if request.method == "GET":
+            logger.info(f"{request.user} accessed post '{post.title}' for editing")
+
+        return super().dispatch(request, *args, **kwargs)
 
     def get_object(self, queryset=None):
-        post = super().get_object(queryset)
-        if post.author != self.request.user:         # only author can edit
-            logger.warning(f"{self.request.user} tried to edit post '{post.title}' without permission")
-            raise PermissionDenied("You are not allowed to edit this post.")
-        
-        if self.request.method == "GET":
-            logger.info(f"{self.request.user} accessed post '{post.title}' for editing")
-        return post
+        return super().get_object(queryset)
     
     def form_valid(self, form):
         response = super().form_valid(form)
@@ -169,13 +174,18 @@ class PostDeleteView(LoginRequiredMixin, DeleteView):
     template_name = "posts/post_confirm_delete.html"
     success_url = reverse_lazy("post_list")
 
+    def dispatch(self, request, *args, **kwargs):
+        post = super().get_object()
+        if post.author != request.user:      # only author can delete
+            logger.warning(f"{request.user} tried to delete post '{post.title}' without permission")
+            messages.warning(request, f"You cannot delete post '{post.title}'")
+            return redirect("post_detail", pk=post.pk)
+
+        logger.info(f"{request.user} accessed post '{post.title}' for deletion")
+        return super().dispatch(request, *args, **kwargs)
+
     def get_object(self, queryset=None):
-        post = super().get_object(queryset)
-        if post.author != self.request.user:         # only author can delete
-            logger.warning(f"{self.request.user} tried to delete post '{post.title}' without permission")
-            raise PermissionDenied("You are not allowed to delete this post.")
-        logger.info(f"{self.request.user} accessed post '{post.title}' for deletion")
-        return post
+        return super().get_object(queryset)
 
 
 @login_required
@@ -297,7 +307,12 @@ def update_comment(request, pk):
 
     if request.user != comment.author:                # only author can update
         logger.warning(f"Unauthorized update attempt by {request.user} on comment {pk}")
-        return JsonResponse({"success": False, "error": "Unauthorized"}, status=403)
+
+        if request.headers.get("x-requested-with") == "XMLHttpRequest":
+            return JsonResponse({"success": False, "error": "Unauthorized"}, status=403)
+        else:
+            messages.warning(request, f"You cannot edit this comment")
+            return redirect("post_detail", pk=comment.post.pk)
 
     if request.method == "POST" and request.headers.get("X-Requested-With") == "XMLHttpRequest":
         new_content = request.POST.get("content", "").strip()
@@ -329,6 +344,7 @@ def delete_comment(request, pk):
         logger.info(f"{request.user} deleted comment {pk}")
     else:
         logger.warning(f"Unauthorized delete attempt by {request.user} on comment {pk}")
+        messages.warning(request, "You cannot delete this comment")
     return redirect("post_detail", pk=comment.post.pk)
 
 
