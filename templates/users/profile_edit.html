@@ -1,0 +1,29 @@
+<!--
+Displays form for editing user's profile
+-->
+
+{% extends "base.html" %}
+
+{% block title %}Edit Profile{% endblock %}
+
+{% block content %}
+<div class="container d-flex justify-content-center mt-5 mb-5">
+    <div class="card shadow-sm p-5" style="max-width: 600px; width: 100%;">
+        <h2 class="text-center mb-4">Edit Profile</h2>
+
+        <form method="POST" class="profile-form">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="mb-3">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% for error in field.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn profile-btn imp-btn w-100">Save Changes</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

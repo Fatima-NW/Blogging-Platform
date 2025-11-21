@@ -8,8 +8,9 @@ form textarea {
 }
 
 /* Form-specific styles */
-.register-form textarea {
-    height: 100px;
+.register-form textarea,
+.profile-form textarea {
+    height: 150px;
 }
 
 .post-form textarea {
