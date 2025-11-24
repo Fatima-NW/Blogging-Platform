@@ -13,16 +13,55 @@ Displays form for editing user's profile
 
         <form method="POST" class="profile-form">
             {% csrf_token %}
+
             {% for field in form %}
+                {% if field.name != "current_password" and field.name != "new_password1" and field.name != "new_password2" %}
+                    <div class="mb-3">
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {% for error in field.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+            <!-- Change Password Toggle Button -->
+            <div class="mb-3">
+                <button class="btn profile-password-btn btn-link text-decoration-none w-100" type="button" 
+                        data-bs-toggle="collapse" data-bs-target="#password-section">
+                    Change Password
+                </button>
+            </div>
+
+            <!-- Collapsible Password Section -->
+            <div class="collapse {% if form.current_password.value or form.new_password1.value or form.new_password2.value or form.current_password.errors or form.new_password1.errors or form.new_password2.errors %}show{% endif %}" id="password-section">
                 <div class="mb-3">
-                    {{ field.label_tag }}
-                    {{ field }}
-                    {% for error in field.errors %}
+                    {{ form.current_password.label_tag }}
+                    {{ form.current_password }}
+                    {% for error in form.current_password.errors %}
                         <div class="text-danger small">{{ error }}</div>
                     {% endfor %}
                 </div>
-            {% endfor %}
-            <button type="submit" class="btn profile-btn imp-btn w-100">Save Changes</button>
+
+                <div class="mb-3">
+                    {{ form.new_password1.label_tag }}
+                    {{ form.new_password1 }}
+                    {% for error in form.new_password1.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.new_password2.label_tag }}
+                    {{ form.new_password2 }}
+                    {% for error in form.new_password2.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <button type="submit" class="btn profile-save-btn imp-btn w-100">Save Changes</button>
         </form>
     </div>
 </div>

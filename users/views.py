@@ -12,9 +12,9 @@ Includes views for:
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
-from django.core.exceptions import PermissionDenied
 from .forms import CustomUserCreationForm, ProfileForm
 from .models import CustomUser
 from posts.filters import filter_posts
@@ -94,8 +94,12 @@ def profile_edit(request, username):
         return redirect("profile", username=profile_user.username)
 
     if request.method == "POST":
-        form = ProfileForm(request.POST, instance=profile_user)
+        form = ProfileForm(request.POST, instance=profile_user, user=profile_user)   
         if form.is_valid():
+            new_password = form.cleaned_data.get("new_password1")
+            if new_password:
+                profile_user.set_password(new_password)
+                update_session_auth_hash(request, profile_user)
             form.save()
             logger.info(f"{request.user} updated their profile")
             messages.success(request, "Profile updated successfully!")
@@ -103,7 +107,7 @@ def profile_edit(request, username):
         else:
             logger.warning(f"{request.user} tried submitting invalid profile form")
     else:
-        form = ProfileForm(instance=profile_user)
+        form = ProfileForm(instance=profile_user, user=profile_user)
         logger.info(f"{request.user} accessed profile edit page.")
 
     return render(request, "users/profile_edit.html", {

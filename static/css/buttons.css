@@ -56,23 +56,24 @@
 }
 
 
-/* Login */
-.login-btn {
+/* Register*/
+.register-btn {
+    background-color: #000000;
+    border-color: #000000;
+    margin-top: 1rem;
+}
+
+
+/* Login + Save Profile*/
+.login-btn,
+.profile-save-btn {
     background-color: #000000;
     border-color: #000000;
     margin-top: 1.5rem;
 }
 
 
-/* Register + Profile*/
-.register-btn,
-.profile-btn {
-    background-color: #000000;
-    border-color: #000000;
-    margin-top: 1rem;
-}
-
-/* Edit Profile */
+/* Profile */
 .profile-edit-btn {
     width: 75px;
     min-width: 50px;
@@ -81,7 +82,6 @@
     border-color: #cb950a !important;
 }
 
-/* Delete Profile */
 .profile-delete-btn {
     width: 75px;
     min-width: 50px;
@@ -90,13 +90,18 @@
     border-color: #d12216 !important;
 }
 
-/* Create Post (from profile) */
 .profile-create-btn{
     width: 175px;
     min-width: 165px;
     height: 38px;
     background-color: #1A8917 !important;
     border-color: #1A8917 !important;
+}
+
+.profile-password-btn {
+    background: none !important;
+    padding-bottom: 0 !important;
+    line-height: 1 !important;
 }
 
 

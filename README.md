@@ -9,6 +9,7 @@ The Blogging Platform is a modern, full-featured web application built with **Dj
 - Create, edit, delete, and download blog posts as PDFs.
 - Interactive post pages with likes, threaded comments, and replies.
 - Add, edit, delete and reply to other comments.
+- View and update user profiles.
 - Dynamic post filtering for easy content discovery.
 - Automated email alerts for new comments and delayed downloads.
 - Complete API support for all major functionalities.
