@@ -13,8 +13,8 @@ from django.core.exceptions import ValidationError
 
 class Post(models.Model):
     """ Blog post model """
-    title = models.CharField(max_length=200)
-    content = models.TextField(max_length=10000)
+    title = models.CharField(max_length=250)
+    content = models.TextField(max_length=20000)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -27,7 +27,7 @@ class Comment(models.Model):
     """ Comment model """
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    content = models.TextField(max_length=1000)
+    content = models.TextField(max_length=3000)
     created_at = models.DateTimeField(auto_now_add=True)
     parent = models.ForeignKey(
         "self",
@@ -47,9 +47,9 @@ class Comment(models.Model):
         return f"Comment by {self.author} on {self.post.title}"
     
     def save(self, *args, **kwargs):
-        """ Validate that comment content does not exceed 1000 characters """
-        if self.content and len(self.content) > 1000:
-            raise ValidationError("Content cannot exceed 1000 characters.")
+        """ Validate that comment content does not exceed 3000 characters """
+        if self.content and len(self.content) > 3000:
+            raise ValidationError("Content cannot exceed 3000 characters.")
         super().save(*args, **kwargs)
 
 

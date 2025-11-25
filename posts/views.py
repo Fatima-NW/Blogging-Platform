@@ -118,8 +118,8 @@ class PostCreateView(LoginRequiredMixin, CreateView):
     
     def form_invalid(self, form):
         content_errors = form.errors.get("content", [])
-        if any("at most 10000" in str(e) for e in content_errors):
-            logger.debug(f"{self.request.user} attempted to create post exceeding 10,000 chars")
+        if any("at most 20,000" in str(e) for e in content_errors):
+            logger.debug(f"{self.request.user} attempted to create post exceeding 20,000 chars")
             logger.warning(f"{self.request.user} failed to create post due to content length")
         return super().form_invalid(form)
     
@@ -162,8 +162,8 @@ class PostUpdateView(LoginRequiredMixin, UpdateView):
     
     def form_invalid(self, form):
         content_errors = form.errors.get("content", [])
-        if any("at most 10000" in str(e) for e in content_errors):
-            logger.debug(f"{self.request.user} attempted to update post exceeding 10,000 chars")
+        if any("at most 20,000" in str(e) for e in content_errors):
+            logger.debug(f"{self.request.user} attempted to update post exceeding 20,000 chars")
             logger.warning(f"{self.request.user} failed to update post due to content length")
         return super().form_invalid(form)
     
@@ -297,8 +297,8 @@ def add_comment(request, pk):
         else:
             if "content" in form.errors:
                 content_errors = form.errors.get("content")
-                if any("at most 1000 characters" in err for err in content_errors):
-                    logger.debug(f"{request.user} attempted to submit a comment exceeding 1000 chars")
+                if any("at most 3000 characters" in err for err in content_errors):
+                    logger.debug(f"{request.user} attempted to submit a comment exceeding 3000 chars")
             logger.warning(f"{request.user} failed to add comment on '{post.title}'")
 
     return redirect("post_detail", pk=post.pk)
@@ -323,10 +323,10 @@ def update_comment(request, pk):
             logger.warning(f"{request.user} submitted empty content for comment {pk}")
             return JsonResponse({"success": False, "error": "Empty content."}, status=400)
 
-        if len(new_content) > 1000:
-            logger.debug(f"{request.user} attempted to update comment {pk} exceeding 1000 chars")
+        if len(new_content) > 3000:
+            logger.debug(f"{request.user} attempted to update comment {pk} exceeding 3000 chars")
             logger.warning(f"{request.user} failed to update comment {pk}")
-            return JsonResponse({"success": False, "error": "Comment too long (max 1000 characters)."}, status=400)
+            return JsonResponse({"success": False, "error": "Comment too long (max 3000 characters)."}, status=400)
 
         comment.content = new_content
         comment.save()
