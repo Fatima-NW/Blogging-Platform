@@ -31,7 +31,7 @@ def linkify_tagged_users(content):
     def replacer(match):
         username = match.group(1)
         url = f"/users/profile/{username}/"
-        return f'<a href="{url}" class="text-decoration-none text-muted">@{username}</a>'
+        return f'<a href="{url}" class="text-decoration-none text-muted profile-link">@{username}</a>'
 
     return re.sub(r'@([\w.\-]+)', replacer, content)
 
