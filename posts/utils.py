@@ -4,6 +4,7 @@ Utility helpers for the posts app
 Includes:
 - Asynchronous email notifications for comments and replies
 - Post downloads
+- @username extraction and profile linking
 
 This module centralizes logic that may be shared across multiple views
 """
@@ -15,11 +16,25 @@ from django.conf import settings
 import os
 import uuid
 from io import BytesIO
-import tempfile
-from django.utils.text import slugify
 
 
 User = get_user_model()
+
+
+def linkify_tagged_users(content):
+    """
+    Convert @username in content to <a> links to their profiles
+    """
+    if not content:
+        return ""
+
+    def replacer(match):
+        username = match.group(1)
+        url = f"/users/profile/{username}/"
+        return f'<a href="{url}" class="text-decoration-none text-muted">@{username}</a>'
+
+    return re.sub(r'@([\w.\-]+)', replacer, content)
+
 
 def extract_tagged_users(content):
     """

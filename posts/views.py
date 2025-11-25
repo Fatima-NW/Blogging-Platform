@@ -19,7 +19,7 @@ from django.http import JsonResponse, HttpResponse, FileResponse, Http404
 from django.shortcuts import render
 from django.conf import settings
 from .filters import filter_posts
-from .utils import notify_comment_emails, generate_post_pdf_bytes
+from .utils import notify_comment_emails, generate_post_pdf_bytes, linkify_tagged_users
 from .tasks import generate_post_pdf_task_and_email
 from concurrent.futures import ThreadPoolExecutor, TimeoutError
 from django.contrib import messages
@@ -71,11 +71,13 @@ class PostDetailView(DetailView):
             .get(pk=self.object.pk)
         )
 
-        # Top-level comments: newest to oldest
+        # Comments
         top_comments = post.comments.filter(parent__isnull=True).order_by("-created_at")
-        # Prefetch nested replies: oldest to newest
         for comment in top_comments:
             comment.replies_ordered = comment.replies.all().order_by("created_at")
+            comment.rendered_content = linkify_tagged_users(comment.content)
+            for reply in comment.replies_ordered:
+                reply.rendered_content = linkify_tagged_users(reply.content)
 
         context["comments"] = top_comments
         context["comment_form"] = CommentForm()
@@ -87,6 +89,7 @@ class PostDetailView(DetailView):
             self.request.user.is_authenticated
             and post.likes.filter(user=self.request.user).exists()
         )
+
         logger.info(f"{self.request.user} viewed post '{self.object.title}'")
         logger.debug(f"Comments: {post.comments.count()}, Likes: {post.likes.count()}")
         return context
