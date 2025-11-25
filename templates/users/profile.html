@@ -67,7 +67,7 @@ Features:
                     {% for post in posts %}
                         <a href="{% url 'post_detail' post.pk %}" class="list-group-item list-group-item-action">
                             <div class="d-flex justify-content-between">
-                                <h5 class="mb-1" style="max-width: calc(100% - 120px);">{{ post.title }}</h5>
+                                <p class="mb-1" style="max-width: calc(100% - 120px); font-size: 19px; color: black;">{{ post.title }}</p>
                                 <small class="text-muted">{{ post.created_at|date:"M d, Y" }}</small>
                             </div>
                             <small class="text-secondary">
