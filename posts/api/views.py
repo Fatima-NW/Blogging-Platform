@@ -16,7 +16,7 @@ from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from ..filters import filter_posts
-from posts.utils import notify_comment_emails, generate_post_pdf_bytes
+from posts.utils import notify_comment, generate_post_pdf_bytes
 from posts.tasks import generate_post_pdf_task_and_email
 from django.conf import settings
 from concurrent.futures import ThreadPoolExecutor, TimeoutError
@@ -193,7 +193,7 @@ class CommentCreateAPIView(generics.CreateAPIView):
             logger.info(f"User {self.request.user} replied to {replied_to_user.username} under comment {root_parent.pk if root_parent else 'N/A'}")
 
         # Send async email notifications
-        notify_comment_emails(comment, post, self.request.user)
+        notify_comment(comment, post, self.request.user)
 
 
 class CommentUpdateAPIView(generics.RetrieveUpdateAPIView):

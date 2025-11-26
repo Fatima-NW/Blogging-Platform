@@ -249,7 +249,7 @@ def test_comment_triggers_email_task(client_logged_in, post, user):
     url = reverse("add_comment", args=[post.pk])
     data = {"content": "This is a test comment"}
 
-    with patch("posts.views.notify_comment_emails") as mock_notify:
+    with patch("posts.views.notify_comment") as mock_notify:
         response = client_logged_in.post(url, data)
         assert response.status_code == 302  # Redirect to post detail
 

@@ -19,7 +19,7 @@ from django.http import JsonResponse, HttpResponse, FileResponse, Http404
 from django.shortcuts import render
 from django.conf import settings
 from .filters import filter_posts
-from .utils import notify_comment_emails, generate_post_pdf_bytes, linkify_tagged_users
+from .utils import notify_comment, generate_post_pdf_bytes, linkify_tagged_users
 from .tasks import generate_post_pdf_task_and_email
 from concurrent.futures import ThreadPoolExecutor, TimeoutError
 from django.contrib import messages
@@ -290,8 +290,8 @@ def add_comment(request, pk):
 
             comment.save()
 
-            # Send async email notifications
-            notify_comment_emails(comment, post, request.user)
+            # Send notifications
+            notify_comment(comment, post, request.user)
             logger.info(f"{request.user} added comment {comment.pk} on '{post.title}'")
             messages.success(request, "Comment added successfully!")
         else:

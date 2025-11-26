@@ -264,7 +264,7 @@ def test_api_comment_triggers_email_task(auth_client, post, user):
     url = reverse("api_comment_create", kwargs={"post_pk": post.pk})
     data = {"content": "This is a test API comment"}
 
-    with patch("posts.api.views.notify_comment_emails") as mock_notify:
+    with patch("posts.api.views.notify_comment") as mock_notify:
         response = auth_client.post(url, data, format="json")
         
         assert response.status_code == 201
