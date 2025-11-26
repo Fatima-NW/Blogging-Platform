@@ -16,7 +16,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import CustomUserCreationForm, ProfileForm
-from .models import CustomUser
+from .models import CustomUser, Notification
 from posts.filters import filter_posts
 from posts.models import Post, Comment, Like 
 from mylogger import Logger
@@ -72,6 +72,8 @@ def home(request):
     logger.info(f"{username} accessed home page ")
     return render(request, "home.html")
 
+
+# -----------------------PROFILE-----------------------
 
 @login_required
 def profile_view(request, username):
@@ -155,3 +157,33 @@ def profile_delete(request):
         return redirect("home")
 
     return render(request, "users/profile_confirm_delete.html", context)
+
+
+# -----------------------NOTIFICATIONS-----------------------
+
+@login_required
+def notifications_view(request):
+    """ Show the current user's notifications  """
+    notifications = request.user.notifications.all()
+    context = {
+        "notifications": notifications
+    }
+    return render(request, "users/notifications.html", context)
+
+
+@login_required
+def open_notification(request, pk):
+    """ Mark a notification as read and redirect to its post or comment """
+    notif = get_object_or_404(Notification, pk=pk, user=request.user)
+
+    if not notif.read:
+        notif.read = True
+        notif.save(update_fields=["read"])
+
+    if notif.comment:
+        return redirect("post_detail", pk=notif.comment.post.pk)
+    elif notif.post:
+        return redirect("post_detail", pk=notif.post.pk)
+    else:
+        # fallback
+        return redirect("post_list")

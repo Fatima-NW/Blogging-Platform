@@ -31,4 +31,14 @@ class Notification(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        return f"Notification for {self.user.username}: {self.message[:80]}"
+        # Reply to comment
+        if self.comment and self.comment.replied_to == self.user:
+            return f"{self.user.username}: {self.comment.author.username} replied to your comment on '{self.post.title}'"
+        # Post Author
+        elif self.comment and self.post and self.post.author == self.user:
+            return f"{self.user.username}: {self.comment.author.username} commented on your post '{self.post.title}'"
+        # Mentioned in comment
+        elif self.comment and self.comment.author != self.user:
+            return f"{self.user.username}: {self.comment.author.username} mentioned you in a comment on '{self.post.title}'"
+        else:
+            return f"{self.user.username}: {self.message[:100]}"
