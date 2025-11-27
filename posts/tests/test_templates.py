@@ -120,11 +120,15 @@ def test_post_edit_by_author(client_logged_in, post):
 
 @pytest.mark.django_db
 def test_post_edit_by_non_author_raises_error(client, another_user, post):
-    " A non-author attempting to edit someone else's post should receive a 403 error "
+    " A non-author should not be allowed to edit someone else's post"
     client.force_login(another_user)
     url = reverse("post_edit", args=[post.pk])
     response = client.post(url, {"title": "Hack", "content": "Unauthorized"})
-    assert response.status_code == 403  # PermissionDenied
+    assert response.status_code == 302
+    assert response.url == reverse("post_detail", args=[post.pk])
+    post.refresh_from_db()
+    assert post.title != "Hack"
+    assert post.content != "Unauthorized"
 
 # DELETE POST
 
@@ -142,7 +146,9 @@ def test_post_delete_by_non_author_forbidden(client, another_user, post):
     client.force_login(another_user)
     url = reverse("post_delete", args=[post.pk])
     response = client.post(url)
-    assert response.status_code == 403
+    assert response.status_code == 302
+    assert response.url == reverse("post_detail", args=[post.pk])
+    assert Post.objects.filter(pk=post.pk).exists()
 
 # DOWNLOAD POST
 
