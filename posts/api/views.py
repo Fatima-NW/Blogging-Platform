@@ -15,8 +15,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
-from ..filters import filter_posts
-from posts.utils import notify_comment, generate_post_pdf_bytes
+from posts.utils import filter_posts, notify_comment, generate_post_pdf_bytes
 from posts.tasks import generate_post_pdf_task_and_email
 from django.conf import settings
 from concurrent.futures import ThreadPoolExecutor, TimeoutError

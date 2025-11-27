@@ -18,8 +18,7 @@ from django.urls import reverse_lazy
 from django.http import JsonResponse, HttpResponse, FileResponse, Http404
 from django.shortcuts import render
 from django.conf import settings
-from .filters import filter_posts
-from .utils import notify_comment, generate_post_pdf_bytes, linkify_tagged_users
+from .utils import filter_posts, notify_comment, generate_post_pdf_bytes, linkify_tagged_users
 from .tasks import generate_post_pdf_task_and_email
 from concurrent.futures import ThreadPoolExecutor, TimeoutError
 from django.contrib import messages

@@ -17,7 +17,7 @@ from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import CustomUserCreationForm, ProfileForm
 from .models import CustomUser, Notification
-from posts.filters import filter_posts
+from posts.utils import filter_posts
 from posts.models import Post, Comment, Like 
 from mylogger import Logger
 
