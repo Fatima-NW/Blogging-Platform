@@ -76,9 +76,9 @@ def test_comment_reply(post, user, another_user):
     assert reply.parent.replies.count() == 1
 
 @pytest.mark.django_db
-def test_comment_rejects_content_over_3000_chars(user, post):
-    """Model should raise ValidationError if comment exceeds 3000 chars"""
-    long_content = "x" * 3001
+def test_comment_rejects_content_over_2000_chars(user, post):
+    """Model should raise ValidationError if comment exceeds 2000 chars"""
+    long_content = "x" * 2001
     comment = Comment(post=post, author=user, content=long_content)
     with pytest.raises(ValidationError) as excinfo:
         comment.save()
