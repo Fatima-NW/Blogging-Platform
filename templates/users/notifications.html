@@ -1,3 +1,13 @@
+<!--
+Displays the notifications page
+
+Features:
+- Lists all notifications for the current user
+- Marks unread notifications visually with bold text
+- Shows the notification message, the associated comment content, creation date and time of each notification
+- Uses truncation to limit displayed comment text for readability
+-->
+
 {% extends "base.html" %}
 
 {% block title %}Notifications{% endblock %}
@@ -10,7 +20,10 @@
             {% for notif in notifications %}
                 <a href="{% url 'open_notification' notif.pk %}" 
                    class="list-group-item list-group-item-action py-3 {% if not notif.read %}fw-bold{% endif %}">
-                    <p class="mb-1">{{ notif.message }}</p>
+                    <p class="truncate-3  mb-1">
+                        <strong class="{% if not notif.read %}fw-bold{% endif %}">{{ notif.message }}</strong>: 
+                        {{ notif.comment.content }}
+                    </p>
                     <small class="text-muted">
                         {{ notif.created_at|date:"d M Y" }}  at  {{ notif.created_at|date:"H:i" }}
                     </small>

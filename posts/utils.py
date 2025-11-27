@@ -2,7 +2,7 @@
 Utility helpers for the posts app
 
 Includes:
-- Asynchronous email notifications for comments and replies
+- In-app and asynchronous email notifications for comments, mentions and replies
 - Post downloads
 - @username extraction and profile linking
 
@@ -59,7 +59,7 @@ def notify_comment(comment, post, user):
     if not comment.parent and post.author.email and post.author != user:
         Notification.objects.create(
             user=post.author,
-            message=f"{user.username} commented on your post '{post.title}': {comment.content}",
+            message=f"{user.username} commented on your post '{post.title}'",
             post=post,
             comment=comment
         )
@@ -71,7 +71,7 @@ def notify_comment(comment, post, user):
     if comment.replied_to and comment.replied_to.email and comment.replied_to != user:
         Notification.objects.create(
             user=comment.replied_to,
-            message=f"{user.username} replied to your comment on '{post.title}': {comment.content}",
+            message=f"{user.username} replied to your comment on '{post.title}'",
             post=post,
             comment=comment
         )
@@ -86,7 +86,7 @@ def notify_comment(comment, post, user):
         if tagged_user not in [user, post.author, comment.replied_to] and tagged_user.email:
             Notification.objects.create(
                 user=tagged_user,
-                message=f"{user.username} mentioned you in a comment on '{post.title}': {comment.content}",
+                message=f"{user.username} mentioned you in a comment on '{post.title}'",
                 post=post,
                 comment=comment
             )
