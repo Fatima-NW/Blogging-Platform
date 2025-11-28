@@ -137,7 +137,9 @@ document.addEventListener("DOMContentLoaded", function() {
             </div>
         `;
 
-        contentP.querySelector(".edit-textarea").focus();
+        const textarea = contentP.querySelector(".edit-textarea");
+        attachMentionListener(textarea);
+        textarea.focus();
     });
 
     // Handle Save and Cancel actions
@@ -200,17 +202,13 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
     // ------------------------- @Username Search -------------------------
-    const textareas = document.querySelectorAll('textarea[name="content"]');
-    if (!textareas) return;
-
-    // Create dropdown
     let dropdown = document.createElement('ul');
     dropdown.classList.add('mention-dropdown');
     document.body.appendChild(dropdown);
 
     let activeTextarea = null;
 
-    textareas.forEach(textarea => {
+    function attachMentionListener(textarea) {
         textarea.addEventListener('keyup', async (e) => {
             activeTextarea = textarea;
             const text = textarea.value;
@@ -239,7 +237,9 @@ document.addEventListener("DOMContentLoaded", function() {
                 dropdown.style.display = 'none';
             }
         });
-    });
+    }
+
+    document.querySelectorAll('textarea[name="content"]').forEach(attachMentionListener);
 
     // Click on dropdown item
     dropdown.addEventListener('click', (e) => {
@@ -253,7 +253,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Click outside hides dropdown
     document.addEventListener('click', (e) => {
-        if (!dropdown.contains(e.target) && ![...textareas].includes(e.target)) {
+        if (!dropdown.contains(e.target) && ![...document.querySelectorAll('textarea[name="content"]')].includes(e.target)) {
             dropdown.style.display = 'none';
         }
     });

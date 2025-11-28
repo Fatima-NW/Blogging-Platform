@@ -146,17 +146,9 @@ def linkify_tagged_users(content):
 
 # ----------------------- NOTIFICATIONS -----------------------
 
-def extract_tagged_users(content):
+def notify_comment(comment, post, user, new_content: str | None = None, is_new_comment: bool = False, old_content: str = ""):
     """
-    Extract valid tagged users from comment content
-    """
-    usernames = re.findall(r'@([\w.\-]+)', content)
-    return list(User.objects.filter(username__in=usernames))
-
-
-def notify_comment(comment, post, user):
-    """
-    - Send in-app notifications when a comment is added
+    - Send in-app notifications
     - Send async email notifications
         Handles:
         - Post author notifications for top-level comments
@@ -165,8 +157,10 @@ def notify_comment(comment, post, user):
     """
     from posts.tasks import send_email_task
 
+    content_to_check = new_content if new_content is not None else comment.content
+
     # Notify post author ONLY for top-level comments
-    if not comment.parent and post.author.email and post.author != user:
+    if is_new_comment and not comment.parent and post.author.email and post.author != user:
         Notification.objects.create(
             user=post.author,
             message=f"{user.username} commented on your post '{post.title}'",
@@ -174,11 +168,11 @@ def notify_comment(comment, post, user):
             comment=comment
         )
         subject = f"New comment on your post '{post.title}'"
-        message = f"{user.username} commented on your post '{post.title}': {comment.content}"
+        message = f"{user.username} commented on your post '{post.title}':  {content_to_check}"
         send_email_task.delay(subject, message, [post.author.email])
 
     # Notify replied-to user
-    if comment.replied_to and comment.replied_to.email and comment.replied_to != user:
+    if is_new_comment and comment.replied_to and comment.replied_to.email and comment.replied_to != user:
         Notification.objects.create(
             user=comment.replied_to,
             message=f"{user.username} replied to your comment on '{post.title}'",
@@ -186,13 +180,14 @@ def notify_comment(comment, post, user):
             comment=comment
         )
         subject = f"New reply to your comment on '{post.title}'"
-        message = f"{user.username} replied to your comment on '{post.title}': {comment.content}"
+        message = f"{user.username} replied to your comment on '{post.title}': {content_to_check}"
         send_email_task.delay(subject, message, [comment.replied_to.email])
 
     # Notify @tagged users
-    tagged_users = extract_tagged_users(comment.content)
-    for tagged_user in tagged_users:
-        # Avoid duplicate email if already notified
+    old_tags = set(re.findall(r'@([\w.\-]+)', old_content))
+    new_tags = set(re.findall(r'@([\w.\-]+)', content_to_check))
+    for username in new_tags - old_tags:
+        tagged_user = User.objects.filter(username=username).first()
         if tagged_user not in [user, post.author, comment.replied_to] and tagged_user.email:
             Notification.objects.create(
                 user=tagged_user,
@@ -201,7 +196,7 @@ def notify_comment(comment, post, user):
                 comment=comment
             )
             subject = f"You were mentioned in a comment on '{post.title}'"
-            message = f"{user.username} mentioned you in a comment on '{post.title}': {comment.content}"
+            message = f"{user.username} mentioned you in a comment on '{post.title}': {content_to_check}"
             send_email_task.delay(subject, message, [tagged_user.email])
 
 

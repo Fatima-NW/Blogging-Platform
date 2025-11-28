@@ -290,7 +290,7 @@ def add_comment(request, pk):
             comment.save()
 
             # Send notifications
-            notify_comment(comment, post, request.user)
+            notify_comment(comment, post, request.user, is_new_comment=True)
             logger.info(f"{request.user} added comment {comment.pk} on '{post.title}'")
             messages.success(request, "Comment added successfully!")
         else:
@@ -305,6 +305,7 @@ def add_comment(request, pk):
 
 @login_required
 def update_comment(request, pk):
+    """ Allow users to edit their own comments """
     comment = get_object_or_404(Comment, pk=pk)
 
     if request.user != comment.author:                # only author can update
@@ -327,9 +328,11 @@ def update_comment(request, pk):
             logger.warning(f"{request.user} failed to update comment {pk}")
             return JsonResponse({"success": False, "error": "Comment too long (max 2000 characters)."}, status=400)
 
+        old_content = comment.content 
         comment.content = new_content
         comment.save()
         logger.info(f"{request.user} updated comment {pk}")
+        notify_comment(comment, comment.post, request.user, new_content=new_content, old_content=old_content)
         return JsonResponse({"success": True, "updated_content": comment.content})
 
     logger.warning(f"Invalid request for updating comment {pk} by {request.user}")
