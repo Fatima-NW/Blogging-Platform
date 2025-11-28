@@ -11,7 +11,7 @@ Features:
 -->
 
 {% extends "base.html" %}
-
+{% load static %}
 {% block title %}Posts{% endblock %}
 
 {% block content %}
@@ -19,9 +19,7 @@ Features:
 
     <!-- Create new post button-->
     {% if user.is_authenticated %}
-        <a href="{% url 'post_create' %}" class="btn create-btn mb-3">
-            + Create New Post
-        </a>
+        <a href="{% url 'post_create' %}" class="btn create-btn mb-3"><img src="{% static 'img/create.png' %}" alt="Create Post" class="icon-img">&nbsp;&nbsp;Create a Post</a>
     {% endif %}
 
     <!-- Filter Form -->
@@ -31,9 +29,9 @@ Features:
         <div class="d-flex align-items-center mb-2">
             <input type="text" name="query" class="form-control flex-grow-1 me-2" placeholder="Search anything" value="{{ request.GET.query }}">
 
-            <button type="submit" class="btn search-btn me-2">Search</button>
-            <button class="btn filter-btn me-2" type="button" data-bs-toggle="collapse" data-bs-target="#filters-section">Filters</button>
-            <a href="{% url 'post_list' %}" class="btn reset-btn">Reset</a>
+            <button type="submit" class="btn search-btn me-2" title="Search"><img src="{% static 'img/search.png' %}" alt="Search" class="icon-img"></button>
+            <button type="button" class="btn filter-btn me-2" title="Filters" data-bs-toggle="collapse" data-bs-target="#filters-section"><img src="{% static 'img/filter.png' %}" alt="Filters" class="icon-img"></button>
+            <a href="{% url 'post_list' %}" class="btn reset-btn" title="Reset"><img src="{% static 'img/reset.png' %}" alt="Reset" class="icon-img"></a>
         </div>
 
         <!-- Filters Section -->

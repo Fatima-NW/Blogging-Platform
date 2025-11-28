@@ -50,7 +50,7 @@ Features:
             <div class="d-flex justify-content-between">
                 <h3 class="mb-3">All Posts</h3>
                 {% if user == profile_user %}
-                    <a href="{% url 'post_create' %}" class="btn profile-create-btn mb-3">+ Create New Post</a>
+                    <a href="{% url 'post_create' %}" class="btn profile-create-btn mb-3"><img src="{% static 'img/create.png' %}" alt="Create Post" class="icon-img">&nbsp;&nbsp;Create a Post</a>
                 {% endif %}
             </div>
 
