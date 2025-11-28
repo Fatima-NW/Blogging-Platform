@@ -81,12 +81,13 @@ document.addEventListener("DOMContentLoaded", function() {
             console.log("Server response JSON:", data);
 
             // Update button
+            const icon = likeBtn.querySelector("img");
             if (data.liked) {
-                likeBtn.textContent = "Liked";
+                icon.src = "/static/img/liked.png";
                 likeBtn.classList.remove("unliked-btn");
                 likeBtn.classList.add("liked-btn");
             } else {
-                likeBtn.textContent = "Like";
+                icon.src = "/static/img/like.png";
                 likeBtn.classList.remove("liked-btn");
                 likeBtn.classList.add("unliked-btn");
             }

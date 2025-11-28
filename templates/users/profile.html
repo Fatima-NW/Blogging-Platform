@@ -10,7 +10,7 @@ Features:
 -->
 
 {% extends "base.html" %}
-
+{% load static %}
 {% block title %}{{ profile_user.username }}{% endblock %}
 
 {% block content %}
@@ -19,7 +19,7 @@ Features:
 
             <div class="d-flex align-items-center justify-content-between mb-3">
                 <!-- Name -->
-                <h1 class="mb-0">
+                <h1 class="mb-0 me-3">
                     {% if profile_user.get_full_name %}
                         {{ profile_user.get_full_name }}
                     {% else %}
@@ -29,9 +29,10 @@ Features:
 
                 <!-- Edit + Delete buttons-->
                 {% if user == profile_user %}
-                <div class="d-flex">
-                    <a href="{% url 'profile_edit' profile_user.username %}" class="btn profile-edit-btn me-2">Edit</a>
-                    <a href="{% url 'profile_delete' %}" class="btn profile-delete-btn">Delete</a>
+                <div class="d-flex gap-2 flex-shrink-0">
+                    <a href="{% url 'notifications' %}" class="btn profile-post-btns notif-btn" title="Notifications"><img src="{% static 'img/notification.png' %}" alt="Notifications" class="icon-img"></a>
+                    <a href="{% url 'profile_edit' profile_user.username %}" class="btn profile-post-btns edit-btn" title="Edit"><img src="{% static 'img/edit.png' %}" alt="Edit" class="icon-img"></a>
+                    <a href="{% url 'profile_delete' %}" class="btn profile-post-btns delete-btn" title="Delete"><img src="{% static 'img/delete.png' %}" alt="Delete" class="icon-img"></a>
                 </div>
                 {% endif %}
             </div>
@@ -57,8 +58,8 @@ Features:
             <form method="get" class="mb-4 p-3 bg-light filter">
                 <div class="d-flex align-items-center">
                     <input type="text" name="title" class="form-control me-2" placeholder="Search by title" value="{{ request.GET.title }}">
-                    <button type="submit" class="btn search-btn me-2">Search</button>
-                    <a href="{% url 'profile' profile_user.username %}" class="btn reset-btn">Reset</a>
+                    <button type="submit" class="btn search-btn me-2" title="Search"><img src="{% static 'img/search.png' %}" alt="Search" class="icon-img"></button>
+                    <a href="{% url 'profile' profile_user.username %}" class="btn reset-btn" title="Reset"><img src="{% static 'img/reset.png' %}" alt="Reset" class="icon-img"></a>
                 </div>
             </form>
 

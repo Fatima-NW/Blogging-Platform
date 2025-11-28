@@ -73,26 +73,32 @@
 }
 
 
-/* Profile */
-.profile-edit-btn {
-    width: 75px;
-    min-width: 50px;
-    height: 35px;
+/* Edit, Delete, Notification, Download*/
+.profile-post-btns  {
+    width: clamp(45px, 6vw, 58px); 
+    height: clamp(33px, 6vw, 35px); 
+}
+
+.edit-btn {
     background-color: #cb950a !important;
     border-color: #cb950a !important;
 }
 
-.profile-delete-btn {
-    width: 75px;
-    min-width: 50px;
-    height: 35px;
+.delete-btn {
     background-color: #d12216 !important;
     border-color: #d12216 !important;
 }
 
+.notif-btn,
+.download-btn {
+    background-color: #333333 !important;
+    border-color: #333333 !important;
+}
+
+
+/* Profile */
 .profile-create-btn{
-    width: 175px;
-    min-width: 165px;
+    width: clamp(165px, 6vw, 175px); 
     height: 38px;
     background-color: #1A8917 !important;
     border-color: #1A8917 !important;
@@ -172,29 +178,8 @@
 
 
 /* Post Detail */
-.download-btn {
-    width: 120px;
-    height: 32px;
-    background-color: #333333 !important;
-    border-color: #333333 !important;
-}
-
-.edit-btn {
-    width: 50px;
-    height: 32px;
-    background-color: #cb950a !important;
-    border-color: #cb950a !important;
-}
-
-.delete-btn {
-    width: 70px;
-    height: 32px;
-    background-color: #d12216 !important;
-    border-color: #d12216 !important;
-}
 
 .like-btn {
-    font-size: 15px;
     width: 80px;
     height: 35px;
 }
@@ -204,7 +189,11 @@
     border-color: #1A8917 !important;
 }
 
-.unliked-btn,
+.unliked-btn {
+    background-color: #333333 !important;
+    border-color: #333333 !important;
+}
+
 .cancel-reply-btn,
 .cancel-edit-btn {
     width: 80px;

@@ -155,3 +155,18 @@ h1, h2, h3, h4, h5, h6, strong, b {
     font-weight: bold;
     background-color: #FFFAF1;
 }
+
+
+/* Icons */
+.icon-main {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    padding-bottom: 3px;
+}
+
+.icon-img {
+    width: 23px;
+    height: 23px;
+    object-fit: contain;
+}
