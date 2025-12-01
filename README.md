@@ -1,6 +1,6 @@
-# Blogging Platform
+# BLOGS — Blogging Platform
 
-The Blogging Platform is a modern, full-featured web application built with **Django** and **Django REST Framework**. It delivers a seamless blogging experience where users can share their stories, engage with others through comments and likes, and enjoy a clean, responsive interface. Behind the scenes, the platform handles background tasks, automated notifications, and data management with efficiency and reliability. Powered by Docker for effortless setup and deployment, it combines functionality and performance to provide a smooth, end-to-end blogging environment.
+BLOGS is a modern, full-featured web application built with **Django** and **Django REST Framework**. It provides a seamless blogging experience where users can share their stories, engage with others through comments and likes, and enjoy a clean, responsive interface. Behind the scenes, the platform handles background tasks, automated notifications, and data management with efficiency and reliability. Powered by Docker for effortless setup and deployment, it combines functionality and performance to provide a smooth, end-to-end blogging environment.
 
 
 ## 🚀 Features
@@ -224,7 +224,10 @@ yourfolder/
 **Users**
 - POST   `/api/users/register/`              → Register a new user
 - GET    `/api/users/profile/`               → Retrieve authenticated user profile
+- PUT    `/api/users/profile/update/`        → Update authenticated user profile
+- DELETE `/api/users/profile/delete/`        → Delete authenticated user account
 - GET    `/api/users/search/?q=<query>`      → Search users by username (autocomplete dropdown)
+- GET    `/api/users/notifications/`          → List all notifications for authenticated user
 
 **Posts**
 - GET    `/api/posts/`                        → List all posts
