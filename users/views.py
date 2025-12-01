@@ -7,6 +7,7 @@ Includes views for:
 - Logout 
 - Home page
 - User profile: view, edit, delete
+- Notifications page
 """
 
 from django.shortcuts import render, redirect, get_object_or_404
@@ -81,7 +82,10 @@ def profile_view(request, username):
     profile_user = get_object_or_404(CustomUser, username=username)
     posts = profile_user.post_set.all().order_by('-created_at')
     posts = filter_posts(posts, request.GET)
-    logger.info(f"{request.user} viewed profile of {profile_user.username}")
+    if request.user == profile_user:
+        logger.info(f"{request.user} accessed their own profile")
+    else:
+        logger.info(f"{request.user} viewed profile of {profile_user.username}")
     return render(request, "users/profile.html", {"profile_user": profile_user, "posts": posts})
 
 
@@ -110,7 +114,7 @@ def profile_edit(request, username):
             logger.warning(f"{request.user} tried submitting invalid profile form")
     else:
         form = ProfileForm(instance=profile_user, user=profile_user)
-        logger.info(f"{request.user} accessed profile edit page.")
+        logger.info(f"{request.user} accessed profile edit page")
 
     return render(request, "users/profile_edit.html", {
         "form": form,
@@ -150,7 +154,10 @@ def profile_delete(request):
         "total_comments": total_comments,
     }
 
+    logger.info(f"User {current_user.username} accessed account deletion page")
+
     if request.method == "POST":
+        logger.info(f"User {current_user.username} deleted their account")
         logout(request)
         current_user.delete()
         messages.success(request, "Account deleted permanently.")
@@ -168,6 +175,7 @@ def notifications_view(request):
     context = {
         "notifications": notifications
     }
+    logger.info(f"{request.user} accessed notifications page")
     return render(request, "users/notifications.html", context)
 
 
@@ -175,6 +183,7 @@ def notifications_view(request):
 def open_notification(request, pk):
     """ Mark a notification as read and redirect to its post or comment """
     notif = get_object_or_404(Notification, pk=pk, user=request.user)
+    logger.info(f"{request.user.username} opened notification {notif.pk}")
 
     if not notif.read:
         notif.read = True
@@ -185,5 +194,4 @@ def open_notification(request, pk):
     elif notif.post:
         return redirect("post_detail", pk=notif.post.pk)
     else:
-        # fallback
         return redirect("post_list")
